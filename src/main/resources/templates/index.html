@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:th="http://www.thymeleaf.org">
+<head th:include="fragment/common :: headerFragment" />
+<body>
+<div class="container">
+    <div th:replace="fragment/common :: top-nav"></div>
+    <div class="jumbotron">
+        <h1>My ASU Bank</h1>
+    </div>
+    <div th:replace="fragment/common :: [//footer]"></div>
+</div>
+</body>
+</html>
