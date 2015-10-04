@@ -7,6 +7,6 @@ import com.bankapp.models.Role;
 public interface RoleRepository extends CrudRepository<Role, Long> {
 
     Role findByName(String name);
-
+    
 
 }

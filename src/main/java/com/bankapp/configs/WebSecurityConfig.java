@@ -29,7 +29,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                         "/", 
                         "/home", 
                         "/webjars/**",
-                        "/signup").permitAll()
+                        "/signup"
+                        ).permitAll()
                 .anyRequest().authenticated()
                 .and()
             .formLogin()
