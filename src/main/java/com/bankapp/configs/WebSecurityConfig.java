@@ -29,7 +29,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                         "/", 
                         "/home", 
                         "/webjars/**",
-                        "/signup").permitAll()
+                        "/signup"
+                        ).permitAll()
                 .anyRequest().authenticated()
                 .and()
             .formLogin()
@@ -39,7 +40,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .permitAll()
                 .and()
             .logout()
-                .permitAll();
+                .permitAll()
+                .and()
+            .sessionManagement()
+                 .maximumSessions(1);
     }
 
     @Override
