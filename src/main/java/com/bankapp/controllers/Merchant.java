@@ -50,7 +50,8 @@ public class Merchant {
 
 	private List<Transaction> getTransactionsByUserId(long id) {
 		User user = userService.getUserById(id);
-		List<Transaction> transactions = merchantService.getTransactionsByUser(user);
+		Account
+		List<Transaction> transactions = merchantService.getTransactionsByUser(user, );
 		System.out.println(transactions.size());
 		return transactions;
 	}

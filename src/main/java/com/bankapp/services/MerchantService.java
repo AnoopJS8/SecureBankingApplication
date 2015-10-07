@@ -23,9 +23,9 @@ public class MerchantService implements IMerchantService{
 
     @Transactional
 	@Override
-	public List<Transaction> getTransactionsByUser(final User user) {
+	public List<Transaction> getTransactionsByUserAndAccount(final User user, Account fromAccount, Account toAccount) {
 		// TODO Auto-generated method stub
-    	List<Transaction> list = transactionRepository.findByUserOrderByCreatedAsc(user);
+    	List<Transaction> list = transactionRepository.findByUserAndFromAccountOrToAccountOrderByCreatedAsc(user, fromAccount, toAccount);
 		return list;
 	}
 
@@ -34,6 +34,12 @@ public class MerchantService implements IMerchantService{
 		// TODO Auto-generated method stub
 		List<Account> list = accountRepository.findByUserOrderByCreatedAsc(user);
 		return list;
+	}
+
+	@Override
+	public Account saveAccount(Account account) {
+		Account acc = accountRepository.save(account);
+		return acc;
 	}
 	
 }

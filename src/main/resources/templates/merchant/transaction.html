@@ -21,7 +21,7 @@
 					</tr>
 				</thead>
 				<tbody>
-					<tr th:each="row : transactions">
+					<tr th:each="row : ${transactions}">
 						<td><span th:text="${row.getCreated()}"></span></td>
 						<td><span th:text="${row.getType()}"></span></td>
 						<td><span th:text="${row.getFromAccount()}"></span></td>

@@ -10,5 +10,6 @@ import com.bankapp.models.User;
 public interface AccountRepository extends CrudRepository<Account, Long>{
 
 	List<Account> findByUserOrderByCreatedAsc(User user );
+	Account save(Account account);
 	
 }
