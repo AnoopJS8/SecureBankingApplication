@@ -55,7 +55,10 @@ public class SignupController {
         LOGGER.debug("Registering user account with information: {}", newUser);
 
         if (result.hasErrors()) {
-            return new ModelAndView("signup", "user", newUser);
+            ModelAndView mv = new ModelAndView("signup");
+            mv.addObject("user", newUser);
+            mv.addObject("errors", result.getAllErrors());
+            return mv;
         }
 
         User registered = createUserAccount(newUser);
@@ -74,7 +77,7 @@ public class SignupController {
 
             LOGGER.debug(message);
             ModelAndView mv = new ModelAndView("signup");
-            mv.addObject("message", message);
+            mv.addObject("message", e.getMessage());
             mv.addObject("user", newUser);
             return mv;
         }
