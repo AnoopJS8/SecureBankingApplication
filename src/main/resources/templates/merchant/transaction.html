@@ -17,24 +17,19 @@
 						<th>To</th>
 						<th>Amount</th>
 						<th>Balance</th>
+						<th>Comment</th>
 					</tr>
 				</thead>
 				<tbody>
-					<tr>
-						<td>10/05/2015</td>
-						<td>Credit</td>
-						<td>Ravin</td>
-						<td>Anna</td>
-						<td>100</td>
-						<td>3000</td>
-					</tr>
-					<tr>
-						<td>10/03/2015</td>
-						<td>Debit</td>
-						<td>Anna</td>
-						<td>Ravin</td>
-						<td>19</td>
-						<td>1245</td>
+					<tr th:each="row : transactions">
+						<td><span th:text="${row.getCreated()}"></span></td>
+						<td><span th:text="${row.getType()}"></span></td>
+						<td><span th:text="${row.getFromAccount()}"></span></td>
+						<td><span th:text="${row.getToAccount()}"></span></td>
+						<td><span th:text="${row.getAmount()}"></span></td>
+						<td><span th:text="${row.getBalance()}"></span></td>
+						<td><span th:text="${row.getComment()}"></span></td>
+						
 					</tr>
 				</tbody>
 			</table>
