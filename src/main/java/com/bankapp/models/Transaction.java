@@ -22,22 +22,25 @@ public class Transaction {
      @GeneratedValue(strategy = GenerationType.AUTO)
      private Long tId;
 	 
-	 @ManyToOne(cascade=CascadeType.ALL) 
+	 @ManyToOne() 
 	 @JoinColumn(name = "accId", nullable=false)
 	 private Account account;
 	 
-	 @ManyToOne(cascade=CascadeType.ALL) 
+	 @ManyToOne() 
 	 @JoinColumn(name = "userId" , nullable=false)
 	 private User user;
 	 
 	 private String comment;
 	 
-	 @ManyToOne(cascade=CascadeType.ALL) 
+	 @ManyToOne() 
 	 @JoinColumn(name= "toAccId" , nullable=false)
 	 private Account toccount;
 	 
 	 @NotNull
 	 private Double amount;
+	 
+	 @NotNull
+	 private String type;
 	 
 	 private Date created;
 	 private Date updated;
@@ -116,7 +119,15 @@ public class Transaction {
 		this.updated = updated;
 	}
 
-	  
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
+	}
+
+	 
 	
 	 
 	 

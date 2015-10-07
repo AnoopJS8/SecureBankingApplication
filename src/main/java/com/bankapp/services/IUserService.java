@@ -6,4 +6,7 @@ import com.bankapp.models.User;
 public interface IUserService {
     User registerNewUserAccount(User accountDto)     
             throws EmailExistsException;
+    
+    User getUserById(Long id);
+    
 }

@@ -47,4 +47,10 @@ public class UserService implements IUserService {
         }
         return false;
     }
+
+	@Override
+	public User getUserById(Long id) {
+		User user = repository.findById(id);
+		return user;
+	}
 }
