@@ -9,6 +9,6 @@ import com.bankapp.models.User;
 public interface IMerchantService {
 	
 	public List<Transaction> getTransactionsByUser(User user);
-	public List<Account> getAccountByUser(User user);
+	public List<Account> getAccountsByUser(User user);
 
 }

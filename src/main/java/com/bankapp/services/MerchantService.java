@@ -30,7 +30,7 @@ public class MerchantService implements IMerchantService{
 	}
 
 	@Override
-	public List<Account> getAccountByUser(User user) {
+	public List<Account> getAccountsByUser(User user) {
 		// TODO Auto-generated method stub
 		List<Account> list = accountRepository.findByUserOrderByCreatedAsc(user);
 		return list;

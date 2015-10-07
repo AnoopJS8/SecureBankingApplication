@@ -29,6 +29,7 @@ public class Account {
 	private Double balance;
 	private Date created;
 	private Date updated;
+	private Double criticalLimit;
 
 	@PrePersist
 	protected void onCreate() {
@@ -40,7 +41,18 @@ public class Account {
 	  updated = new Date();
 	}
 	
-	private Double criticalLimit;
+	
+	
+	public Account() {
+        super();
+    }
+
+    public Account(final User user, final Double balance, final Double criticalLimit) {
+        super();
+        this.user = user;
+        this.balance = balance;
+        this.criticalLimit = criticalLimit;
+    }
 
 	public Long getAccId() {
 		return accId;
@@ -92,5 +104,12 @@ public class Account {
 	
 	
 	
+	
+	@Override
+    public String toString() {
+        final StringBuilder builder = new StringBuilder();
+        builder.append("Account [userid=").append(user.getUsername()).append("]").append("[accId=").append(accId).append("]").append("[balance=").append(balance).append("]");
+        return builder.toString();
+    }
 
 }

@@ -19,35 +19,34 @@ import com.bankapp.services.IUserService;
 
 @Controller
 public class Merchant {
-	
+
 	private final Logger LOGGER = LoggerFactory.getLogger(getClass());
 
-    @Autowired
-    private IMerchantService merchantService; 
-    
-    @Autowired
-    private IUserService userService;
-	
-	@RequestMapping(value = "/merchant_transaction", method = RequestMethod.GET)
-	  public ModelAndView getTransactions() {
-		  List<Transaction> transactions = new ArrayList<Transaction>();
-	      ModelAndView mv = new ModelAndView();
-	      transactions = getTransactionsByUserId(1);
-	      mv.addObject("transactions", transactions);
-	      mv.setViewName("merchant_transaction");
-	      return mv;
-	  }
-	
-	@RequestMapping(value = "/merchant_account", method = RequestMethod.GET)
+	@Autowired
+	private IMerchantService merchantService;
+
+	@Autowired
+	private IUserService userService;
+
+	@RequestMapping(value = "/transaction", method = RequestMethod.GET)
+	public ModelAndView getTransactions() {
+		List<Transaction> transactions = new ArrayList<Transaction>();
+		ModelAndView mv = new ModelAndView();
+		transactions = getTransactionsByUserId(1);
+		mv.addObject("transactions", transactions);
+		mv.setViewName("merchant/transaction");
+		return mv;
+	}
+
+	@RequestMapping(value = "/account", method = RequestMethod.GET)
 	public ModelAndView getAccounts() {
-		  List<Account> account = new ArrayList<Account>();
-	      ModelAndView mv = new ModelAndView();
-	      account = getAccountById(1);
-	      mv.addObject("accounts", account);
-	      mv.setViewName("merchant_account");
-	      return mv;
-	  }
-	
+		List<Account> account = new ArrayList<Account>();
+		ModelAndView mv = new ModelAndView();
+		account = getAccountById(1);
+		mv.addObject("accounts", account);
+		mv.setViewName("merchant/account");
+		return mv;
+	}
 
 	private List<Transaction> getTransactionsByUserId(long id) {
 		User user = userService.getUserById(id);
@@ -55,12 +54,11 @@ public class Merchant {
 		System.out.println(transactions.size());
 		return transactions;
 	}
-	
+
 	private List<Account> getAccountById(long id) {
 		User user = userService.getUserById(id);
-		List<Account> account = merchantService.getAccountByUser(user);
+		List<Account> account = merchantService.getAccountsByUser(user);
 		System.out.println(account.size());
 		return account;
 	}
 }
-

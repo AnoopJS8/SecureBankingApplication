@@ -20,11 +20,11 @@ public class Transaction {
 
 	 @Id
      @GeneratedValue(strategy = GenerationType.AUTO)
-     private Long tId;
+     private Long transactionId;
 	 
 	 @ManyToOne() 
-	 @JoinColumn(name = "accId", nullable=false)
-	 private Account account;
+	 @JoinColumn(name = "fromAccId", nullable=false)
+	 private Account fromAccount;
 	 
 	 @ManyToOne() 
 	 @JoinColumn(name = "userId" , nullable=false)
@@ -34,7 +34,7 @@ public class Transaction {
 	 
 	 @ManyToOne() 
 	 @JoinColumn(name= "toAccId" , nullable=false)
-	 private Account toccount;
+	 private Account toAccount;
 	 
 	 @NotNull
 	 private Double amount;
@@ -55,20 +55,22 @@ public class Transaction {
 	    updated = new Date();
 	  }
 
-	public Long gettId() {
-		return tId;
+	
+	  
+	public Long getTransactionId() {
+		return transactionId;
 	}
 
-	public void settId(Long tId) {
-		this.tId = tId;
+	public void setTransactionId(Long transactionId) {
+		this.transactionId = transactionId;
 	}
 
-	public Account getAccount() {
-		return account;
+	public Account getFromAccount() {
+		return fromAccount;
 	}
 
-	public void setAccount(Account account) {
-		this.account = account;
+	public void setFromAccount(Account fromAccount) {
+		this.fromAccount = fromAccount;
 	}
 
 	public User getUser() {
@@ -87,12 +89,12 @@ public class Transaction {
 		this.comment = comment;
 	}
 
-	public Account getToccount() {
-		return toccount;
+	public Account getToAccount() {
+		return toAccount;
 	}
 
-	public void setToccount(Account toccount) {
-		this.toccount = toccount;
+	public void setToAccount(Account toAccount) {
+		this.toAccount = toAccount;
 	}
 
 	public Double getAmount() {
