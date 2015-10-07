@@ -2,6 +2,7 @@ package com.bankapp.controllers;
 
 import java.util.Calendar;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import org.slf4j.Logger;
@@ -24,6 +25,7 @@ import com.bankapp.listeners.OnRegistrationCompleteEvent;
 import com.bankapp.models.User;
 import com.bankapp.models.VerificationToken;
 import com.bankapp.services.IUserService;
+import com.bankapp.services.IMailService;
 
 @Controller
 public class SignupController {
@@ -31,6 +33,9 @@ public class SignupController {
 
     @Autowired
     private IUserService userService;
+
+    @Autowired
+    private IMailService mailService;
 
     @Autowired
     ApplicationEventPublisher eventPublisher;
@@ -94,12 +99,39 @@ public class SignupController {
         Calendar cal = Calendar.getInstance();
         if ((verificationToken.getExpiryDate().getTime() - cal.getTime().getTime()) <= 0) {
             String message = String.format("The verification token has expired. Please register again!");
-            return new ModelAndView("registration/activationFailed", "message", message);
+            String url = "http://localhost:8081/resendRegistrationToken?token=" + token;
+            ModelAndView mv = new ModelAndView("registration/activationFailed");
+            mv.addObject("message", message);
+            mv.addObject("url", url);
+            return mv;
         }
 
         user.setEnabled(true);
         userService.saveRegisteredUser(user);
         return new ModelAndView("registration/activationSuccess");
+    }
+
+    @RequestMapping(value = "/resendRegistrationToken", method = RequestMethod.GET)
+    public ModelAndView resendRegistrationToken(HttpServletRequest request,
+            @RequestParam("token") String existingToken) {
+        String newToken = userService.generateNewVerificationToken(existingToken).getToken();
+        User user = userService.getUser(newToken);
+
+        String recipientAddress = user.getEmail();
+        String userName = user.getUsername();
+        String subject = String.format("My ASU Bank - Resending Activation");
+        String confirmationUrl = "http://localhost:8081/registrationConfirm?token=" + newToken;
+
+        String textBody = String.format(
+                "Dear %s, <br /><br />Here is your new account verification link:<br />"
+                        + "<a href='%s'>%s</a>.<br /><br />Regards,<br />My ASU Bank",
+                userName, confirmationUrl, confirmationUrl);
+        mailService.sendEmail(recipientAddress, subject, textBody);
+
+        ModelAndView mv = new ModelAndView("registration/activationInfo");
+        mv.addObject("email", recipientAddress);
+        mv.addObject("username", userName);
+        return mv;
     }
 
     private User createUserAccount(final User newUser) {

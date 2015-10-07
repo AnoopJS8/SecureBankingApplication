@@ -1,6 +1,7 @@
 package com.bankapp.services;
 
 import java.util.Arrays;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -18,7 +19,7 @@ import com.bankapp.repositories.VerificationTokenRepository;
 public class UserService implements IUserService {
     @Autowired
     private UserRepository repository;
-    
+
     @Autowired
     private PasswordEncoder passwordEncoder;
 
@@ -64,20 +65,29 @@ public class UserService implements IUserService {
         User user = tokenRepository.findByToken(verificationToken).getUser();
         return user;
     }
-     
+
     @Override
     public VerificationToken getVerificationToken(String VerificationToken) {
         return tokenRepository.findByToken(VerificationToken);
     }
-     
+
     @Override
     public void saveRegisteredUser(User user) {
         repository.save(user);
     }
-     
+
     @Override
     public void createVerificationToken(User user, String token) {
         VerificationToken myToken = new VerificationToken(token, user);
         tokenRepository.save(myToken);
+    }
+
+    @Override
+    public VerificationToken generateNewVerificationToken(final String existingVerificationToken) {
+        VerificationToken vToken = tokenRepository.findByToken(existingVerificationToken);
+
+        vToken.setToken(UUID.randomUUID().toString());
+        vToken = tokenRepository.save(vToken);
+        return vToken;
     }
 }

@@ -11,15 +11,18 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 
-public class MailService {
+@Service
+public class MailService implements IMailService {
     @Value("${com.bankapp.email.mail_username}")
-    private static String username;
+    private String username;
 
     @Value("${com.bankapp.email.mail_password}")
-    private static String password;
+    private String password;
 
-    public static void sendEmail(String recipientAddress, String subject, String textBody) {
+    @Override
+    public void sendEmail(String recipientAddress, String subject, String textBody) {
         Properties props = new Properties();
         props.put("mail.smtp.auth", "true");
         props.put("mail.smtp.starttls.enable", "true");

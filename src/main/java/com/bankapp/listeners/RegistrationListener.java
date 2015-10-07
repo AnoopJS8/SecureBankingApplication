@@ -7,13 +7,16 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Component;
 
 import com.bankapp.models.User;
+import com.bankapp.services.IMailService;
 import com.bankapp.services.IUserService;
-import com.bankapp.services.MailService;
 
 @Component
 public class RegistrationListener implements ApplicationListener<OnRegistrationCompleteEvent> {
     @Autowired
     private IUserService service;
+    
+    @Autowired
+    private IMailService mailService;
 
     @Override
     public void onApplicationEvent(OnRegistrationCompleteEvent event) {
@@ -34,6 +37,6 @@ public class RegistrationListener implements ApplicationListener<OnRegistrationC
                 + "please click on <b><a href='%s' target='_blank'>this</a></b> link.<br><br>"
                 + "Regards,<br />My ASU Bank<br>", recipientUsername, confirmationUrl);
 
-        MailService.sendEmail(recipientAddress, subject, textBody);
+        mailService.sendEmail(recipientAddress, subject, textBody);
     }
 }
