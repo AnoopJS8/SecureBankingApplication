@@ -35,13 +35,24 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(final String email) throws UsernameNotFoundException {
+        boolean enabled = true;
+        boolean accountNotExpired = true;
+        boolean credentialsNotExpired = true;
+        boolean accountNotLocked = true;
         try {
             final com.bankapp.models.User user = userRepository.findByEmail(email);
-            
-            if(user == null) {
-                return new User(" ", " ", true, true, true, true, getAuthorities(Arrays.asList(roleRepository.findByName("ROLE_USER"))));
+
+            if (user == null) {
+                return new User(" ", " ", enabled, true, true, true,
+                        getAuthorities(Arrays.asList(roleRepository.findByName("ROLE_USER"))));
             }
-            return new User(user.getEmail(), user.getPassword(), user.isEnabled(), true, true, true, getAuthorities(user.getRoles()));
+            return new User(user.getEmail(), 
+                    user.getPassword(), 
+                    user.isEnabled(), 
+                    accountNotExpired,
+                    credentialsNotExpired,
+                    accountNotLocked,
+                    getAuthorities(user.getRoles()));
         } catch (final Exception e) {
             throw new RuntimeException(e);
         }
