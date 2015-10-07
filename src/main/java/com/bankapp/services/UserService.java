@@ -9,8 +9,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.bankapp.exceptions.EmailExistsException;
 import com.bankapp.models.User;
+import com.bankapp.models.VerificationToken;
 import com.bankapp.repositories.RoleRepository;
 import com.bankapp.repositories.UserRepository;
+import com.bankapp.repositories.VerificationTokenRepository;
 
 @Service
 public class UserService implements IUserService {
@@ -22,6 +24,9 @@ public class UserService implements IUserService {
 
     @Autowired
     private RoleRepository roleRepository;
+
+    @Autowired
+    private VerificationTokenRepository tokenRepository;
 
     @Transactional
     @Override
@@ -48,9 +53,31 @@ public class UserService implements IUserService {
         return false;
     }
 
-	@Override
-	public User getUserById(Long id) {
-		User user = repository.findById(id);
-		return user;
-	}
+    @Override
+    public User getUserById(Long id) {
+        User user = repository.findById(id);
+        return user;
+    }
+
+    @Override
+    public User getUser(String verificationToken) {
+        User user = tokenRepository.findByToken(verificationToken).getUser();
+        return user;
+    }
+     
+    @Override
+    public VerificationToken getVerificationToken(String VerificationToken) {
+        return tokenRepository.findByToken(VerificationToken);
+    }
+     
+    @Override
+    public void saveRegisteredUser(User user) {
+        repository.save(user);
+    }
+     
+    @Override
+    public void createVerificationToken(User user, String token) {
+        VerificationToken myToken = new VerificationToken(token, user);
+        tokenRepository.save(myToken);
+    }
 }
