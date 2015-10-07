@@ -8,10 +8,10 @@ import org.springframework.web.servlet.ModelAndView;
 @Controller
 public class MainController {
 
-  @RequestMapping(value = "/", method = RequestMethod.GET)
-  public ModelAndView home() {
-      ModelAndView mv = new ModelAndView();
-      mv.setViewName("index");
-      return mv;
-  }
+	@RequestMapping(value = "/", method = RequestMethod.GET)
+	public ModelAndView home() {
+		ModelAndView mv = new ModelAndView();
+		mv.setViewName("index");
+		return mv;
+	}
 }

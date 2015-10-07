@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+<head th:include="fragment/common :: headerFragment" />
+<body>
+	<div class="container">
+		<div th:replace="fragment/common :: top-nav"></div>	
+		<div th:replace="fragment/merchant_common :: merchant-header"></div>	
+		<div class="table-responsive">
+			<table class="table table-bordered table-hover">
+				<thead>
+					<tr>
+						<th>Account Number</th>
+						<th>Balance</th>
+						<th>Created Date</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr th:each="row : ${accounts}">
+						<td><span th:text="${row.getAccId()}"></span></td>
+						<td><span th:text="${row.getBalance()}"></span></td>
+						<td><span th:text="${row.getCreated()}"></span></td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</div>
+		
+</body>
+</html>
