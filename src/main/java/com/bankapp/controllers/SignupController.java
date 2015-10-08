@@ -5,8 +5,7 @@ import java.util.Calendar;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Controller;
@@ -29,7 +28,7 @@ import com.bankapp.services.IMailService;
 
 @Controller
 public class SignupController {
-    private final Logger LOGGER = LoggerFactory.getLogger(SignupController.class);
+    private final Logger LOGGER = Logger.getLogger(SignupController.class);
 
     @Autowired
     private IUserService userService;
@@ -52,7 +51,8 @@ public class SignupController {
     public ModelAndView registerUser(@ModelAttribute("user") @Valid User newUser, BindingResult result,
             WebRequest request, Errors errors) {
 
-        LOGGER.debug("Registering user account with information: {}", newUser);
+        String logMessage = String.format("Registering user account with information: {%s}", newUser);
+        LOGGER.info(logMessage);
 
         if (result.hasErrors()) {
             ModelAndView mv = new ModelAndView("signup");
@@ -73,9 +73,9 @@ public class SignupController {
             String appUrl = request.getContextPath();
             eventPublisher.publishEvent(new OnRegistrationCompleteEvent(registered, request.getLocale(), appUrl));
         } catch (Exception e) {
-            String message = String.format("[ERROR]: Action: %s, Message: %s", "signup", e.getMessage());
+            String message = String.format("Action: %s, Message: %s", "signup", e.getMessage());
+            LOGGER.error(message);
 
-            LOGGER.debug(message);
             ModelAndView mv = new ModelAndView("signup");
             mv.addObject("message", e.getMessage());
             mv.addObject("user", newUser);
@@ -91,7 +91,8 @@ public class SignupController {
     @RequestMapping(value = "/registrationConfirm", method = RequestMethod.GET)
     public ModelAndView confirmRegistration(WebRequest request, Model model, @RequestParam("token") String token) {
 
-        LOGGER.debug("Verifying user account with information: {}", token);
+        String logMessage = String.format("Verifying user account with information: {token = %s}", token);
+        LOGGER.info(logMessage);
         VerificationToken verificationToken = userService.getVerificationToken(token);
         if (verificationToken == null) {
             String message = String.format("The token is invalid, please register again!");
