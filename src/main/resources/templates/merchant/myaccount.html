@@ -6,7 +6,26 @@
 <body>
 	<div class="container">
 		<div th:replace="fragment/common :: top-nav"></div>	
-		<div th:replace="fragment/merchant_common :: merchant-header"></div>
+		<div th:replace="fragment/merchant :: merchant-header"></div>
+		<div class="table-responsive">
+			<table class="table table-bordered table-hover">
+				<thead>
+					<tr>
+						<th>Account Number</th>
+						<th>Balance</th>
+						<th>Created Date</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr style="cursor: pointer" th:each="row : ${accounts}">
+						<td><span th:text="${row.getAccId()}"></span></td>
+						<td><span th:text="${row.getBalance()}"></span></td>
+						<td><span th:text="${row.getCreated()}"></span></td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+		<div class="row"><span>Transactions</span></div>
 		<div class="table-responsive">
 			<table class="table table-bordered table-hover">
 				<thead>
@@ -29,7 +48,6 @@
 						<td><span th:text="${row.getAmount()}"></span></td>
 						<td><span th:text="${row.getBalance()}"></span></td>
 						<td><span th:text="${row.getComment()}"></span></td>
-						
 					</tr>
 				</tbody>
 			</table>
