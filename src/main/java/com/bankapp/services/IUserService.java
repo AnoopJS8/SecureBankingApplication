@@ -5,13 +5,17 @@ import com.bankapp.models.User;
 import com.bankapp.models.VerificationToken;
 
 public interface IUserService {
-    User registerNewUserAccount(User accountDto)     
-            throws EmailExistsException;
-    
+    User registerNewUserAccount(User accountDto) throws EmailExistsException;
+
     User getUserById(Long id);
 
     User getUser(String verificationToken);
+
     void saveRegisteredUser(User user);
+
     void createVerificationToken(User user, String token);
+
     VerificationToken getVerificationToken(String VerificationToken);
+
+    VerificationToken generateNewVerificationToken(String VerificationToken);
 }

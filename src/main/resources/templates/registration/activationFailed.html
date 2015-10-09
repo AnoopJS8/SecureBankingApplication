@@ -1,14 +1,22 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
-    xmlns:th="http://www.thymeleaf.org">
+	xmlns:th="http://www.thymeleaf.org">
 <head th:include="fragment/common :: headerFragment" />
 <body>
-<div class="container">
-    <div th:replace="fragment/common :: top-nav"></div>
-    <h4 th:text="${message}"></h4>
-    <br />
-    <p>Go back to the <a th:href="@{/signup}">Sign Up </a></p>
-    <div th:replace="fragment/common :: [//footer]"></div>
-</div>
+	<div class="container">
+		<div th:replace="fragment/common :: top-nav"></div>
+		<h4 th:text="${message}"></h4>
+		<br />
+		<div class="jumbotron">
+			<p>Sorry, it seems that your registration token has expired!</p>
+			<p>
+				To generate another verification token, click <a th:href="${url}">here</a>.
+			</p>
+			<p>
+				Go back to the <a th:href="@{/signup}">Sign Up</a>.
+			</p>
+		</div>
+		<div th:replace="fragment/common :: [//footer]"></div>
+	</div>
 </body>
 </html>
