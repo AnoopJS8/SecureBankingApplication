@@ -10,5 +10,8 @@ import com.bankapp.models.User;
 public interface TransactionRepository extends CrudRepository<Transaction, Long>{
 
 	List<Transaction> findByUserOrderByCreatedAsc(User user );
+
+	List<Transaction> findByTflag(String str);
+	
 	
 }

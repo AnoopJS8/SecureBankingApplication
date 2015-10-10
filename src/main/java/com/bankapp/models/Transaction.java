@@ -43,6 +43,19 @@ public class Transaction {
 	 
 	 private Date created;
 	 private Date updated;
+	 
+	 
+	 private String tflag;
+	 
+	 public void settflag(String str)
+		{
+			this.tflag = str;
+		}
+		
+		public String gettflag()
+		{
+			return this.tflag;
+		}
 
 	  @PrePersist
 	  protected void onCreate() {

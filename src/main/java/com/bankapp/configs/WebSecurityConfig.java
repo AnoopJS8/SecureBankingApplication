@@ -27,7 +27,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             .authorizeRequests()
                 .antMatchers(
                         "/", 
-                        "/home", 
+                        "/home", "/index", 
                         "/webjars/**",
                         "/signup",
                         "/registrationConfirm",
