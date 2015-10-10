@@ -7,6 +7,9 @@
 	<div class="container">
 		<div th:replace="fragment/common :: top-nav"></div>	
 		<div th:replace="fragment/merchant :: merchant-header"></div>
+		<div >
+			<h3>Account</h3>
+		</div>
 		<div class="table-responsive">
 			<table class="table table-bordered table-hover">
 				<thead>
@@ -25,28 +28,26 @@
 				</tbody>
 			</table>
 		</div>
-		<div class="row"><span>Transactions</span></div>
+		<div >
+			<h3>Transactions</h3>
+		</div>
 		<div class="table-responsive">
 			<table class="table table-bordered table-hover">
 				<thead>
 					<tr>
 						<th>Date</th>
-						<th>Type</th>
 						<th>From</th>
 						<th>To</th>
 						<th>Amount</th>
-						<th>Balance</th>
 						<th>Comment</th>
 					</tr>
 				</thead>
 				<tbody>
 					<tr th:each="row : ${transactions}">
 						<td><span th:text="${row.getCreated()}"></span></td>
-						<td><span th:text="${row.getType()}"></span></td>
-						<td><span th:text="${row.getFromAccount()}"></span></td>
-						<td><span th:text="${row.getToAccount()}"></span></td>
+						<td><span th:text="${row.getFromAccount().getUser().getUsername()}"></span></td>
+						<td><span th:text="${row.getToAccount().getUser().getUsername()}"></span></td>
 						<td><span th:text="${row.getAmount()}"></span></td>
-						<td><span th:text="${row.getBalance()}"></span></td>
 						<td><span th:text="${row.getComment()}"></span></td>
 					</tr>
 				</tbody>

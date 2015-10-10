@@ -38,9 +38,6 @@ public class Transaction {
 	 @NotNull
 	 private Double amount;
 	 
-	 @NotNull
-	 private String type;
-	 
 	 private Date created;
 	 private Date updated;
 
@@ -119,17 +116,5 @@ public class Transaction {
 	public void setUpdated(Date updated) {
 		this.updated = updated;
 	}
-
-	public String getType() {
-		return type;
-	}
-
-	public void setType(String type) {
-		this.type = type;
-	}
-
-	 
 	
-	 
-	 
 }

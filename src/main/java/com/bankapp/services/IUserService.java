@@ -8,6 +8,8 @@ public interface IUserService {
     User registerNewUserAccount(User accountDto) throws EmailExistsException;
 
     User getUserById(Long id);
+    
+    User getUserByEmail(String email);
 
     User getUser(String verificationToken);
 

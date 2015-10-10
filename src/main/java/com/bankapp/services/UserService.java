@@ -59,6 +59,12 @@ public class UserService implements IUserService {
         User user = repository.findById(id);
         return user;
     }
+    
+    @Override
+    public User getUserByEmail(String email){
+    	User user = repository.findByEmail(email);
+        return user;
+    }
 
     @Override
     public User getUser(String verificationToken) {

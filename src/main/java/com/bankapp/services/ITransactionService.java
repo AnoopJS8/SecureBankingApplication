@@ -8,5 +8,6 @@ import com.bankapp.models.User;
 
 public interface ITransactionService {
 
-	public List<Transaction> getTransactionsByUserAndAccount(User user, Account fromAccount, Account toAccount);
+	public List<Transaction> getTransactionsByAccount(Account fromAccount, Account toAccount);
+	public String saveTransaction(Transaction transaction, User user);
 }
