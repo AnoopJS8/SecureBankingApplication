@@ -3,16 +3,12 @@
  */
 package com.bankapp.controllers;
 
-import java.io.IOException;
 import java.security.Principal;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -20,7 +16,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.ModelAndView;
-import org.thymeleaf.expression.Lists;
 
 import com.bankapp.exceptions.EmailDoesNotExist;
 import com.bankapp.exceptions.EmailExistsException;
@@ -31,7 +26,6 @@ import com.bankapp.models.Account;
 import com.bankapp.models.Transaction;
 import com.bankapp.models.User;
 import com.bankapp.services.ISystemManagerService;
-import com.bankapp.services.IUserService;
 import com.bankapp.constants.Constants;;;
 
 /**
