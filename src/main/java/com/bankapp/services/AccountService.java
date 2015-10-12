@@ -31,12 +31,6 @@ public class AccountService implements IAccountService, Constants{
 		return acc;
 	}
 
-	@Transactional
-	@Override
-	public Account getAccount(Long accId) {
-		Account acc = accountRepository.findByAccId(accId);
-		return acc;
-	}
 
 	@Transactional
 	@Override

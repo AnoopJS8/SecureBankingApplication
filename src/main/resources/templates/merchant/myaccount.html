@@ -20,10 +20,10 @@
 					</tr>
 				</thead>
 				<tbody>
-					<tr style="cursor: pointer" th:each="row : ${accounts}">
-						<td><span th:text="${row.getAccId()}"></span></td>
-						<td><span th:text="${row.getBalance()}"></span></td>
-						<td><span th:text="${row.getCreated()}"></span></td>
+					<tr style="cursor: pointer" th:each="account : ${accounts}">
+						<td><span th:text="${account.accId}"></span></td>
+						<td><span th:text="${account.balance}"></span></td>
+						<td><span th:text="${account.created}"></span></td>
 					</tr>
 				</tbody>
 			</table>
@@ -43,12 +43,12 @@
 					</tr>
 				</thead>
 				<tbody>
-					<tr th:each="row : ${transactions}">
-						<td><span th:text="${row.getCreated()}"></span></td>
-						<td><span th:text="${row.getFromAccount().getUser().getUsername()}"></span></td>
-						<td><span th:text="${row.getToAccount().getUser().getUsername()}"></span></td>
-						<td><span th:text="${row.getAmount()}"></span></td>
-						<td><span th:text="${row.getComment()}"></span></td>
+					<tr th:each="transaction : ${transactions}">
+						<td><span th:text="${transaction.created}"></span></td>
+						<td><span th:text="${transaction.fromAccount.user.username}"></span></td>
+						<td><span th:text="${transaction.toAccount.user.username}"></span></td>
+						<td><span th:text="${transaction.amount}"></span></td>
+						<td><span th:text="${transaction.comment}"></span></td>
 					</tr>
 				</tbody>
 			</table>

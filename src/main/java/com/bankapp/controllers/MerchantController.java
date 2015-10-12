@@ -2,8 +2,7 @@ package com.bankapp.controllers;
 
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -28,7 +27,7 @@ import com.bankapp.services.IUserService;
 @Controller
 public class MerchantController implements Constants {
 
-	private final Logger LOGGER = LoggerFactory.getLogger(getClass());
+	private final Logger LOGGER = Logger.getLogger(MerchantController.class);
 
 	@Autowired
 	private IAccountService accountService;
@@ -38,12 +37,12 @@ public class MerchantController implements Constants {
 
 	@Autowired
 	private IUserService userService;
-
+	
 
 	@RequestMapping(value = "/myaccount", method = RequestMethod.GET)
 	public ModelAndView getTransactions() {
 		ModelAndView mv = new ModelAndView();
-		Account account = getAccountById(userService.getUserByEmail(getPrincipal()).getId());
+		Account account = getAccountByUserId(userService.getUserByEmail(getPrincipal()).getId());
 		List<Transaction> transactions = getTransactionsByAccount(account);
 		mv.addObject("accounts", account);
 		mv.addObject("transactions", transactions);
@@ -68,25 +67,32 @@ public class MerchantController implements Constants {
 		String message = transactionService.saveTransaction(transaction, user);
 		if(message!=null){
 			if(message.equalsIgnoreCase(LESS_BALANCE)){
-				mv.addObject("message", "You are low on balance, the transaction cannot go through.");
+				String msg = "You are low on balance, the transaction cannot go through.";
+				mv.addObject("message", msg);
+				String errorMsg = String.format("Action: %s, Message: %s", "low on balance", msg);
+				LOGGER.error(errorMsg);
 				mv.setViewName("success");
 			}else if(message.equalsIgnoreCase(SUCCESS)){
 				mv.addObject("message", "Money transfered successfully");
 				mv.setViewName("success");
 			}else{
 				mv.addObject("message", "Error");
+				String errorMsg = String.format("Action: %s, Message: %s", "Error", message);
+				LOGGER.error(errorMsg);
 				mv.setViewName("success");
 			}
 			
 		}else{
 			mv.addObject("message", "Error");
+			String errorMsg = String.format("Action: %s, Message: %s", "SQL error", message);
+			LOGGER.error(errorMsg);
 			mv.setViewName("success");
 		}
 		return mv;
 		
 	}
 
-	private Account getAccountById(long id) {
+	private Account getAccountByUserId(long id) {
 		User user = userService.getUserById(id);
 		Account account = accountService.getAccountsByUser(user);
 		return account;

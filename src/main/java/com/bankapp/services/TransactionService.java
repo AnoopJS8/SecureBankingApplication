@@ -36,7 +36,8 @@ public class TransactionService implements ITransactionService, Constants{
 	@Override
 	public String saveTransaction(Transaction transaction, User user) {
 		try{
-			transaction.setToAccount(accountService.getAccountsByUser(userService.getUserById(transaction.getToAccount().getUser().getId())));
+			Long userId = transaction.getToAccount().getUser().getId();
+			transaction.setToAccount(accountService.getAccountsByUser(userService.getUserById(userId)));
 			transaction.setFromAccount(accountService.getAccountsByUser(user));
 			transaction.setUser(user);
 			String message = accountService.updateBalance(transaction);
