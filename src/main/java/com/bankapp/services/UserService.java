@@ -1,9 +1,11 @@
 package com.bankapp.services;
 
+import java.security.Principal;
 import java.util.Arrays;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,7 +23,7 @@ import com.bankapp.repositories.VerificationTokenRepository;
 @Service
 public class UserService implements IUserService {
     @Autowired
-    private UserRepository repository;
+    private UserRepository userRepository;
 
     @Autowired
     private OTPRepository oTPRepository;
@@ -49,11 +51,11 @@ public class UserService implements IUserService {
 
         newUser.setRoles(Arrays.asList(roleRepository.findByName("ROLE_USER")));
 
-        return repository.save(newUser);
+        return userRepository.save(newUser);
     }
 
     private boolean emailExist(String email) {
-        User user = repository.findByEmail(email);
+        User user = userRepository.findByEmail(email);
         if (user != null) {
             return true;
         }
@@ -62,7 +64,7 @@ public class UserService implements IUserService {
 
     @Override
     public User getUserById(Long id) {
-        User user = repository.findById(id);
+        User user = userRepository.findById(id);
         return user;
     }
 
@@ -73,13 +75,27 @@ public class UserService implements IUserService {
     }
 
     @Override
+    public User getUserFromSession(Principal principal) {
+        String email = null;
+
+        if (principal instanceof UserDetails) {
+            email = ((UserDetails) principal).getUsername();
+        } else {
+            email = principal.toString();
+        }
+
+        User user = userRepository.findByEmail(email);
+        return user;
+    }
+
+    @Override
     public VerificationToken getVerificationToken(String VerificationToken) {
         return tokenRepository.findByToken(VerificationToken);
     }
 
     @Override
     public void saveRegisteredUser(User user) {
-        repository.save(user);
+        userRepository.save(user);
     }
 
     @Override
@@ -99,7 +115,7 @@ public class UserService implements IUserService {
 
     @Override
     public User getUserByEmail(String email) {
-        User user = repository.findByEmail(email);
+        User user = userRepository.findByEmail(email);
         return user;
     }
 
