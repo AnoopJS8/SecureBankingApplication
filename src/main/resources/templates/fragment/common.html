@@ -27,29 +27,38 @@ body {
 				<a class="navbar-brand" th:href="@{/}">My ASU Bank</a>
 			</div>
 			<!-- /.navbar-header -->
-
-			<ul class="nav navbar-nav navbar-right">
-			    <div sec:authorize="isAnonymous()">
+            
+            <!--  User is anonymous -->
+            <div sec:authorize="isAnonymous()">
+    			<ul class="nav navbar-nav navbar-right">
 					<li th:class="${activeTab == 'login'} ? 'active' : null">
 					    <a th:href="@{/login}">Login</a>
 					</li>
 					<li th:class="${activeTab == 'signup'} ? 'active' : null">
 					    <a th:href="@{/signup}">Register</a>
 					</li>
-				</div>
-				<div sec:authorize="isAuthenticated()">
+				</ul>
+			</div>
+			
+			<!-- User has logged in -->
+			<div sec:authorize="isAuthenticated()">
+			     <ul class="nav navbar-nav navbar-right">
 					<div sec:authorize="hasRole('ROLE_ADMIN')">
 					    <li th:class="${activeTab == ''} ? 'active' : null">
-					        <a th:href="@{}"></a>
+					        <a th:href="@{/}"></a>
 					    </li>
 					</div>
 					<div sec:authorize="hasRole('ROLE_USER')">
 					    <li th:class="${activeTab == ''} ? 'active' : null">
-	                        <a th:href="@{}"></a>
+	                        <a th:href="@{/}"></a>
 	                    </li>
 					</div>
-				</div>
-			</ul>
+					<li>
+                        <a href="/logout" th:href="@{#}" onclick="$('#logout-form').submit();">Logout</a>
+                        <form style="visibility: hidden" id="logout-form" method="post" action="#" th:action="@{/logout}"></form>
+					</li>
+				</ul>
+			</div>
 			<!-- /.navbar-top-links -->
 		</div>
 	</nav>
