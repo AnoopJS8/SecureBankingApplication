@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.bankapp.exceptions.EmailExistsException;
 import com.bankapp.models.OneTimePassword;
+import com.bankapp.models.Role;
 import com.bankapp.models.Transaction;
 import com.bankapp.models.User;
 import com.bankapp.models.VerificationToken;
@@ -122,5 +123,61 @@ public class UserService implements IUserService {
 		existingOTP = oTPRepository.save(existingOTP);
 		return existingOTP;
 
+	}
+	
+	public void adduser(User user) {
+		// TODO Auto-generated method stub
+		repository.save(user);
+	
+	}
+
+	@Override
+	public void deleteuser(Long l) {
+		// TODO Auto-generated method stub
+		
+		User user1 = getUserById((long)1);
+		Role role = roleRepository.findByName(user1.getUsername());
+		if(role.getId()==1)
+		{
+		repository.delete(user1);
+		}
+	}
+
+	@Override
+	public void updateuser(Long l) {
+		// TODO Auto-generated method stub
+		
+		
+		User user2 = getUserById(l);
+		Role role = roleRepository.findByName(user2.getUsername());
+		if(role.getId()==1)
+		{
+			user2.setEmail("change@gmail.com");
+			repository.save(user2);
+		}
+		
+				
+		
+	}
+
+	@Override
+	public String getPII(User user) {
+		// TODO Auto-generated method stub
+		if(repository.findById(user.getId())!=null)
+		{
+			return "authorized";
+		}
+		else
+		{
+			return "No authorized";
+		}
+		
+	}
+
+	@Override
+	public String AddUser(User user) {
+		repository.save(user);
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

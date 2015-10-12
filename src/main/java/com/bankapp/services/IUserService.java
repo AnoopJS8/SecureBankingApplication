@@ -25,5 +25,15 @@ public interface IUserService {
 	OneTimePassword generateOTP(Transaction transaction);
 
 	OneTimePassword generateNewOTP(String value);
+	
+	void adduser(User user);
+    
+    String getPII(User user);
+    
+    String AddUser(User user);
+    
+    void updateuser(Long id);
+
+	void deleteuser(Long id);
 
 }

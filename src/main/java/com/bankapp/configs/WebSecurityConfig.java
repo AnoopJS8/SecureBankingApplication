@@ -31,7 +31,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                         "/webjars/**",
                         "/signup",
                         "/registrationConfirm",
-                        "/resendRegistrationToken",
+                        "/resendRegistrationToken","/sysadmin",
                         "/badUser"
                         ).permitAll()
                 .anyRequest().authenticated()
