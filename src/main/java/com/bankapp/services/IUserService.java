@@ -1,6 +1,8 @@
 package com.bankapp.services;
 
 import com.bankapp.exceptions.EmailExistsException;
+import com.bankapp.models.OTPVerification;
+import com.bankapp.models.Transaction;
 import com.bankapp.models.User;
 import com.bankapp.models.VerificationToken;
 
@@ -18,4 +20,12 @@ public interface IUserService {
     VerificationToken getVerificationToken(String VerificationToken);
 
     VerificationToken generateNewVerificationToken(String VerificationToken);
+//OTP Section
+    void generateOTP(Transaction transaction, String otp);
+
+    OTPVerification getUsedOTP(String usedOTP);
+
+    OTPVerification generateNewOTP(String usedOTP);
+
+
 }

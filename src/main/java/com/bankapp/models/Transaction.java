@@ -29,6 +29,10 @@ public class Transaction {
 	 @JoinColumn(name = "userId" , nullable=false)
 	 private User user;
 	 
+     private boolean enabled;
+
+     private boolean otpExpired;
+
 	 private String comment;
 	 
 	 @ManyToOne() 
@@ -54,7 +58,21 @@ public class Transaction {
 	    updated = new Date();
 	  }
 
-	
+	    public boolean isEnabled() {
+	        return enabled;
+	    }
+
+	    public void setEnabled(final boolean enabled) {
+	        this.enabled = enabled;
+	    }
+	    
+	    public boolean isotpExpired() {
+	        return otpExpired;
+	    }
+
+	    public void setotpExpired(final boolean expired) {
+	        this.otpExpired = expired;
+	    }	    
 	  
 	public Long getTransactionId() {
 		return transactionId;

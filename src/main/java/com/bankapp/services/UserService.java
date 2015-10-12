@@ -1,6 +1,8 @@
 package com.bankapp.services;
 
+import java.security.SecureRandom;
 import java.util.Arrays;
+import java.util.Random;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,9 +11,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.bankapp.exceptions.EmailExistsException;
+import com.bankapp.models.OTPVerification;
+import com.bankapp.models.Transaction;
 import com.bankapp.models.User;
 import com.bankapp.models.VerificationToken;
 import com.bankapp.repositories.RoleRepository;
+import com.bankapp.repositories.UsedOTPRepository;
 import com.bankapp.repositories.UserRepository;
 import com.bankapp.repositories.VerificationTokenRepository;
 
@@ -20,6 +25,9 @@ public class UserService implements IUserService {
     @Autowired
     private UserRepository repository;
 
+    @Autowired
+    private UsedOTPRepository usedOTPRepository;
+    
     @Autowired
     private PasswordEncoder passwordEncoder;
 
@@ -88,6 +96,40 @@ public class UserService implements IUserService {
 
         vToken.setToken(UUID.randomUUID().toString());
         vToken = tokenRepository.save(vToken);
-        return vToken;
+        return vToken;}
+
+    
+ // OTP Part
+        
+        @Override
+        public OTPVerification getUsedOTP(String usedOTP) {
+            return usedOTPRepository.findByUsedOTP(usedOTP);
+        }
+
+        @Override
+        public void generateOTP(Transaction transaction, String otp) {
+            OTPVerification otp1 = new OTPVerification(otp, transaction);
+            usedOTPRepository.save(otp1);
+        }
+
+        @Override
+        public OTPVerification generateNewOTP(final String existingUsedOTP) {
+            OTPVerification newOTP = usedOTPRepository.findByUsedOTP(existingUsedOTP);
+
+//
+	        String chars = "abcdefghijklmnopqrstuvwxyz"
+                    + "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+                    + "0123456789";
+       final int pw_len = 7;
+       Random rnd = new SecureRandom();
+       StringBuilder pass = new StringBuilder();
+       for (int i = 0; i < pw_len; i++)
+           pass.append(chars.charAt(rnd.nextInt(chars.length())));
+
+       newOTP.setUsedOTP(pass.toString());
+       newOTP = usedOTPRepository.save(newOTP);
+            return newOTP;    
+    
+    
     }
 }
