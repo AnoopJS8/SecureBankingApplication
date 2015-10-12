@@ -29,13 +29,13 @@ public class Transaction {
 	@JoinColumn(name = "userId", nullable = false)
 	private User user;
 
-	private boolean status;
+	private String status;
 
-	public boolean isStatus() {
+	public String getStatus() {
 		return status;
 	}
 
-	public void setStatus(boolean status) {
+	public void setStatus(String status) {
 		this.status = status;
 	}
 
