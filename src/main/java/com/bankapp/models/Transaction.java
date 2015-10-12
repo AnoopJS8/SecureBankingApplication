@@ -17,63 +17,53 @@ import javax.validation.constraints.NotNull;
 @Table(name = "transactions")
 public class Transaction {
 
-	 @Id
-     @GeneratedValue(strategy = GenerationType.AUTO)
-     private Long transactionId;
-	 
-	 @ManyToOne() 
-	 @JoinColumn(name = "fromAccId", nullable=false)
-	 private Account fromAccount;
-	 
-	 @ManyToOne() 
-	 @JoinColumn(name = "userId" , nullable=false)
-	 private User user;
-	 
-     private boolean enabled;
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	private Long transactionId;
 
-     private boolean otpExpired;
+	@ManyToOne()
+	@JoinColumn(name = "fromAccId", nullable = false)
+	private Account fromAccount;
 
-	 private String comment;
-	 
-	 @ManyToOne() 
-	 @JoinColumn(name= "toAccId" , nullable=false)
-	 private Account toAccount;
-	 
-	 @NotNull
-	 private Double amount;
-	 
-	 @NotNull
-	 private String type;
-	 
-	 private Date created;
-	 private Date updated;
+	@ManyToOne()
+	@JoinColumn(name = "userId", nullable = false)
+	private User user;
 
-	  @PrePersist
-	  protected void onCreate() {
-	    created = new Date();
-	  }
-	
-	  @PreUpdate
-	  protected void onUpdate() {
-	    updated = new Date();
-	  }
+	private boolean status;
 
-	    public boolean isEnabled() {
-	        return enabled;
-	    }
+	public boolean isStatus() {
+		return status;
+	}
 
-	    public void setEnabled(final boolean enabled) {
-	        this.enabled = enabled;
-	    }
-	    
-	    public boolean isotpExpired() {
-	        return otpExpired;
-	    }
+	public void setStatus(boolean status) {
+		this.status = status;
+	}
 
-	    public void setotpExpired(final boolean expired) {
-	        this.otpExpired = expired;
-	    }	    
-	  
+	private String comment;
+
+	@ManyToOne()
+	@JoinColumn(name = "toAccId", nullable = false)
+	private Account toAccount;
+
+	@NotNull
+	private Double amount;
+
+	@NotNull
+	private String type;
+
+	private Date created;
+	private Date updated;
+
+	@PrePersist
+	protected void onCreate() {
+		created = new Date();
+	}
+
+	@PreUpdate
+	protected void onUpdate() {
+		updated = new Date();
+	}
+
 	public Long getTransactionId() {
 		return transactionId;
 	}
@@ -146,8 +136,4 @@ public class Transaction {
 		this.type = type;
 	}
 
-	 
-	
-	 
-	 
 }
