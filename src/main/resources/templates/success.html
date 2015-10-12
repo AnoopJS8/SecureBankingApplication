@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+<head th:include="fragment/common :: headerFragment" />
+<body>
+	<div class="container">
+		<div th:replace="fragment/common :: top-nav"></div>	
+		<div th:replace="fragment/merchant :: merchant-header"></div>
+		<div align="center" class="row">
+			<h3 th:text="${message}"></h3>
+		</div>
+		
+	</div>
+</body>
+</html>
