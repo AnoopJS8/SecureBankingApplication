@@ -14,7 +14,7 @@ body {
 </style>
 </head>
 <body>
-	<nav th:fragment="top-nav"
+	<nav th:fragment="top-nav(activeTab)"
 		class="navbar navbar-inverse navbar-static-top">
 		<div class="container-fluid">
 			<div class="navbar-header">
@@ -29,12 +29,26 @@ body {
 			<!-- /.navbar-header -->
 
 			<ul class="nav navbar-nav navbar-right">
-				<li><a th:href="@{/login}">Login</a></li>
-				<li><a th:href="@{/signup}">Register</a></li>
-				<div sec:authorize="hasRole('ROLE_ADMIN')">This content is
-					only shown to administrators.</div>
-				<div sec:authorize="hasRole('ROLE_USER')">This content is only
-					shown to users.</div>
+			    <div sec:authorize="isAnonymous()">
+					<li th:class="${activeTab == 'login'} ? 'active' : null">
+					    <a th:href="@{/login}">Login</a>
+					</li>
+					<li th:class="${activeTab == 'signup'} ? 'active' : null">
+					    <a th:href="@{/signup}">Register</a>
+					</li>
+				</div>
+				<div sec:authorize="isAuthenticated()">
+					<div sec:authorize="hasRole('ROLE_ADMIN')">
+					    <li th:class="${activeTab == ''} ? 'active' : null">
+					        <a th:href="@{}"></a>
+					    </li>
+					</div>
+					<div sec:authorize="hasRole('ROLE_USER')">
+					    <li th:class="${activeTab == ''} ? 'active' : null">
+	                        <a th:href="@{}"></a>
+	                    </li>
+					</div>
+				</div>
 			</ul>
 			<!-- /.navbar-top-links -->
 		</div>

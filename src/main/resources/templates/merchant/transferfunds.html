@@ -5,7 +5,7 @@
 <head th:include="fragment/common :: headerFragment" />
 <body>
 	<div class="container">
-		<div th:replace="fragment/common :: top-nav"></div>	
+		<div th:replace="fragment/common :: top-nav(transferfunds)"></div>	
 		<div th:replace="fragment/merchant :: merchant-header"></div>
 		<form class="form-horizontal" role="form" th:action="@{/transferfunds}" th:object="${transaction}" method="post">
 		  <div class="form-group">

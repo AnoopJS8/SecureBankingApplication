@@ -5,7 +5,7 @@
 <head th:include="fragment/common :: headerFragment" />
 <body>
 	<div class="container">
-		<div th:replace="fragment/common :: top-nav"></div>
+		<div th:replace="fragment/common :: top-nav(signup)"></div>
 		<form action="#" th:action="@{/signup}" th:object="${user}"
 			method="post">
 			<div th:if="${errors}">
