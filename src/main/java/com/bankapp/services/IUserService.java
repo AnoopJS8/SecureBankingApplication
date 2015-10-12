@@ -1,11 +1,12 @@
 package com.bankapp.services;
 
 import com.bankapp.exceptions.EmailExistsException;
+import com.bankapp.exceptions.UserNameExistsException;
 import com.bankapp.models.User;
 import com.bankapp.models.VerificationToken;
 
 public interface IUserService {
-    User registerNewUserAccount(User accountDto) throws EmailExistsException;
+    User registerNewUserAccount(User accountDto) throws EmailExistsException, UserNameExistsException;
 
     User getUserById(Long id);
 

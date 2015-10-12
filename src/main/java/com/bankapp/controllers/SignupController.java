@@ -20,6 +20,7 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.bankapp.exceptions.EmailExistsException;
+import com.bankapp.exceptions.UserNameExistsException;
 import com.bankapp.listeners.OnRegistrationCompleteEvent;
 import com.bankapp.models.User;
 import com.bankapp.models.VerificationToken;
@@ -142,7 +143,9 @@ public class SignupController {
         User registered = null;
         try {
             registered = userService.registerNewUserAccount(newUser);
-        } catch (final EmailExistsException e) {
+        } catch (EmailExistsException e) {
+            return null;
+        }catch (final UserNameExistsException e) {
             return null;
         }
         return registered;
