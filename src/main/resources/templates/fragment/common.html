@@ -31,6 +31,10 @@ body {
 			<ul class="nav navbar-nav navbar-right">
 				<li><a th:href="@{/login}">Login</a></li>
 				<li><a th:href="@{/signup}">Register</a></li>
+				<div sec:authorize="hasRole('ROLE_ADMIN')">This content is
+					only shown to administrators.</div>
+				<div sec:authorize="hasRole('ROLE_USER')">This content is only
+					shown to users.</div>
 			</ul>
 			<!-- /.navbar-top-links -->
 		</div>

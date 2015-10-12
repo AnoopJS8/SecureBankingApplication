@@ -1,5 +1,7 @@
 package com.bankapp.services;
 
+import java.security.Principal;
+
 import com.bankapp.exceptions.EmailExistsException;
 import com.bankapp.models.OneTimePassword;
 import com.bankapp.models.Transaction;
@@ -14,6 +16,8 @@ public interface IUserService {
     User getUserByEmail(String email);
 
     User getUser(String verificationToken);
+
+    User getUserFromSession(Principal principal);
 
     void saveRegisteredUser(User user);
 
