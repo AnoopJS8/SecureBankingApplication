@@ -17,45 +17,53 @@ import javax.validation.constraints.NotNull;
 @Table(name = "transactions")
 public class Transaction {
 
-	 @Id
-     @GeneratedValue(strategy = GenerationType.AUTO)
-     private Long transactionId;
-	 
-	 @ManyToOne() 
-	 @JoinColumn(name = "fromAccId", nullable=false)
-	 private Account fromAccount;
-	 
-	 @ManyToOne() 
-	 @JoinColumn(name = "userId" , nullable=false)
-	 private User user;
-	 
-	 private String comment;
-	 
-	 @ManyToOne() 
-	 @JoinColumn(name= "toAccId" , nullable=false)
-	 private Account toAccount;
-	 
-	 @NotNull
-	 private Double amount;
-	 
-	 @NotNull
-	 private String type;
-	 
-	 private Date created;
-	 private Date updated;
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	private Long transactionId;
 
-	  @PrePersist
-	  protected void onCreate() {
-	    created = new Date();
-	  }
-	
-	  @PreUpdate
-	  protected void onUpdate() {
-	    updated = new Date();
-	  }
+	@ManyToOne()
+	@JoinColumn(name = "fromAccId", nullable = false)
+	private Account fromAccount;
 
-	
-	  
+	@ManyToOne()
+	@JoinColumn(name = "userId", nullable = false)
+	private User user;
+
+	private String status;
+
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
+
+	private String comment;
+
+	@ManyToOne()
+	@JoinColumn(name = "toAccId", nullable = false)
+	private Account toAccount;
+
+	@NotNull
+	private Double amount;
+
+	@NotNull
+	private String type;
+
+	private Date created;
+	private Date updated;
+
+	@PrePersist
+	protected void onCreate() {
+		created = new Date();
+	}
+
+	@PreUpdate
+	protected void onUpdate() {
+		updated = new Date();
+	}
+
 	public Long getTransactionId() {
 		return transactionId;
 	}
@@ -128,8 +136,4 @@ public class Transaction {
 		this.type = type;
 	}
 
-	 
-	
-	 
-	 
 }
