@@ -34,6 +34,6 @@ public interface IUserService {
     
     void updateuser(Long id);
 
-	void deleteuser(Long id);
+	void deleteuser(Long );
 
 }
