@@ -7,24 +7,23 @@ import com.bankapp.models.User;
 import com.bankapp.models.VerificationToken;
 
 public interface IUserService {
-	User registerNewUserAccount(User accountDto) throws EmailExistsException;
+    User registerNewUserAccount(User accountDto) throws EmailExistsException;
 
-	User getUserById(Long id);
+    User getUserById(Long id);
 
-	User getUser(String verificationToken);
+    User getUserByEmail(String email);
 
-	void saveRegisteredUser(User user);
+    User getUser(String verificationToken);
 
-	void createVerificationToken(User user, String token);
+    void saveRegisteredUser(User user);
 
-	VerificationToken getVerificationToken(String VerificationToken);
+    void createVerificationToken(User user, String token);
 
-	VerificationToken generateNewVerificationToken(String VerificationToken);
+    VerificationToken getVerificationToken(String VerificationToken);
 
-	// OTP Section
-	OneTimePassword generateOTP(Transaction transaction);
+    VerificationToken generateNewVerificationToken(String VerificationToken);
 
-	OneTimePassword generateNewOTP(String value);
+
 	
 	void adduser(User user);
     
@@ -34,6 +33,11 @@ public interface IUserService {
     
     void updateuser(Long id);
 
-	void deleteuser(Long );
+	void deleteuser(Long id);
+
+    // OTP Section
+    OneTimePassword generateOTP(Transaction transaction);
+
+    OneTimePassword generateNewOTP(String value);
 
 }

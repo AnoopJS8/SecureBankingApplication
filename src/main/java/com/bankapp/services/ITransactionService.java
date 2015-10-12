@@ -10,5 +10,7 @@ public interface ITransactionService {
 
 	public List<Transaction> getTransactionsByAccount(Account fromAccount, Account toAccount);
 	public String saveTransaction(Transaction transaction, User user);
+
 	String TransactionVerifyDetails(Transaction t);
+	
 }

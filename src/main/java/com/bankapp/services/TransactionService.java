@@ -19,10 +19,11 @@ public class TransactionService implements ITransactionService, Constants{
     private TransactionRepository transactionRepository;
 	
 	@Autowired
-    private IUserService accountService;
-	
-	@Autowired
-	private IUserService userService;
+
+    private IUserService userService;
+
+    private IAccountService accountService;
+
 	
 
 	@Transactional
@@ -79,5 +80,6 @@ public class TransactionService implements ITransactionService, Constants{
 		}
 
 	}
+
 	
-}
+

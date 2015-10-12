@@ -21,20 +21,21 @@ import com.bankapp.repositories.VerificationTokenRepository;
 
 @Service
 public class UserService implements IUserService {
-	@Autowired
-	private UserRepository repository;
 
-	@Autowired
-	private OTPRepository oTPRepository;
+	 @Autowired
+	    private UserRepository repository;
 
-	@Autowired
-	private PasswordEncoder passwordEncoder;
+	    @Autowired
+	    private OTPRepository oTPRepository;
 
-	@Autowired
-	private RoleRepository roleRepository;
+	    @Autowired
+	    private PasswordEncoder passwordEncoder;
 
-	@Autowired
-	private VerificationTokenRepository tokenRepository;
+	    @Autowired
+	    private RoleRepository roleRepository;
+
+	    @Autowired
+	    private VerificationTokenRepository tokenRepository;
 
 	@Transactional
 	@Override
@@ -70,11 +71,7 @@ public class UserService implements IUserService {
 		return user;
 	}
 
-	@Override
-	public User getUser(String verificationToken) {
-		User user = tokenRepository.findByToken(verificationToken).getUser();
-		return user;
-	}
+	
 
 	@Override
 	public VerificationToken getVerificationToken(String VerificationToken) {
@@ -92,26 +89,11 @@ public class UserService implements IUserService {
 		tokenRepository.save(myToken);
 	}
 
-	@Override
-	public VerificationToken generateNewVerificationToken(
-			final String existingVerificationToken) {
-		VerificationToken vToken = tokenRepository
-				.findByToken(existingVerificationToken);
-
-		vToken.setToken(UUID.randomUUID().toString());
-		vToken = tokenRepository.save(vToken);
-		return vToken;
-	}
+	
 
 	// OTP Part
 
-	@Override
-	public OneTimePassword generateOTP(Transaction transaction) {
-		OneTimePassword otp = new OneTimePassword(transaction);
-		oTPRepository.save(otp);
-		return otp;
-	}
-
+	
 	@Override
 	public OneTimePassword generateNewOTP(final String existingUsedOTP) {
 		OneTimePassword existingOTP = oTPRepository
@@ -177,6 +159,30 @@ public class UserService implements IUserService {
 	@Override
 	public String AddUser(User user) {
 		repository.save(user);
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public User getUserByEmail(String email) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public User getUser(String verificationToken) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public VerificationToken generateNewVerificationToken(String VerificationToken) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public OneTimePassword generateOTP(Transaction transaction) {
 		// TODO Auto-generated method stub
 		return null;
 	}
