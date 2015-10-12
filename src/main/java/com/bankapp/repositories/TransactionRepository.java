@@ -11,6 +11,5 @@ import com.bankapp.models.User;
 public interface TransactionRepository extends CrudRepository<Transaction, Long>{
 
 	List<Transaction> findByFromAccountOrToAccountOrderByCreatedAsc(Account fromAccount, Account toAccount );
-	Transaction save(Transaction transaction);
 	
 }
