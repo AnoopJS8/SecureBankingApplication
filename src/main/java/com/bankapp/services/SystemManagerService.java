@@ -16,23 +16,13 @@ public class SystemManagerService implements ISystemManagerService{
 	
 	@Autowired
     private UserRepository UserRepo;
-	private TransactionRepository TransRepo1;
+	private TransactionRepository TransRepo;
 	
-    
-    
-
-//	@Override
-//	public User getUsersByUsername(String str) {
-//		// TODO Auto-generated method stub
-//		
-//		User user = TransRepo.findByUsername(str);
-//		return user;
-//	}
-
+ 
 	@Override
-	public List<Transaction> getTransactionByTflag(String str) {
+	public List<Transaction> getTransactionByStatus(String status) {
 		// TODO Auto-generated method stub
-		List<Transaction> list = TransRepo1.findByTflag(str);
+		List<Transaction> list = TransRepo.findByStatus(status);
 		return list;
 	}
 	
@@ -48,7 +38,7 @@ public class SystemManagerService implements ISystemManagerService{
 		return user;
 	}
 	
-	public User createUser(User user)
+	public User addUser(User user)
 	{	   
 		UserRepo.save(user);
 		return user;

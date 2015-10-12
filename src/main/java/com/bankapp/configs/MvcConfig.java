@@ -15,10 +15,10 @@ public class MvcConfig extends WebMvcConfigurerAdapter {
         registry.addViewController("/login").setViewName("login");
         registry.addViewController("/account").setViewName("merchant/account");
         registry.addViewController("/transaction").setViewName("merchant/transaction");
-        registry.addViewController("/pendingtransaction").setViewName("manager/pendingtransaction");
+        registry.addViewController("/criticaltransaction").setViewName("manager/manager_view");
         registry.addViewController("/manager_adduser").setViewName("manager/manager_view");
-        registry.addViewController("/manager_viewuser_byemail").setViewName("manager/view_user");
-        registry.addViewController("/manager_viewuser_byid").setViewName("manager/view_user");
+        registry.addViewController("/manager_viewuser_byemail").setViewName("manager/manager_view");
+        registry.addViewController("/manager_viewuser_byid").setViewName("manager/manager_view");
 
     }
 

@@ -23,14 +23,14 @@
 				</thead>
 				<tbody>
 					<tr th:each="row : transactions">
-						<td><span th:text="${pending.getCreated()}"></span></td>
-						<td><span th:text="${pending.getType()}"></span></td>
-						<td><span th:text="${pending.getFromAccount()}"></span></td>
-						<td><span th:text="${pending.getToAccount()}"></span></td>
-						<td><span th:text="${pending.getAmount()}"></span></td>
-						<td><span th:text="${pending.getBalance()}"></span></td>
-						<td><span th:text="${pending.gettflag()}"></span></td>						
-						<td><span th:text="${pending.getComment()}"></span></td>
+						<td><span th:text="${critical.getCreated()}"></span></td>
+						<td><span th:text="${critical.getType()}"></span></td>
+						<td><span th:text="${critical.getFromAccount()}"></span></td>
+						<td><span th:text="${critical.getToAccount()}"></span></td>
+						<td><span th:text="${critical.getAmount()}"></span></td>
+						<td><span th:text="${critical.getBalance()}"></span></td>
+						<td><span th:text="${critical.getstatus()}"></span></td>						
+						<td><span th:text="${critical.getComment()}"></span></td>
 						
 					</tr>
 				</tbody>

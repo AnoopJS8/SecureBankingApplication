@@ -17,132 +17,122 @@ import javax.validation.constraints.NotNull;
 @Table(name = "transactions")
 public class Transaction {
 
-	 @Id
-     @GeneratedValue(strategy = GenerationType.AUTO)
-     private Long transactionId;
-	 
-	 @ManyToOne() 
-	 @JoinColumn(name = "fromAccId", nullable=false)
-	 private Account fromAccount;
-	 
-	 @ManyToOne() 
-	 @JoinColumn(name = "userId" , nullable=false)
-	 private User user;
-	 
-	 private String comment;
-	 
-	 @ManyToOne() 
-	 @JoinColumn(name= "toAccId" , nullable=false)
-	 private Account toAccount;
-	 
-	 @NotNull
-	 private Double amount;
-	 
-	 @NotNull
-	 private String type;
-	 
-	 private Date created;
-	 private Date updated;
-	 
-	 
-	 private String tflag;
-	 
-	 public void settflag(String str)
-		{
-			this.tflag = str;
-		}
-		
-		public String gettflag()
-		{
-			return this.tflag;
-		}
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Long transactionId;
 
-	  @PrePersist
-	  protected void onCreate() {
-	    created = new Date();
-	  }
-	
-	  @PreUpdate
-	  protected void onUpdate() {
-	    updated = new Date();
-	  }
+    @ManyToOne()
+    @JoinColumn(name = "fromAccId", nullable = false)
+    private Account fromAccount;
 
-	
-	  
-	public Long getTransactionId() {
-		return transactionId;
-	}
+    @ManyToOne()
+    @JoinColumn(name = "userId", nullable = false)
+    private User user;
 
-	public void setTransactionId(Long transactionId) {
-		this.transactionId = transactionId;
-	}
+    private String status;
 
-	public Account getFromAccount() {
-		return fromAccount;
-	}
+    public String getStatus() {
+        return status;
+    }
 
-	public void setFromAccount(Account fromAccount) {
-		this.fromAccount = fromAccount;
-	}
+    public void setStatus(String status) {
+        this.status = status;
+    }
 
-	public User getUser() {
-		return user;
-	}
+    private String comment;
 
-	public void setUser(User user) {
-		this.user = user;
-	}
+    @ManyToOne()
+    @JoinColumn(name = "toAccId", nullable = false)
+    private Account toAccount;
 
-	public String getComment() {
-		return comment;
-	}
+    @NotNull
+    private Double amount;
 
-	public void setComment(String comment) {
-		this.comment = comment;
-	}
+    @NotNull
+    private String type;
 
-	public Account getToAccount() {
-		return toAccount;
-	}
+    private Date created;
+    private Date updated;
 
-	public void setToAccount(Account toAccount) {
-		this.toAccount = toAccount;
-	}
+    @PrePersist
+    protected void onCreate() {
+        created = new Date();
+    }
 
-	public Double getAmount() {
-		return amount;
-	}
+    @PreUpdate
+    protected void onUpdate() {
+        updated = new Date();
+    }
 
-	public void setAmount(Double amount) {
-		this.amount = amount;
-	}
+    public Long getTransactionId() {
+        return transactionId;
+    }
 
-	public Date getCreated() {
-		return created;
-	}
+    public void setTransactionId(Long transactionId) {
+        this.transactionId = transactionId;
+    }
 
-	public void setCreated(Date created) {
-		this.created = created;
-	}
+    public Account getFromAccount() {
+        return fromAccount;
+    }
 
-	public Date getUpdated() {
-		return updated;
-	}
+    public void setFromAccount(Account fromAccount) {
+        this.fromAccount = fromAccount;
+    }
 
-	public void setUpdated(Date updated) {
-		this.updated = updated;
-	}
+    public User getUser() {
+        return user;
+    }
 
-	public String getType() {
-		return type;
-	}
+    public void setUser(User user) {
+        this.user = user;
+    }
 
-	public void setType(String type) {
-		this.type = type;
-	}
+    public String getComment() {
+        return comment;
+    }
 
-	 
-	
-	 
-	 
+    public void setComment(String comment) {
+        this.comment = comment;
+    }
+
+    public Account getToAccount() {
+        return toAccount;
+    }
+
+    public void setToAccount(Account toAccount) {
+        this.toAccount = toAccount;
+    }
+
+    public Double getAmount() {
+        return amount;
+    }
+
+    public void setAmount(Double amount) {
+        this.amount = amount;
+    }
+
+    public Date getCreated() {
+        return created;
+    }
+
+    public void setCreated(Date created) {
+        this.created = created;
+    }
+
+    public Date getUpdated() {
+        return updated;
+    }
+
+    public void setUpdated(Date updated) {
+        this.updated = updated;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
 }

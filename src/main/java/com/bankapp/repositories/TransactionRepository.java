@@ -11,7 +11,7 @@ public interface TransactionRepository extends CrudRepository<Transaction, Long>
 
 	List<Transaction> findByUserOrderByCreatedAsc(User user );
 
-	List<Transaction> findByTflag(String str);
+	List<Transaction> findByStatus(String str);
 	
 	
 }

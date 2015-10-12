@@ -14,9 +14,9 @@ public interface ISystemManagerService {
 	
 //	public User getUsersByUsername(String str);
 	
-	public List<Transaction> getTransactionByTflag(String str);
+	public List<Transaction> getTransactionByStatus(String status);
 	
-	public User createUser(User user) throws EmailExistsException, UserNameExistsException, UserAlreadyExistException;
+	public User addUser(User user) throws EmailExistsException, UserNameExistsException, UserAlreadyExistException;
 	
 	public User viewUserById(Long id)throws UserIdDoesNotExist;
 	

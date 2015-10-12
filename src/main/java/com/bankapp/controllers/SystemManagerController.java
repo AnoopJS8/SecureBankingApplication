@@ -43,22 +43,22 @@ public class SystemManagerController {
     private final Logger LOGGER = Logger.getLogger(SystemManagerController.class);
 
 	
-	@RequestMapping(value = "/pendingtransaction", method = RequestMethod.GET)
+	@RequestMapping(value = "/criticaltransaction", method = RequestMethod.GET)
 	public ModelAndView getPendingTransaction() {
-		List<Transaction> transactions = manager.getTransactionByTflag("Pending");
+		List<Transaction> transactions = manager.getTransactionByStatus("OTP Verified");
 		ModelAndView mv = new ModelAndView();		
-		mv.addObject("pending", transactions);
+		mv.addObject("critical", transactions);
 		mv.setViewName("manager/manager_view");
 		return mv;
 	}
 	
-	
+		
 	@RequestMapping(value = "/manager_adduser", method = RequestMethod.POST)
-	public ModelAndView createUser(User user_request){
+	public ModelAndView addUser(User user_request){
 		User user = null;
 		
 		try{
-			user = manager.createUser(user_request);
+			user = manager.addUser(user_request);
 		}
 		catch (EmailExistsException e) {
 			String message = String.format("Action: %s, Message: %s", "email_exists", e.getMessage());
@@ -104,7 +104,7 @@ public class SystemManagerController {
 		
 		ModelAndView mv = new ModelAndView();
 		mv.addObject("viewuser", user);
-		mv.setViewName("manager/view_user");
+		mv.setViewName("manager/manager_view");
 		return mv;
 	}
 	
@@ -126,7 +126,7 @@ public class SystemManagerController {
 		
 		ModelAndView mv = new ModelAndView();
 		mv.addObject("viewuser", user);
-		mv.setViewName("manager/view_user");
+		mv.setViewName("manager/manager_view");
 		return mv;
 	}
 	
