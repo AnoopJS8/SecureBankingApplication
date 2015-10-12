@@ -1,8 +1,6 @@
 package com.bankapp.services;
 
-import java.security.SecureRandom;
 import java.util.Arrays;
-import java.util.Random;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +17,7 @@ import com.bankapp.repositories.RoleRepository;
 import com.bankapp.repositories.UsedOTPRepository;
 import com.bankapp.repositories.UserRepository;
 import com.bankapp.repositories.VerificationTokenRepository;
+import com.bankapp.validators.OTPGenerator;
 
 @Service
 public class UserService implements IUserService {
@@ -116,17 +115,9 @@ public class UserService implements IUserService {
         public OTPVerification generateNewOTP(final String existingUsedOTP) {
             OTPVerification newOTP = usedOTPRepository.findByUsedOTP(existingUsedOTP);
 
-//
-	        String chars = "abcdefghijklmnopqrstuvwxyz"
-                    + "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-                    + "0123456789";
-       final int pw_len = 7;
-       Random rnd = new SecureRandom();
-       StringBuilder pass = new StringBuilder();
-       for (int i = 0; i < pw_len; i++)
-           pass.append(chars.charAt(rnd.nextInt(chars.length())));
+       String temp = OTPGenerator.generateOTP();
 
-       newOTP.setUsedOTP(pass.toString());
+       newOTP.setUsedOTP(temp);
        newOTP = usedOTPRepository.save(newOTP);
             return newOTP;    
     
