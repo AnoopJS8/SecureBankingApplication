@@ -53,7 +53,7 @@ public class SystemManagerController {
 	}
 	
 	
-	@RequestMapping(value = "/manager_createuser", method = RequestMethod.POST)
+	@RequestMapping(value = "/manager_adduser", method = RequestMethod.POST)
 	public ModelAndView createUser(User user_request){
 		User user = null;
 		
@@ -87,7 +87,7 @@ public class SystemManagerController {
 	}
 	
 	
-	@RequestMapping(value = "/manager_viewuser", method = RequestMethod.GET)
+	@RequestMapping(value = "/manager_viewuser_byemail", method = RequestMethod.GET)
 	 public ModelAndView getuser_byemail(String email){
 		
 		User user = null;
@@ -109,7 +109,7 @@ public class SystemManagerController {
 	}
 	
 	
-	@RequestMapping(value = "/manager_viewuser", method = RequestMethod.GET)
+	@RequestMapping(value = "/manager_viewuser_byid", method = RequestMethod.GET)
 	 public ModelAndView getuser_byid(Long id){
 		
 		User user = null;
@@ -129,6 +129,9 @@ public class SystemManagerController {
 		mv.setViewName("manager/view_user");
 		return mv;
 	}
+	
+	
+	
 	
 	
 	
