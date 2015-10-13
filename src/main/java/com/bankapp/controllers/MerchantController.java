@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.Errors;
@@ -22,6 +23,7 @@ import com.bankapp.services.IAccountService;
 import com.bankapp.services.ITransactionService;
 import com.bankapp.services.IUserService;
 
+
 @Controller
 public class MerchantController implements Constants {
 
@@ -35,8 +37,8 @@ public class MerchantController implements Constants {
 
     @Autowired
     private IUserService userService;
-
-    @RequestMapping(value = "/myaccount", method = RequestMethod.GET)
+    
+    @RequestMapping(value = "/merchant/myaccount", method = RequestMethod.GET)
     public ModelAndView getTransactions(Principal principal) {
         ModelAndView mv = new ModelAndView();
         User loggedInUser = userService.getUserFromSession(principal);
@@ -48,7 +50,7 @@ public class MerchantController implements Constants {
         return mv;
     }
 
-    @RequestMapping(value = "/transferfunds", method = RequestMethod.GET)
+    @RequestMapping(value = "/merchant/transferfunds", method = RequestMethod.GET)
     public ModelAndView transferFunds() {
         ModelAndView mv = new ModelAndView();
         Transaction transaction = new Transaction();
@@ -57,7 +59,7 @@ public class MerchantController implements Constants {
         return mv;
     }
 
-    @RequestMapping(value = "/transferfunds", method = RequestMethod.POST)
+    @RequestMapping(value = "/merchant/transferfunds", method = RequestMethod.POST)
     public ModelAndView saveTransaction(@ModelAttribute("transaction") Transaction transaction, BindingResult result,
             WebRequest request, Errors errors, Principal principal) {
         ModelAndView mv = new ModelAndView();

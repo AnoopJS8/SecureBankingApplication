@@ -1,5 +1,6 @@
 package com.bankapp.controllers;
 
+import java.security.Principal;
 import java.util.Calendar;
 
 import javax.servlet.http.HttpServletRequest;
@@ -147,4 +148,5 @@ public class SignupController {
         }
         return registered;
     }
+    
 }
