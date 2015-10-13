@@ -1,5 +1,6 @@
 package com.bankapp.services;
 
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,5 +58,24 @@ public class TransactionService implements ITransactionService, Constants {
 
         return null;
     }
+    @Transactional
+    @Override
+    public String inTransaction(Transaction transaction, User user) {
+        try {
+            Long userId = transaction.getToAccount().getUser().getId();
+            transaction.setToAccount(accountService.getAccountsByUser(userService.getUserById(userId)));
+            transaction.setFromAccount(accountService.getAccountsByUser(user));
+            transaction.setUser(user);
+            transaction.setStatus(S_PENDING);
+            transactionRepository.save(transaction);
 
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ERROR;
+        }
+
+        return null;
+    }
+    
+    
 }

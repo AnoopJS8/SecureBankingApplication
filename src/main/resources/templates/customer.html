@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:th="http://www.thymeleaf.org">
+<head th:include="fragment/common :: headerFragment" />
+<body>
+<div class="container">
+	<div th:replace="fragment/customer :: customer-header"></div>
+    <!--  <div th:replace="fragment/customer_common :: welcome-messg"/>-->
+    <div class="alert alert-success" role="alert">Welcome <b>Username</b> to MyASU Bank</div>     
+    <div class="jumbotron">
+    </div>
+    
+</div>
+</body>
+</html>
