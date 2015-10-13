@@ -25,6 +25,7 @@ import com.bankapp.services.IUserService;
 
 
 @Controller
+@Secured("ROLE_MERCHANT")
 public class MerchantController implements Constants {
 
     private final Logger LOGGER = Logger.getLogger(MerchantController.class);
@@ -37,7 +38,7 @@ public class MerchantController implements Constants {
 
     @Autowired
     private IUserService userService;
-    
+
     @RequestMapping(value = "/merchant/myaccount", method = RequestMethod.GET)
     public ModelAndView getTransactions(Principal principal) {
         ModelAndView mv = new ModelAndView();
