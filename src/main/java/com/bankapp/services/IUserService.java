@@ -9,7 +9,7 @@ import com.bankapp.models.User;
 import com.bankapp.models.VerificationToken;
 
 public interface IUserService {
-    User registerNewUserAccount(User accountDto) throws EmailExistsException;
+    User registerNewUserAccount(User accountDto, String roleName) throws EmailExistsException;
 
     User getUserById(Long id);
 

@@ -43,7 +43,7 @@ public class DataSetup implements ApplicationListener<ContextRefreshedEvent> {
         final Role adminRole = roleRepository.findByName("ROLE_CUSTOMER");
         final User user = new User();
         user.setUsername("Test");
-        user.setPassword(passwordEncoder.encode("test"));
+        user.setPassword(passwordEncoder.encode("test123"));
         user.setEmail("test@test.com");
         user.setRoles(Arrays.asList(adminRole));
         user.setEnabled(true);
