@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.Errors;
@@ -23,6 +24,7 @@ import com.bankapp.services.ITransactionService;
 import com.bankapp.services.IUserService;
 
 @Controller
+@Secured("ROLE_CUSTOMER")
 public class CustomerController implements Constants {
 
     private final Logger LOGGER = Logger.getLogger(CustomerController.class);
@@ -90,14 +92,6 @@ public class CustomerController implements Constants {
 
     }
 
-    @RequestMapping(value = "/customer/initiatetransaction", method = RequestMethod.GET)
-    public ModelAndView intitateTransaction() {
-        ModelAndView mv = new ModelAndView();
-        Transaction transaction = new Transaction();
-        mv.addObject("transaction", transaction);
-        mv.setViewName("customer/Initiatetransaction");
-        return mv;
-    }
 
     @RequestMapping(value = "/customer/inititatetransaction", method = RequestMethod.POST)
     public ModelAndView saveTransaction1(@ModelAttribute("transaction") Transaction transaction, BindingResult result,

@@ -66,8 +66,8 @@ public class TransactionService implements ITransactionService, Constants {
     @Override
     public String inTransaction(Transaction transaction, User user) {
         try {
-            Long userId = transaction.getToAccount().getUser().getId();
-            transaction.setToAccount(accountService.getAccountsByUser(userService.getUserById(userId)));
+        	Long accId = transaction.getToAccount().getAccId();
+            transaction.setToAccount(accountService.getAccountByAccountId(accId));
             transaction.setFromAccount(accountService.getAccountsByUser(user));
             transaction.setUser(user);
             transaction.setStatus(S_PENDING);
