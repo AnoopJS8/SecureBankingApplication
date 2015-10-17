@@ -49,4 +49,9 @@ public class AccountService implements IAccountService, Constants {
         return null;
     }
 
+	@Override
+	public Account getAccountByAccountId(Long id) {
+		return accountRepository.findOne(id);
+	}
+
 }

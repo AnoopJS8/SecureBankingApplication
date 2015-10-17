@@ -6,6 +6,7 @@ import com.bankapp.models.User;
 
 public interface IAccountService {
 	public Account getAccountsByUser(User user);
+	public Account getAccountByAccountId(Long id);
 	public Account saveAccount(Account account);
 	public String updateBalance(Transaction transaction);
 }

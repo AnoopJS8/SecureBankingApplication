@@ -9,4 +9,5 @@ public interface Constants {
     public String S_OTP_PENDING = "OP";
     public String S_VERIFIED = "V";
     public String S_OTP_VERIFIED = "OV";
+
 }
