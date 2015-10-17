@@ -42,7 +42,7 @@ public class TransactionService implements ITransactionService, Constants {
                 if (message.equalsIgnoreCase(LESS_BALANCE)) {
                     return LESS_BALANCE;
                 } else {
-                	transaction.setStatus("Approved");
+                	transaction.setStatus(S_VERIFIED);
                 	try
                 	{
                 		transactionRepository.save(transaction);
