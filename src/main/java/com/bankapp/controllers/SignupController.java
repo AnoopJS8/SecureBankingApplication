@@ -51,14 +51,13 @@ public class SignupController {
     }
 
     @RequestMapping(value = "/signup", method = RequestMethod.POST)
-    public ModelAndView registerUser(@Valid @ModelAttribute("user") User newUser, @ModelAttribute("role") Role role,
-            BindingResult result, WebRequest request) {
+    public ModelAndView registerUser(@Valid @ModelAttribute("user") User newUser, BindingResult resultUser,
+            @ModelAttribute("role") Role role, BindingResult resultRole, WebRequest request) {
 
-        if (result.hasErrors()) {
-            System.out.println("got");
+        if (resultUser.hasErrors()) {
             ModelAndView mv = new ModelAndView("signup");
             mv.addObject("user", newUser);
-            mv.addObject("errors", result.getAllErrors());
+            mv.addObject("errors", resultUser.getAllErrors());
             return mv;
         }
 
