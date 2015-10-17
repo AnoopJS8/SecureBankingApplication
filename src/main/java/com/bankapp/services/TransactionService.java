@@ -37,7 +37,6 @@ public class TransactionService implements ITransactionService, Constants {
 			Long accId = transaction.getToAccount().getAccId();
 			transaction.setToAccount(accountService.getAccountByAccountId(accId));
 			transaction.setFromAccount(accountService.getAccountsByUser(user));
-			transaction.setUser(user);
 			String message = accountService.updateBalance(transaction);
 			if (message != null) {
 				if (message.equalsIgnoreCase(LESS_BALANCE)) {
@@ -64,21 +63,29 @@ public class TransactionService implements ITransactionService, Constants {
 
 	@Transactional
 	@Override
-	public String initiateTransaction(Transaction transaction, User user) {
+	public String askCustomerPayment(Transaction transaction, User user) {
+		Long accId = transaction.getToAccount().getAccId();
 		try {
-			Long accId = transaction.getToAccount().getAccId();
-			transaction.setToAccount(accountService.getAccountByAccountId(accId));
-			transaction.setFromAccount(accountService.getAccountsByUser(user));
-			transaction.setUser(user);
-			transaction.setStatus(S_PENDING);
+			transaction.setToAccount(accountService.getAccountsByUser(user));
+			transaction.setFromAccount(accountService.getAccountByAccountId(accId));
+			transaction.setStatus(S_PENDING_CUSTOMER_VERIFICATION);
 			transactionRepository.save(transaction);
-
+			return SUCCESS;
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ERROR;
 		}
+	}
+
+	@Transactional
+	@Override
+	public String initiateTransaction(Transaction transaction, User user) {
+		Long accId = transaction.getToAccount().getAccId();
+		transaction.setToAccount(accountService.getAccountByAccountId(accId));
+		transaction.setFromAccount(accountService.getAccountsByUser(user));
+		transaction.setStatus(S_PENDING);
+		transactionRepository.save(transaction);
 
 		return SUCCESS;
 	}
-
 }

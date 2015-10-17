@@ -17,114 +17,110 @@ import javax.validation.constraints.NotNull;
 @Table(name = "transactions")
 public class Transaction {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long transactionId;
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	private Long transactionId;
 
-    @ManyToOne()
-    @JoinColumn(name = "fromAccId", nullable = false)
-    @NotNull
-    private Account fromAccount;
+	@ManyToOne()
+	@JoinColumn(name = "fromAccId", nullable = false)
+	@NotNull
+	private Account fromAccount;
 
-    @ManyToOne()
-    @JoinColumn(name = "userId", nullable = false)
-    @NotNull
-    private User user;
+	private String status;
+	private String comment;
 
-    private String status;
-    private String comment;
+	@ManyToOne()
+	@JoinColumn(name = "toAccId", nullable = false)
+	@NotNull
+	private Account toAccount;
 
-    @ManyToOne()
-    @JoinColumn(name = "toAccId", nullable = false)
-    @NotNull
-    private Account toAccount;
+	@NotNull
+	private Double amount;
 
-    @NotNull
-    private Double amount;
+	private Date transferDate;
+	private Date created;
+	private Date updated;
 
-    private Date created;
-    private Date updated;
-    
-    public String getStatus() {
-        return status;
-    }
+	public String getStatus() {
+		return status;
+	}
 
-    public void setStatus(String status) {
-        this.status = status;
-    }
+	public void setStatus(String status) {
+		this.status = status;
+	}
 
-    @PrePersist
-    protected void onCreate() {
-        created = new Date();
-    }
+	@PrePersist
+	protected void onCreate() {
+		created = new Date();
+	}
 
-    @PreUpdate
-    protected void onUpdate() {
-        updated = new Date();
-    }
+	@PreUpdate
+	protected void onUpdate() {
+		updated = new Date();
+	}
 
-    public Long getTransactionId() {
-        return transactionId;
-    }
+	public Long getTransactionId() {
+		return transactionId;
+	}
 
-    public void setTransactionId(Long transactionId) {
-        this.transactionId = transactionId;
-    }
+	public void setTransactionId(Long transactionId) {
+		this.transactionId = transactionId;
+	}
 
-    public Account getFromAccount() {
-        return fromAccount;
-    }
+	public Account getFromAccount() {
+		return fromAccount;
+	}
 
-    public void setFromAccount(Account fromAccount) {
-        this.fromAccount = fromAccount;
-    }
+	public void setFromAccount(Account fromAccount) {
+		this.fromAccount = fromAccount;
+	}
 
-    public User getUser() {
-        return user;
-    }
+	public String getComment() {
+		return comment;
+	}
 
-    public void setUser(User user) {
-        this.user = user;
-    }
+	public void setComment(String comment) {
+		this.comment = comment;
+	}
 
-    public String getComment() {
-        return comment;
-    }
+	public Account getToAccount() {
+		return toAccount;
+	}
 
-    public void setComment(String comment) {
-        this.comment = comment;
-    }
+	public void setToAccount(Account toAccount) {
+		this.toAccount = toAccount;
+	}
 
-    public Account getToAccount() {
-        return toAccount;
-    }
+	public Double getAmount() {
+		return amount;
+	}
 
-    public void setToAccount(Account toAccount) {
-        this.toAccount = toAccount;
-    }
+	public void setAmount(Double amount) {
+		this.amount = amount;
+	}
 
-    public Double getAmount() {
-        return amount;
-    }
+	public Date getCreated() {
+		return created;
+	}
 
-    public void setAmount(Double amount) {
-        this.amount = amount;
-    }
+	public void setCreated(Date created) {
+		this.created = created;
+	}
 
-    public Date getCreated() {
-        return created;
-    }
+	public Date getUpdated() {
+		return updated;
+	}
 
-    public void setCreated(Date created) {
-        this.created = created;
-    }
+	public void setUpdated(Date updated) {
+		this.updated = updated;
+	}
 
-    public Date getUpdated() {
-        return updated;
-    }
+	public Date getTransferDate() {
+		return transferDate;
+	}
 
-    public void setUpdated(Date updated) {
-        this.updated = updated;
-    }
+	public void setTransferDate(Date transferDate) {
+		this.transferDate = transferDate;
+	}
 
 }
