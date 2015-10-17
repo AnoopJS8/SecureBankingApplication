@@ -8,6 +8,7 @@ import javax.validation.Valid;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -21,10 +22,12 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.bankapp.exceptions.EmailExistsException;
 import com.bankapp.listeners.OnRegistrationCompleteEvent;
+import com.bankapp.models.Account;
 import com.bankapp.models.Role;
 import com.bankapp.models.User;
 import com.bankapp.models.VerificationToken;
 import com.bankapp.services.IUserService;
+import com.bankapp.services.IAccountService;
 import com.bankapp.services.IMailService;
 
 @Controller
@@ -38,7 +41,16 @@ public class SignupController {
     private IMailService mailService;
 
     @Autowired
+    private IAccountService accountService;
+
+    @Autowired
     ApplicationEventPublisher eventPublisher;
+
+    @Value("${com.bankapp.account.default_balance}")
+    private double defaultBalance;
+
+    @Value("${com.bankapp.account.default_critical_limit}")
+    private double defaultCriticalLimit;
 
     @RequestMapping(value = "/signup", method = RequestMethod.GET)
     public ModelAndView getSignupPage() {
@@ -96,6 +108,7 @@ public class SignupController {
 
         String logMessage = String.format("Verifying user account with information: {token = %s}", token);
         LOGGER.info(logMessage);
+
         VerificationToken verificationToken = userService.getVerificationToken(token);
         if (verificationToken == null) {
             String message = String.format("The token is invalid, please register again!");
@@ -115,6 +128,13 @@ public class SignupController {
 
         user.setEnabled(true);
         userService.saveRegisteredUser(user);
+
+        // Create user account
+        Account userAccount = new Account(user, defaultBalance, defaultCriticalLimit);
+        accountService.saveAccount(userAccount);
+        logMessage = String.format("User %s has been verified, created new account [%s]", user.getId(), userAccount);
+        LOGGER.info(logMessage);
+
         return new ModelAndView("registration/activationSuccess");
     }
 
