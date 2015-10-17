@@ -1,6 +1,5 @@
 package com.bankapp.controllers;
 
-import java.security.Principal;
 import java.util.Calendar;
 
 import javax.servlet.http.HttpServletRequest;
@@ -17,7 +16,6 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.bankapp.exceptions.EmailExistsException;
@@ -64,7 +62,7 @@ public class SignupController {
 
     @RequestMapping(value = "/signup", method = RequestMethod.POST)
     public ModelAndView registerUser(@Valid @ModelAttribute("user") User newUser, BindingResult resultUser,
-            @ModelAttribute("role") Role role, BindingResult resultRole, WebRequest request) {
+            @ModelAttribute("role") Role role, BindingResult resultRole, HttpServletRequest request) {
 
         if (resultUser.hasErrors()) {
             ModelAndView mv = new ModelAndView("signup");
@@ -85,8 +83,7 @@ public class SignupController {
             return mv;
         }
         try {
-            String appUrl = request.getContextPath();
-            eventPublisher.publishEvent(new OnRegistrationCompleteEvent(registered, request.getLocale(), appUrl));
+            eventPublisher.publishEvent(new OnRegistrationCompleteEvent(registered, request.getLocale(), getAppUrl(request)));
         } catch (Exception e) {
             String message = String.format("Action: %s, Message: %s", "signup", e.getMessage());
             LOGGER.error(message);
@@ -104,7 +101,7 @@ public class SignupController {
     }
 
     @RequestMapping(value = "/registrationConfirm", method = RequestMethod.GET)
-    public ModelAndView confirmRegistration(WebRequest request, Model model, @RequestParam("token") String token) {
+    public ModelAndView confirmRegistration(HttpServletRequest request, Model model, @RequestParam("token") String token) {
 
         String logMessage = String.format("Verifying user account with information: {token = %s}", token);
         LOGGER.info(logMessage);
@@ -119,7 +116,7 @@ public class SignupController {
         Calendar cal = Calendar.getInstance();
         if ((verificationToken.getExpiryDate().getTime() - cal.getTime().getTime()) <= 0) {
             String message = String.format("The verification token has expired. Please register again!");
-            String url = "http://localhost:8081/resendRegistrationToken?token=" + token;
+            String url = getAppUrl(request) + "/resendRegistrationToken?token=" + token;
             ModelAndView mv = new ModelAndView("registration/activationFailed");
             mv.addObject("message", message);
             mv.addObject("url", url);
@@ -147,7 +144,7 @@ public class SignupController {
         String recipientAddress = user.getEmail();
         String userName = user.getUsername();
         String subject = String.format("My ASU Bank - Resending Activation");
-        String confirmationUrl = "http://localhost:8081/registrationConfirm?token=" + newToken;
+        String confirmationUrl = getAppUrl(request) + "/registrationConfirm?token=" + newToken;
 
         String textBody = String.format(
                 "Dear %s, <br /><br />Here is your new account verification link:<br />"
@@ -170,5 +167,8 @@ public class SignupController {
         }
         return registered;
     }
-    
+
+    private String getAppUrl(HttpServletRequest request) {
+        return request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort();
+    }
 }
