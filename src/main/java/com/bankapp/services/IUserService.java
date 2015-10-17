@@ -34,4 +34,6 @@ public interface IUserService {
 
     void generateTemporaryPassword(User user);
 
+    boolean verifyOTP(OneTimePassword otp);
+
 }

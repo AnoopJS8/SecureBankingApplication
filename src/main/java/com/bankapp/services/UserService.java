@@ -155,4 +155,12 @@ public class UserService implements IUserService {
 
     }
 
+    public boolean verifyOTP(OneTimePassword otp) {
+        OneTimePassword otpFromDB = oTPRepository.findOne(otp.getId());
+        if (otp.getValue() == otpFromDB.getValue()) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 }
