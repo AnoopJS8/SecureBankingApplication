@@ -43,13 +43,7 @@ public class TransactionService implements ITransactionService, Constants {
                     return LESS_BALANCE;
                 } else {
                 	transaction.setStatus(S_VERIFIED);
-                	try
-                	{
-                		transactionRepository.save(transaction);
-                		
-                	}catch(Exception e){
-                		e.printStackTrace();
-                	}
+                	transactionRepository.save(transaction);
                     return message;
                 }
 
@@ -61,5 +55,39 @@ public class TransactionService implements ITransactionService, Constants {
 
         return null;
     }
+
+    @Transactional
+	@Override
+	public String askCustomerPayment(Transaction transaction, User user) {
+		Long accId = transaction.getToAccount().getAccId();
+		try{
+			transaction.setToAccount(accountService.getAccountsByUser(user));
+	        transaction.setFromAccount(accountService.getAccountByAccountId(accId));
+	        transaction.setUser(user);
+	        transaction.setStatus(S_PENDING_CUSTOMER_VERIFICATION);
+        	transactionRepository.save(transaction);
+        	return SUCCESS;
+        }catch(Exception e){
+        	e.printStackTrace();
+        	return ERROR;
+        }
+	}
+
+    @Transactional
+	@Override
+	public String initiateTransaction(Transaction transaction, User user) {
+		Long accId = transaction.getToAccount().getAccId();
+		try{
+			transaction.setFromAccount(accountService.getAccountsByUser(user));
+	        transaction.setToAccount(accountService.getAccountByAccountId(accId));
+	        transaction.setUser(user);
+	        transaction.setStatus(S_PENDING);
+        	transactionRepository.save(transaction);
+        	return SUCCESS;
+        }catch(Exception e){
+        	e.printStackTrace();
+        	return ERROR;
+        }
+	}
 
 }
