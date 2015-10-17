@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:th="http://www.thymeleaf.org">
+<head th:include="fragment/common :: headerFragment" />
+<body>
+<div class="container">
+    <div th:replace="fragment/common :: top-nav"></div>
+    <div class="jumbotron">
+        <h1>My ASU Bank</h1>
+    </div>
+    <div>
+    <p th:text="${result1}">Welcome to our grocery store!</p>
+    </div>
+    <div class="table-responsive">
+			<table class="table table-bordered table-hover">
+				<thead>
+					<tr>
+						<th>Created Date</th>
+						<th>Type</th>
+						<th>From</th>
+						<th>To</th>
+						<th>Amount</th>
+						<th>Balance</th>
+						<th>Status</th>
+						<th>Comment</th>
+						<th></th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr th:each="row : ${critical}">
+						<form  th:action="@{/approvetransaction}" th:object="${row}" method="post">
+						<td><span th:text="*{created}"></span></td>
+						<td><span th:text="*{type}"></span></td>
+						<td><span th:text="*{fromAccount.user.username}"></span></td>
+						<td><span th:text="*{toAccount.user.username}"></span></td>
+						<td><span th:text="*{amount}"></span></td>
+						<td><span th:text="*{fromAccount['balance']}"></span></td>
+						<td><span th:text="*{status}"></span></td>						
+						<td><span th:text="*{comment}"></span></td>
+						
+                        <td>
+                        <input type="hidden" name="transactionId" th:value="*{transactionId}" />
+                        <input type = "submit" /></td>
+                        </form>
+					</tr>
+				</tbody>
+			</table>
+			
+		</div>
+    <div th:replace="fragment/common :: [//footer]"></div>
+</div>
+</body>
+</html>
