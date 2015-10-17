@@ -23,7 +23,6 @@ import com.bankapp.services.IAccountService;
 import com.bankapp.services.ITransactionService;
 import com.bankapp.services.IUserService;
 
-
 @Controller
 @Secured("ROLE_MERCHANT")
 public class MerchantController implements Constants {
@@ -70,7 +69,7 @@ public class MerchantController implements Constants {
             if (message.equalsIgnoreCase(LESS_BALANCE)) {
                 String msg = "You are low on balance, the transaction cannot go through.";
                 mv.addObject("message", msg);
-                String errorMsg = String.format("Action: %s, Message: %s", "low on balance", msg);
+                String errorMsg = String.format("Action: %s, Message: %s", "saveTransaction", msg);
                 LOGGER.error(errorMsg);
                 mv.setViewName("success");
             } else if (message.equalsIgnoreCase(SUCCESS)) {
