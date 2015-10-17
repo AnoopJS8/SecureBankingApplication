@@ -50,11 +50,13 @@ public class SignupController {
     @Value("${com.bankapp.account.default_critical_limit}")
     private double defaultCriticalLimit;
 
+    final private String signupViewName = "registration/signup";
+
     @RequestMapping(value = "/signup", method = RequestMethod.GET)
     public ModelAndView getSignupPage() {
         User user = new User();
         Role role = new Role();
-        ModelAndView modelAndView = new ModelAndView("signup");
+        ModelAndView modelAndView = new ModelAndView(signupViewName);
         modelAndView.addObject("user", user);
         modelAndView.addObject("role", role);
         return modelAndView;
@@ -64,8 +66,9 @@ public class SignupController {
     public ModelAndView registerUser(@Valid @ModelAttribute("user") User newUser, BindingResult resultUser,
             @ModelAttribute("role") Role role, BindingResult resultRole, HttpServletRequest request) {
 
+        ModelAndView mv = new ModelAndView(signupViewName);
+
         if (resultUser.hasErrors()) {
-            ModelAndView mv = new ModelAndView("signup");
             mv.addObject("user", newUser);
             mv.addObject("errors", resultUser.getAllErrors());
             return mv;
@@ -77,31 +80,31 @@ public class SignupController {
         User registered = createUserAccount(newUser, role.getName());
         if (registered == null) {
             String message = String.format("This email is already taken");
-            ModelAndView mv = new ModelAndView("signup");
             mv.addObject("message", message);
             mv.addObject("user", newUser);
             return mv;
         }
         try {
-            eventPublisher.publishEvent(new OnRegistrationCompleteEvent(registered, request.getLocale(), getAppUrl(request)));
+            eventPublisher
+                    .publishEvent(new OnRegistrationCompleteEvent(registered, request.getLocale(), getAppUrl(request)));
         } catch (Exception e) {
             String message = String.format("Action: %s, Message: %s", "signup", e.getMessage());
             LOGGER.error(message);
 
-            ModelAndView mv = new ModelAndView("signup");
             mv.addObject("message", e.getMessage());
             mv.addObject("user", newUser);
             return mv;
         }
 
-        ModelAndView mv = new ModelAndView("registration/activationInfo");
+        mv.setViewName("registration/activationInfo");
         mv.addObject("username", newUser.getUsername());
         mv.addObject("email", newUser.getEmail());
         return mv;
     }
 
     @RequestMapping(value = "/registrationConfirm", method = RequestMethod.GET)
-    public ModelAndView confirmRegistration(HttpServletRequest request, Model model, @RequestParam("token") String token) {
+    public ModelAndView confirmRegistration(HttpServletRequest request, Model model,
+            @RequestParam("token") String token) {
 
         String logMessage = String.format("Verifying user account with information: {token = %s}", token);
         LOGGER.info(logMessage);

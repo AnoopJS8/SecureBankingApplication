@@ -48,6 +48,10 @@ public class User {
 
     private boolean tokenExpired;
 
+    private String securityQuestion;
+
+    private String securityAnswer;
+
     @ManyToMany
     @JoinTable(name = "users_roles", joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id") , inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id") )
     private Collection<Role> roles;
@@ -175,9 +179,25 @@ public class User {
     @Override
     public String toString() {
         String value = String.format(
-                "User object [username=%s, email=%s, address=%s, phone number=%s, date of birth=%s, gender=%s]",
-                username, email, address, phoneNumber, dateOfBirth, gender);
+                "User object [username=%s, email=%s, address=%s, phone number=%s, date of birth=%s, gender=%s, securityQuestion=%s, securityAnswer=%s]",
+                username, email, address, phoneNumber, dateOfBirth, gender, securityQuestion, securityAnswer);
         return value;
+    }
+
+    public String getSecurityQuestion() {
+        return securityQuestion;
+    }
+
+    public void setSecurityQuestion(String securityQuestion) {
+        this.securityQuestion = securityQuestion;
+    }
+
+    public String getSecurityAnswer() {
+        return securityAnswer;
+    }
+
+    public void setSecurityAnswer(String securtiyAnswer) {
+        this.securityAnswer = securtiyAnswer;
     }
 
 }

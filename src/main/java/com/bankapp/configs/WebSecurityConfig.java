@@ -28,11 +28,14 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(
                         "/", 
                         "/home", 
-                        "/webjars/**",
+                        "/login/identify",
+                        "/login/verifyIdentity",
                         "/signup",
                         "/registrationConfirm",
                         "/resendRegistrationToken",
-                        "/badUser"
+                        "/badUser",
+                        // Resources
+                        "/webjars/**"
                         ).permitAll()
                 .anyRequest().authenticated()
                 .and()

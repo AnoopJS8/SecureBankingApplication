@@ -6,17 +6,24 @@
 <body>
 	<div class="container">
 		<div th:replace="fragment/common :: top-nav(login)"></div>
-		<div th:if="${param.error}">Invalid username and password.</div>
+		<div th:if="${param.error}">
+			<div class="alert alert-danger" role="alert">
+				<p>Invalid username and password</p>
+			</div>
+		</div>
 		<div th:if="${param.logout}">You have been logged out.</div>
 		<form th:action="@{/login}" method="post">
 			<div class="form-group">
-				<label for="email">Email</label>
-				<input id="email" type="email" name="m_email" class="form-control" placeholder="Email" />
+				<label for="email">Email</label> <input id="email" type="email"
+					name="m_email" class="form-control" placeholder="Email" />
 			</div>
 			<div class="form-group">
-				<label for="password">Password</label>
-				<input id="password" type="password" name="m_password" class="form-control" placeholder="Password" />
+				<label for="password">Password</label> <input id="password"
+					type="password" name="m_password" class="form-control"
+					placeholder="Password" />
 			</div>
+			<a class="pull-right" th:href="@{/login/identify}">Forgot
+				password?</a>
 			<button type="submit" class="btn btn-primary">Sign In</button>
 		</form>
 	</div>
