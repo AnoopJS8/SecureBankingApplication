@@ -167,7 +167,7 @@ public class SignupController {
         }
         return registered;
     }
-    
+
     private String getAppUrl(HttpServletRequest request) {
         return request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort();
     }

@@ -23,14 +23,28 @@ public class Transaction {
 
     @ManyToOne()
     @JoinColumn(name = "fromAccId", nullable = false)
+    @NotNull
     private Account fromAccount;
 
     @ManyToOne()
     @JoinColumn(name = "userId", nullable = false)
+    @NotNull
     private User user;
 
     private String status;
+    private String comment;
 
+    @ManyToOne()
+    @JoinColumn(name = "toAccId", nullable = false)
+    @NotNull
+    private Account toAccount;
+
+    @NotNull
+    private Double amount;
+
+    private Date created;
+    private Date updated;
+    
     public String getStatus() {
         return status;
     }
@@ -38,21 +52,6 @@ public class Transaction {
     public void setStatus(String status) {
         this.status = status;
     }
-
-    private String comment;
-
-    @ManyToOne()
-    @JoinColumn(name = "toAccId", nullable = false)
-    private Account toAccount;
-
-    @NotNull
-    private Double amount;
-
-    @NotNull
-    private String type;
-
-    private Date created;
-    private Date updated;
 
     @PrePersist
     protected void onCreate() {
@@ -128,11 +127,4 @@ public class Transaction {
         this.updated = updated;
     }
 
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
 }
