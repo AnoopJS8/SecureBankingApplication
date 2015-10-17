@@ -15,7 +15,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Configuration
 @EnableWebMvcSecurity
-@EnableGlobalMethodSecurity(prePostEnabled = true)
+@EnableGlobalMethodSecurity(securedEnabled = true, prePostEnabled = true)
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
@@ -27,7 +27,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             .authorizeRequests()
                 .antMatchers(
                         "/", 
-                        "/home", "/index", 
+                        "/home", 
                         "/webjars/**",
                         "/signup",
                         "/registrationConfirm",
@@ -40,10 +40,12 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .loginPage("/login")
                 .usernameParameter("m_email")
                 .passwordParameter("m_password")
+                .successHandler(new AuthSuccessHandler())
                 .permitAll()
                 .and()
             .logout()
-                .permitAll()
+                .logoutUrl("/logout")
+                .logoutSuccessUrl("/login")
                 .and()
             .sessionManagement()
                  .maximumSessions(1);

@@ -1,25 +1,27 @@
 package com.bankapp.configs;
 
+import org.springframework.boot.autoconfigure.thymeleaf.ThymeleafProperties;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
+@EnableWebMvc
 @Configuration
+@EnableConfigurationProperties(ThymeleafProperties.class)
 public class MvcConfig extends WebMvcConfigurerAdapter {
 
     @Override
-    public void addViewControllers(ViewControllerRegistry registry) {
-        registry.addViewController("/home").setViewName("home");
-        registry.addViewController("/hello").setViewName("hello");
-        //registry.addViewController("/signup").setViewName("signup");
-        registry.addViewController("/login").setViewName("login");
-        registry.addViewController("/account").setViewName("merchant/account");
-        registry.addViewController("/transaction").setViewName("merchant/transaction");
-        registry.addViewController("/criticaltransaction").setViewName("manager/manager_view");
-        registry.addViewController("/manager_adduser").setViewName("manager/manager_view");
-        registry.addViewController("/manager_viewuser_byemail").setViewName("manager/manager_view");
-        registry.addViewController("/manager_viewuser_byid").setViewName("manager/manager_view");
-
+    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        if (!registry.hasMappingForPattern("/webjars/**")) {
+            registry.addResourceHandler("/webjars/**").addResourceLocations("classpath:/META-INF/resources/webjars/");
+        }
     }
 
+    @Override
+    public void addViewControllers(ViewControllerRegistry registry) {
+        registry.addViewController("/login").setViewName("login");
+    }
 }

@@ -1,5 +1,6 @@
 package com.bankapp.services;
 
+import java.security.Principal;
 import java.util.Arrays;
 import java.util.UUID;
 
@@ -9,16 +10,22 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.bankapp.exceptions.EmailExistsException;
+import com.bankapp.models.OneTimePassword;
+import com.bankapp.models.Transaction;
 import com.bankapp.models.User;
 import com.bankapp.models.VerificationToken;
 import com.bankapp.repositories.RoleRepository;
+import com.bankapp.repositories.OTPRepository;
 import com.bankapp.repositories.UserRepository;
 import com.bankapp.repositories.VerificationTokenRepository;
 
 @Service
 public class UserService implements IUserService {
     @Autowired
-    private UserRepository repository;
+    private UserRepository userRepository;
+
+    @Autowired
+    private OTPRepository oTPRepository;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -31,7 +38,7 @@ public class UserService implements IUserService {
 
     @Transactional
     @Override
-    public User registerNewUserAccount(final User user) throws EmailExistsException {
+    public User registerNewUserAccount(final User user, String roleName) throws EmailExistsException {
         if (emailExist(user.getEmail())) {
             throw new EmailExistsException("There is an account with that email adress: " + user.getEmail());
         }
@@ -40,14 +47,18 @@ public class UserService implements IUserService {
         newUser.setUsername(user.getUsername());
         newUser.setPassword(passwordEncoder.encode(user.getPassword()));
         newUser.setEmail(user.getEmail());
+        newUser.setAddress(user.getAddress());
+        newUser.setGender(user.getGender());
+        newUser.setDateOfBirth(user.getDateOfBirth());
+        newUser.setPhoneNumber(user.getPhoneNumber());
 
-        newUser.setRoles(Arrays.asList(roleRepository.findByName("ROLE_USER")));
+        newUser.setRoles(Arrays.asList(roleRepository.findByName(roleName)));
 
-        return repository.save(newUser);
+        return userRepository.save(newUser);
     }
 
     private boolean emailExist(String email) {
-        User user = repository.findByEmail(email);
+        User user = userRepository.findByEmail(email);
         if (user != null) {
             return true;
         }
@@ -56,7 +67,7 @@ public class UserService implements IUserService {
 
     @Override
     public User getUserById(Long id) {
-        User user = repository.findById(id);
+        User user = userRepository.findById(id);
         return user;
     }
 
@@ -67,13 +78,20 @@ public class UserService implements IUserService {
     }
 
     @Override
+    public User getUserFromSession(Principal principal) {
+        String email = principal.getName();
+        User user = userRepository.findByEmail(email);
+        return user;
+    }
+
+    @Override
     public VerificationToken getVerificationToken(String VerificationToken) {
         return tokenRepository.findByToken(VerificationToken);
     }
 
     @Override
     public void saveRegisteredUser(User user) {
-        repository.save(user);
+        userRepository.save(user);
     }
 
     @Override
@@ -90,4 +108,32 @@ public class UserService implements IUserService {
         vToken = tokenRepository.save(vToken);
         return vToken;
     }
+
+    @Override
+    public User getUserByEmail(String email) {
+        User user = userRepository.findByEmail(email);
+        return user;
+    }
+
+    // OTP Part
+
+    @Override
+    public OneTimePassword generateOTP(Transaction transaction) {
+        OneTimePassword otp = new OneTimePassword(transaction);
+        oTPRepository.save(otp);
+        return otp;
+    }
+
+    @Override
+    public OneTimePassword generateNewOTP(final String existingUsedOTP) {
+        OneTimePassword existingOTP = oTPRepository.findByValue(existingUsedOTP);
+
+        String temp = OneTimePassword.generateOTP();
+
+        existingOTP.setValue(temp);
+        existingOTP = oTPRepository.save(existingOTP);
+        return existingOTP;
+
+    }
+
 }
