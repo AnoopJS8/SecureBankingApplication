@@ -38,7 +38,7 @@ public class UserService implements IUserService {
 
     @Transactional
     @Override
-    public User registerNewUserAccount(final User user) throws EmailExistsException {
+    public User registerNewUserAccount(final User user, String roleName) throws EmailExistsException {
         if (emailExist(user.getEmail())) {
             throw new EmailExistsException("There is an account with that email adress: " + user.getEmail());
         }
@@ -47,8 +47,12 @@ public class UserService implements IUserService {
         newUser.setUsername(user.getUsername());
         newUser.setPassword(passwordEncoder.encode(user.getPassword()));
         newUser.setEmail(user.getEmail());
+        newUser.setAddress(user.getAddress());
+        newUser.setGender(user.getGender());
+        newUser.setDateOfBirth(user.getDateOfBirth());
+        newUser.setPhoneNumber(user.getPhoneNumber());
 
-        newUser.setRoles(Arrays.asList(roleRepository.findByName("ROLE_USER")));
+        newUser.setRoles(Arrays.asList(roleRepository.findByName(roleName)));
 
         return userRepository.save(newUser);
     }

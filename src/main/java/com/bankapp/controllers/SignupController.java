@@ -11,7 +11,6 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -21,6 +20,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.bankapp.exceptions.EmailExistsException;
 import com.bankapp.listeners.OnRegistrationCompleteEvent;
+import com.bankapp.models.Role;
 import com.bankapp.models.User;
 import com.bankapp.models.VerificationToken;
 import com.bankapp.services.IUserService;
@@ -42,26 +42,29 @@ public class SignupController {
     @RequestMapping(value = "/signup", method = RequestMethod.GET)
     public ModelAndView getSignupPage() {
         User user = new User();
+        Role role = new Role();
         ModelAndView modelAndView = new ModelAndView("signup");
         modelAndView.addObject("user", user);
+        modelAndView.addObject("role", role);
         return modelAndView;
     }
 
     @RequestMapping(value = "/signup", method = RequestMethod.POST)
-    public ModelAndView registerUser(@ModelAttribute("user") @Valid User newUser, BindingResult result,
-            WebRequest request, Errors errors) {
-
-        String logMessage = String.format("Registering user account with information: {%s}", newUser);
-        LOGGER.info(logMessage);
+    public ModelAndView registerUser(@Valid @ModelAttribute("user") User newUser, @ModelAttribute("role") Role role,
+            BindingResult result, WebRequest request) {
 
         if (result.hasErrors()) {
+            System.out.println("got");
             ModelAndView mv = new ModelAndView("signup");
             mv.addObject("user", newUser);
             mv.addObject("errors", result.getAllErrors());
             return mv;
         }
 
-        User registered = createUserAccount(newUser);
+        String logMessage = String.format("Registering user account with information: {%s, %s}", newUser, role);
+        LOGGER.info(logMessage);
+
+        User registered = createUserAccount(newUser, role.getName());
         if (registered == null) {
             String message = String.format("This email is already taken");
             ModelAndView mv = new ModelAndView("signup");
@@ -138,10 +141,10 @@ public class SignupController {
         return mv;
     }
 
-    private User createUserAccount(final User newUser) {
+    private User createUserAccount(final User newUser, final String roleName) {
         User registered = null;
         try {
-            registered = userService.registerNewUserAccount(newUser);
+            registered = userService.registerNewUserAccount(newUser, roleName);
         } catch (final EmailExistsException e) {
             return null;
         }

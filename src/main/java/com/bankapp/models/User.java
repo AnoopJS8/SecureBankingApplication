@@ -10,6 +10,9 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
+import javax.validation.constraints.Size;
+
+import org.hibernate.validator.constraints.NotEmpty;
 
 @Entity
 @Table(name = "users")
@@ -19,11 +22,23 @@ public class User {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
+    @NotEmpty
     private String username;
 
+    @NotEmpty
     private String email;
 
+    @NotEmpty
+    @Size(min = 6, max = 60)
     private String password;
+
+    private String address;
+
+    private String phoneNumber;
+
+    private String dateOfBirth;
+
+    private String gender;
 
     private boolean enabled;
 
@@ -69,6 +84,38 @@ public class User {
 
     public void setPassword(final String password) {
         this.password = password;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
+    public String getDateOfBirth() {
+        return dateOfBirth;
+    }
+
+    public void setDateOfBirth(String dateOfBirth) {
+        this.dateOfBirth = dateOfBirth;
+    }
+
+    public String getGender() {
+        return gender;
+    }
+
+    public void setGender(String gender) {
+        this.gender = gender;
     }
 
     public Collection<Role> getRoles() {
@@ -123,9 +170,10 @@ public class User {
 
     @Override
     public String toString() {
-        final StringBuilder builder = new StringBuilder();
-        builder.append("User [username=").append(username).append("]").append("[email=").append(email).append("]");
-        return builder.toString();
+        String value = String.format(
+                "User object [username=%s, email=%s, address=%s, phone number=%s, date of birth=%s, gender=%s]",
+                username, email, address, phoneNumber, dateOfBirth, gender);
+        return value;
     }
 
 }
