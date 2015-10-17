@@ -26,14 +26,7 @@ public class Transaction {
 	@NotNull
 	private Account fromAccount;
 
-	@ManyToOne()
-	@JoinColumn(name = "userId", nullable = false)
-	@NotNull
-	private User user;
-
-	@NotNull
 	private String status;
-
 	private String comment;
 
 	@ManyToOne()
@@ -44,6 +37,7 @@ public class Transaction {
 	@NotNull
 	private Double amount;
 
+	private Date transferDate;
 	private Date created;
 	private Date updated;
 
@@ -79,14 +73,6 @@ public class Transaction {
 
 	public void setFromAccount(Account fromAccount) {
 		this.fromAccount = fromAccount;
-	}
-
-	public User getUser() {
-		return user;
-	}
-
-	public void setUser(User user) {
-		this.user = user;
 	}
 
 	public String getComment() {
@@ -127,6 +113,14 @@ public class Transaction {
 
 	public void setUpdated(Date updated) {
 		this.updated = updated;
+	}
+
+	public Date getTransferDate() {
+		return transferDate;
+	}
+
+	public void setTransferDate(Date transferDate) {
+		this.transferDate = transferDate;
 	}
 
 }
