@@ -16,70 +16,69 @@ import com.bankapp.repositories.TransactionRepository;
 @Service
 public class TransactionService implements ITransactionService, Constants {
 
-    @Autowired
-    private TransactionRepository transactionRepository;
+	@Autowired
+	private TransactionRepository transactionRepository;
 
-    @Autowired
-    private IAccountService accountService;
+	@Autowired
+	private IAccountService accountService;
 
-    @Transactional
-    @Override
-    public List<Transaction> getTransactionsByAccount(Account fromAccount, Account toAccount) {
-        List<Transaction> list = transactionRepository.findByFromAccountOrToAccountOrderByCreatedAsc(fromAccount,
-                toAccount);
-        return list;
-    }
+	@Transactional
+	@Override
+	public List<Transaction> getTransactionsByAccount(Account fromAccount, Account toAccount) {
+		List<Transaction> list = transactionRepository.findByFromAccountOrToAccountOrderByCreatedAsc(fromAccount,
+				toAccount);
+		return list;
+	}
 
-    @Transactional
-    @Override
-    public String saveTransaction(Transaction transaction, User user) {
-        try {
-            Long accId = transaction.getToAccount().getAccId();
-            transaction.setToAccount(accountService.getAccountByAccountId(accId));
-            transaction.setFromAccount(accountService.getAccountsByUser(user));
-            transaction.setUser(user);
-            String message = accountService.updateBalance(transaction);
-            if (message != null) {
-                if (message.equalsIgnoreCase(LESS_BALANCE)) {
-                    return LESS_BALANCE;
-                } else {
-                	transaction.setStatus("Approved");
-                	try
-                	{
-                		transactionRepository.save(transaction);
-                		
-                	}catch(Exception e){
-                		e.printStackTrace();
-                	}
-                    return message;
-                }
+	@Transactional
+	@Override
+	public String saveTransaction(Transaction transaction, User user) {
+		try {
+			Long accId = transaction.getToAccount().getAccId();
+			transaction.setToAccount(accountService.getAccountByAccountId(accId));
+			transaction.setFromAccount(accountService.getAccountsByUser(user));
+			transaction.setUser(user);
+			String message = accountService.updateBalance(transaction);
+			if (message != null) {
+				if (message.equalsIgnoreCase(LESS_BALANCE)) {
+					return LESS_BALANCE;
+				} else {
+					transaction.setStatus("Approved");
+					try {
+						transactionRepository.save(transaction);
 
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ERROR;
-        }
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+					return message;
+				}
 
-        return null;
-    }
-    @Transactional
-    @Override
-    public String initiateTransaction(Transaction transaction, User user) {
-        try {
-        	Long accId = transaction.getToAccount().getAccId();
-            transaction.setToAccount(accountService.getAccountByAccountId(accId));
-            transaction.setFromAccount(accountService.getAccountsByUser(user));
-            transaction.setUser(user);
-            transaction.setStatus(S_PENDING);
-            transactionRepository.save(transaction);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ERROR;
+		}
 
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ERROR;
-        }
+		return null;
+	}
 
-        return SUCCESS;
-    }
-    
-    
+	@Transactional
+	@Override
+	public String initiateTransaction(Transaction transaction, User user) {
+		try {
+			Long accId = transaction.getToAccount().getAccId();
+			transaction.setToAccount(accountService.getAccountByAccountId(accId));
+			transaction.setFromAccount(accountService.getAccountsByUser(user));
+			transaction.setUser(user);
+			transaction.setStatus(S_PENDING);
+			transactionRepository.save(transaction);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ERROR;
+		}
+
+		return SUCCESS;
+	}
+
 }
