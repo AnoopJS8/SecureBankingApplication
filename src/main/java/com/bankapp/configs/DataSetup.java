@@ -36,13 +36,14 @@ public class DataSetup implements ApplicationListener<ContextRefreshedEvent> {
         }
 
         // == create initial roles
-        createRoleIfNotFound("ROLE_ADMIN");
-        createRoleIfNotFound("ROLE_USER");
+        for (Roles role : Roles.values()) {
+            createRoleIfNotFound(role.toString());
+        };
 
         final Role adminRole = roleRepository.findByName("ROLE_ADMIN");
         final User user = new User();
         user.setUsername("Test");
-        user.setPassword(passwordEncoder.encode("test"));
+        user.setPassword(passwordEncoder.encode("test123"));
         user.setEmail("test@test.com");
         user.setRoles(Arrays.asList(adminRole));
         user.setEnabled(true);

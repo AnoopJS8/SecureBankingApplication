@@ -14,7 +14,7 @@ body {
 </style>
 </head>
 <body>
-	<nav th:fragment="top-nav"
+	<nav th:fragment="top-nav(activeTab)"
 		class="navbar navbar-inverse navbar-static-top">
 		<div class="container-fluid">
 			<div class="navbar-header">
@@ -27,15 +27,38 @@ body {
 				<a class="navbar-brand" th:href="@{/}">My ASU Bank</a>
 			</div>
 			<!-- /.navbar-header -->
-
-			<ul class="nav navbar-nav navbar-right">
-				<li><a th:href="@{/login}">Login</a></li>
-				<li><a th:href="@{/signup}">Register</a></li>
-				<div sec:authorize="hasRole('ROLE_ADMIN')">This content is
-					only shown to administrators.</div>
-				<div sec:authorize="hasRole('ROLE_USER')">This content is only
-					shown to users.</div>
-			</ul>
+            
+            <!--  User is anonymous -->
+            <div sec:authorize="isAnonymous()">
+    			<ul class="nav navbar-nav navbar-right">
+					<li th:class="${activeTab == 'login'} ? 'active' : null">
+					    <a th:href="@{/login}">Login</a>
+					</li>
+					<li th:class="${activeTab == 'signup'} ? 'active' : null">
+					    <a th:href="@{/signup}">Register</a>
+					</li>
+				</ul>
+			</div>
+			
+			<!-- User has logged in -->
+			<div sec:authorize="isAuthenticated()">
+			     <ul class="nav navbar-nav navbar-right">
+					<div sec:authorize="hasRole('ROLE_ADMIN')">
+					    <li th:class="${activeTab == ''} ? 'active' : null">
+					        <a th:href="@{/}"></a>
+					    </li>
+					</div>
+					<div sec:authorize="hasRole('ROLE_USER')">
+					    <li th:class="${activeTab == ''} ? 'active' : null">
+	                        <a th:href="@{/}"></a>
+	                    </li>
+					</div>
+					<li>
+                        <a href="/logout" th:href="@{#}" onclick="$('#logout-form').submit();">Logout</a>
+                        <form style="visibility: hidden" id="logout-form" method="post" action="#" th:action="@{/logout}"></form>
+					</li>
+				</ul>
+			</div>
 			<!-- /.navbar-top-links -->
 		</div>
 	</nav>
