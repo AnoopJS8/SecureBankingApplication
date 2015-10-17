@@ -40,7 +40,7 @@ public class DataSetup implements ApplicationListener<ContextRefreshedEvent> {
             createRoleIfNotFound(role.toString());
         };
 
-        final Role adminRole = roleRepository.findByName("ROLE_ADMIN");
+        final Role adminRole = roleRepository.findByName("ROLE_CUSTOMER");
         final User user = new User();
         user.setUsername("Test");
         user.setPassword(passwordEncoder.encode("test"));

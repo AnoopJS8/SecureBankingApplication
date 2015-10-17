@@ -53,6 +53,7 @@ public class MerchantController implements Constants {
     @RequestMapping(value = "/merchant/transferfunds", method = RequestMethod.GET)
     public ModelAndView transferFunds() {
         ModelAndView mv = new ModelAndView();
+        System.out.print("Hello Merchant");
         Transaction transaction = new Transaction();
         mv.addObject("transaction", transaction);
         mv.setViewName("merchant/transferfunds");

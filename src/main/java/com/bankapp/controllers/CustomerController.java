@@ -90,12 +90,12 @@ public class CustomerController implements Constants {
 
     }
 
-    @RequestMapping(value = "/customer/initiateTransaction", method = RequestMethod.GET)
+    @RequestMapping(value = "/customer/initiatetransaction", method = RequestMethod.GET)
     public ModelAndView intitateTransaction() {
         ModelAndView mv = new ModelAndView();
         Transaction transaction = new Transaction();
         mv.addObject("transaction", transaction);
-        mv.setViewName("customer/InitiateTransaction");
+        mv.setViewName("customer/Initiatetransaction");
         return mv;
     }
 
