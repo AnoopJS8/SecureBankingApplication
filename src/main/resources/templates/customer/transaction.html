@@ -5,26 +5,27 @@
 <head th:include="fragment/common :: headerFragment" />
 <body>
 	<div class="container">
-    <!-- <div th:replace="fragment/common :: top-nav"></div> 
+		<!-- <div th:replace="fragment/common :: top-nav"></div> 
     <div th:replace="fragment/customer_common :: customer-header"></div>-->
-    <div th:fragment="customer-header" >
-	    <nav class="navbar navbar-default">
-	           <div class="container-fluid">
-	           		<!-- Collect the nav links, forms, and other content for toggling -->
-	           		<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-	           			<ul class="nav navbar-nav">
-	           				<li><a href="#">Accounts</a></li>
-	           				<li class="active"><a href="#">Transactions</a></li>
-	           				<li><a href="#">MyProfile</a></li>
-	           				<li><a href="#">Transfer Funds</a></li>
-	           				<li><a href="#">Initiate Transaction</a></li>
-	           			</ul>
-	           		</div>
-	       		<!-- /.navbar-collapse -->
-	           	</div>
-	    <!-- /.container-fluid -->
-	    </nav>
-	 </div>
+		<div th:fragment="customer-header">
+			<nav class="navbar navbar-default">
+				<div class="container-fluid">
+					<!-- Collect the nav links, forms, and other content for toggling -->
+					<div class="collapse navbar-collapse"
+						id="bs-example-navbar-collapse-1">
+						<ul class="nav navbar-nav">
+							<li><a href="#">Accounts</a></li>
+							<li class="active"><a href="#">Transactions</a></li>
+							<li><a href="#">MyProfile</a></li>
+							<li><a href="#">Transfer Funds</a></li>
+							<li><a href="#">Initiate Transaction</a></li>
+						</ul>
+					</div>
+					<!-- /.navbar-collapse -->
+				</div>
+				<!-- /.container-fluid -->
+			</nav>
+		</div>
 		<div class="table-responsive">
 			<table class="table table-bordered table-hover">
 				<thead>
@@ -47,7 +48,7 @@
 						<td><span th:text="${transaction.amount}"></span></td>
 						<td><span th:text="${transaction.balance}"></span></td>
 						<td><span th:text="${transaction.comment}"></span></td>
-						
+
 					</tr>
 				</tbody>
 			</table>
