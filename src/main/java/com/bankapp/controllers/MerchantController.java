@@ -71,14 +71,17 @@ public class MerchantController implements Constants {
             if (message.equalsIgnoreCase(LESS_BALANCE)) {
                 String msg = "You are low on balance, the transaction cannot go through.";
                 mv.addObject("message", msg);
+                mv.addObject("role","merchant");
                 String errorMsg = String.format("Action: %s, Message: %s", "low on balance", msg);
                 LOGGER.error(errorMsg);
                 mv.setViewName("success");
             } else if (message.equalsIgnoreCase(SUCCESS)) {
                 mv.addObject("message", "Money transfered successfully");
+                mv.addObject("role","merchant");
                 mv.setViewName("success");
             } else {
                 mv.addObject("message", "Error");
+                mv.addObject("role","merchant");
                 String errorMsg = String.format("Action: %s, Message: %s", "Error", message);
                 LOGGER.error(errorMsg);
                 mv.setViewName("success");
@@ -86,6 +89,7 @@ public class MerchantController implements Constants {
 
         } else {
             mv.addObject("message", "Error");
+            mv.addObject("role","merchant");
             String errorMsg = String.format("Action: %s, Message: %s", "SQL error", message);
             LOGGER.error(errorMsg);
             mv.setViewName("success");

@@ -64,7 +64,7 @@ public class TransactionService implements ITransactionService, Constants {
     }
     @Transactional
     @Override
-    public String inTransaction(Transaction transaction, User user) {
+    public String initiateTransaction(Transaction transaction, User user) {
         try {
         	Long accId = transaction.getToAccount().getAccId();
             transaction.setToAccount(accountService.getAccountByAccountId(accId));
@@ -78,7 +78,7 @@ public class TransactionService implements ITransactionService, Constants {
             return ERROR;
         }
 
-        return null;
+        return SUCCESS;
     }
     
     

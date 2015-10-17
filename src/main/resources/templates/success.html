@@ -5,12 +5,16 @@
 <head th:include="fragment/common :: headerFragment" />
 <body>
 	<div class="container">
-		<div th:replace="fragment/common :: top-nav(success)"></div>	
-		<div th:replace="fragment/merchant :: merchant-header"></div>
-		<div align="center" class="row">
-			<h3 th:text="${message}"></h3>
+		<div th:replace="fragment/common :: top-nav(success)"></div>
+		<div th:if="${role == 'merchant'}">
+			<div th:replace="fragment/merchant :: merchant-header"></div>	
 		</div>
-		
+		<div th:if="${role == 'customer'}">
+			<div th:replace="fragment/customer :: customer-header"></div>	
+		</div>	
+		<div class="alert alert-success" role="alert">
+			<p th:text="${message}"></p>
+		</div>
 	</div>
 </body>
 </html>
