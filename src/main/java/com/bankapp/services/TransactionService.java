@@ -47,4 +47,16 @@ public class TransactionService implements ITransactionService, Constants {
             return SUCCESS;
         }
     }
+
+    @Transactional
+    @Override
+    public String initiateTransaction(Transaction transaction, User user) {
+        Long accId = transaction.getToAccount().getAccId();
+        transaction.setToAccount(accountService.getAccountByAccountId(accId));
+        transaction.setFromAccount(accountService.getAccountsByUser(user));
+        transaction.setStatus(S_PENDING);
+        transactionRepository.save(transaction);
+
+        return SUCCESS;
+    }
 }
