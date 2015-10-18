@@ -55,7 +55,6 @@ public class UserService implements IUserService {
         newUser.setPhoneNumber(user.getPhoneNumber());
         newUser.setSecurityQuestion(user.getSecurityQuestion());
         newUser.setSecurityAnswer(user.getSecurityAnswer());
-
         newUser.setRole(roleRepository.findByName(roleName));
 
         return userRepository.save(newUser);

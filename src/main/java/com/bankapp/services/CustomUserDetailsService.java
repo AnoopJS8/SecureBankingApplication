@@ -40,11 +40,12 @@ public class CustomUserDetailsService implements UserDetailsService {
         boolean accountNotLocked = true;
         try {
             final com.bankapp.models.User user = userRepository.findByEmail(email);
-
+            System.out.println(user);
             if (user == null) {
                 return new User(" ", " ", enabled, true, true, true,
                         getAuthorities(roleRepository.findByName("ROLE_USER")));
             }
+            
             return new User(user.getEmail(), 
                     user.getPassword(), 
                     user.isEnabled(), 
@@ -58,7 +59,7 @@ public class CustomUserDetailsService implements UserDetailsService {
     }
 
     public final Collection<? extends GrantedAuthority> getAuthorities(final Role role) {
-        final List<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
+        final List<SimpleGrantedAuthority> authorities = new ArrayList<SimpleGrantedAuthority>();
         authorities.add(new SimpleGrantedAuthority(role.getName()));
         return authorities;
     }
