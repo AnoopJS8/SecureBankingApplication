@@ -9,14 +9,14 @@
 		<div th:if="${role == 'ROLE_CUSTOMER'}">
 			<div th:replace="fragment/customer :: customer-header"></div>
 		</div>
-		<div th:if="${role == 'admin'}">
-			<div th:replace="fragment/customer :: customer-header"></div>
+		<div th:if="${role == 'ROLE_ADMIN'}">
+			<div th:replace="fragment/admin :: customer-header"></div>
 		</div>
-		<div th:if="${role == 'manager'}">
-			<div th:replace="fragment/customer :: customer-header"></div>
+		<div th:if="${role == 'ROLE_EMPLOYEE'}">
+			<div th:replace="fragment/employee :: customer-header"></div>
 		</div>
-		<div th:if="${role == 'employee'}">
-			<div th:replace="fragment/customer :: customer-header"></div>
+		<div th:if="${role == 'ROLE_MANAGER'}">
+			<div th:replace="fragment/manager :: customer-header"></div>
 		</div>
 	</div>
 </body>
