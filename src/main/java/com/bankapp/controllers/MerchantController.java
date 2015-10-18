@@ -3,6 +3,8 @@ package com.bankapp.controllers;
 import java.security.Principal;
 import java.util.List;
 
+import javax.validation.Valid;
+
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
@@ -134,7 +136,7 @@ public class MerchantController implements Constants {
 	}
 
 	@RequestMapping(value = "/merchant/initiatetransaction", method = RequestMethod.POST)
-	public ModelAndView initiateTransaction(@ModelAttribute("transaction") Transaction transaction,
+	public ModelAndView initiateTransaction(@ModelAttribute("transaction") @Valid Transaction transaction,
 			BindingResult result, WebRequest request, Errors errors, Principal principal) {
 		ModelAndView mv = new ModelAndView();
 		mv.addObject("role", "merchant");
