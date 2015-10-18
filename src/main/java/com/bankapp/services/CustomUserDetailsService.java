@@ -1,7 +1,6 @@
 package com.bankapp.services;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -41,29 +40,27 @@ public class CustomUserDetailsService implements UserDetailsService {
         boolean accountNotLocked = true;
         try {
             final com.bankapp.models.User user = userRepository.findByEmail(email);
-
+            System.out.println(user);
             if (user == null) {
                 return new User(" ", " ", enabled, true, true, true,
-                        getAuthorities(Arrays.asList(roleRepository.findByName("ROLE_USER"))));
+                        getAuthorities(roleRepository.findByName("ROLE_USER")));
             }
+            
             return new User(user.getEmail(), 
                     user.getPassword(), 
                     user.isEnabled(), 
                     accountNotExpired,
                     credentialsNotExpired,
                     accountNotLocked,
-                    getAuthorities(user.getRoles()));
+                    getAuthorities(user.getRole()));
         } catch (final Exception e) {
             throw new RuntimeException(e);
         }
     }
 
-    public final Collection<? extends GrantedAuthority> getAuthorities(final Collection<Role> roles) {
-        System.out.println(roles);
-        final List<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
-        for (final Role role : roles) {
-            authorities.add(new SimpleGrantedAuthority(role.getName()));
-        }
+    public final Collection<? extends GrantedAuthority> getAuthorities(final Role role) {
+        final List<SimpleGrantedAuthority> authorities = new ArrayList<SimpleGrantedAuthority>();
+        authorities.add(new SimpleGrantedAuthority(role.getName()));
         return authorities;
     }
 
