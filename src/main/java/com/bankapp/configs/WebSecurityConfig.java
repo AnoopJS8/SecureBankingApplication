@@ -23,8 +23,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.userDetailsService(userDetailsService);
-
         http
             .authorizeRequests()
                 .antMatchers(
@@ -57,7 +55,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     @Override
-    protected void configure(final AuthenticationManagerBuilder auth) throws Exception {
+    protected void configure(final AuthenticationManagerBuilder auth)
+            throws Exception {
         auth.authenticationProvider(authProvider());
     }
 
