@@ -35,7 +35,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                         "/resendRegistrationToken",
                         "/badUser",
                         // Resources
-                        "/webjars/**"
+                        "/webjars/**",
+                        "/css/**",
+                        "/js/**"
                         ).permitAll()
                 .anyRequest().authenticated()
                 .and()

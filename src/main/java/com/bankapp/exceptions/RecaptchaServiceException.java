@@ -4,8 +4,10 @@ import org.springframework.web.client.RestClientException;
 
 public class RecaptchaServiceException extends Exception {
 
-    public RecaptchaServiceException(String string, RestClientException e) {
-        // TODO Auto-generated constructor stub
+    private static final long serialVersionUID = -8117877279107289743L;
+
+    public RecaptchaServiceException(String message, RestClientException cause) {
+        super(message, cause);
     }
 
 }
