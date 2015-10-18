@@ -1,14 +1,11 @@
 package com.bankapp.models;
 
-import java.util.Collection;
-
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.Size;
 
@@ -48,9 +45,12 @@ public class User {
 
     private boolean tokenExpired;
 
-    @ManyToMany
-    @JoinTable(name = "users_roles", joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id") , inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id") )
-    private Collection<Role> roles;
+    private String securityQuestion;
+
+    private String securityAnswer;
+
+    @ManyToOne(cascade = CascadeType.ALL)
+    private Role role;
 
     public User() {
         super();
@@ -122,12 +122,12 @@ public class User {
         this.gender = gender;
     }
 
-    public Collection<Role> getRoles() {
-        return roles;
+    public Role getRole() {
+        return role;
     }
 
-    public void setRoles(final Collection<Role> roles) {
-        this.roles = roles;
+    public void setRole(final Role role) {
+        this.role = role;
     }
 
     public boolean isEnabled() {
@@ -172,11 +172,27 @@ public class User {
         return true;
     }
 
+    public String getSecurityQuestion() {
+        return securityQuestion;
+    }
+
+    public void setSecurityQuestion(String securityQuestion) {
+        this.securityQuestion = securityQuestion;
+    }
+
+    public String getSecurityAnswer() {
+        return securityAnswer;
+    }
+
+    public void setSecurityAnswer(String securtiyAnswer) {
+        this.securityAnswer = securtiyAnswer;
+    }
+
     @Override
     public String toString() {
         String value = String.format(
-                "User object [username=%s, email=%s, address=%s, phone number=%s, date of birth=%s, gender=%s]",
-                username, email, address, phoneNumber, dateOfBirth, gender);
+                "User object [username=%s, email=%s, address=%s, phone number=%s, date of birth=%s, gender=%s, securityQuestion=%s, securityAnswer=%s]",
+                username, email, address, phoneNumber, dateOfBirth, gender, securityQuestion, securityAnswer);
         return value;
     }
 

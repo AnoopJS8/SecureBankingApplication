@@ -1,7 +1,6 @@
 package com.bankapp.services;
 
 import java.security.Principal;
-import java.util.Arrays;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +35,9 @@ public class UserService implements IUserService {
     @Autowired
     private VerificationTokenRepository tokenRepository;
 
+    @Autowired
+    private IMailService mailService;
+
     @Transactional
     @Override
     public User registerNewUserAccount(final User user, String roleName) throws EmailExistsException {
@@ -51,8 +53,9 @@ public class UserService implements IUserService {
         newUser.setGender(user.getGender());
         newUser.setDateOfBirth(user.getDateOfBirth());
         newUser.setPhoneNumber(user.getPhoneNumber());
-
-        newUser.setRoles(Arrays.asList(roleRepository.findByName(roleName)));
+        newUser.setSecurityQuestion(user.getSecurityQuestion());
+        newUser.setSecurityAnswer(user.getSecurityAnswer());
+        newUser.setRole(roleRepository.findByName(roleName));
 
         return userRepository.save(newUser);
     }
@@ -115,8 +118,22 @@ public class UserService implements IUserService {
         return user;
     }
 
-    // OTP Part
+    @Override
+    public void generateTemporaryPassword(User user) {
+        String temporaryPassword = OneTimePassword.generateOTP();
+        user.setPassword(passwordEncoder.encode(temporaryPassword));
+        userRepository.save(user);
 
+        String userName = user.getUsername();
+        String recipientAddress = user.getEmail();
+        String subject = "My ASU Bank - Temporary Password";
+        String textBody = String
+                .format("Dear %s, <br /><br />Here is your temporary password for your account: %s<br />"
+                        + "<br />Regards,<br />My ASU Bank", userName, temporaryPassword);
+        mailService.sendEmail(recipientAddress, subject, textBody);
+    }
+
+    // OTP Part
     @Override
     public OneTimePassword generateOTP(Transaction transaction) {
         OneTimePassword otp = new OneTimePassword(transaction);
@@ -136,4 +153,12 @@ public class UserService implements IUserService {
 
     }
 
+    public boolean verifyOTP(OneTimePassword otp) {
+        OneTimePassword otpFromDB = oTPRepository.findOne(otp.getId());
+        if (otp.getValue() == otpFromDB.getValue()) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 }

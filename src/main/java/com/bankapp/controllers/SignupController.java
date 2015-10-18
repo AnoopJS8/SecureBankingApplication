@@ -12,6 +12,8 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -19,12 +21,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.bankapp.exceptions.EmailExistsException;
+import com.bankapp.forms.SignupForm;
 import com.bankapp.listeners.OnRegistrationCompleteEvent;
 import com.bankapp.models.Account;
 import com.bankapp.models.Role;
 import com.bankapp.models.User;
 import com.bankapp.models.VerificationToken;
 import com.bankapp.services.IUserService;
+import com.bankapp.validators.RecaptchaFormValidator;
 import com.bankapp.services.IAccountService;
 import com.bankapp.services.IMailService;
 
@@ -50,58 +54,76 @@ public class SignupController {
     @Value("${com.bankapp.account.default_critical_limit}")
     private double defaultCriticalLimit;
 
+    final private String signupViewName = "registration/signup";
+    
+    private final RecaptchaFormValidator recaptchaFormValidator;
+
+    @ModelAttribute("recaptchaSiteKey")
+    public String getRecaptchaSiteKey(@Value("${recaptcha.site-key}") String recaptchaSiteKey) {
+        return recaptchaSiteKey;
+    }
+
+    @Autowired
+    public SignupController(RecaptchaFormValidator recaptchaFormValidator) {
+        this.recaptchaFormValidator = recaptchaFormValidator;
+    }
+
+    @InitBinder("form")
+    public void initBinder(WebDataBinder binder) {
+        binder.addValidators(recaptchaFormValidator);
+    }
+
     @RequestMapping(value = "/signup", method = RequestMethod.GET)
     public ModelAndView getSignupPage() {
-        User user = new User();
-        Role role = new Role();
-        ModelAndView modelAndView = new ModelAndView("signup");
-        modelAndView.addObject("user", user);
-        modelAndView.addObject("role", role);
+        ModelAndView modelAndView = new ModelAndView(signupViewName, "form", new SignupForm());
         return modelAndView;
     }
 
     @RequestMapping(value = "/signup", method = RequestMethod.POST)
-    public ModelAndView registerUser(@Valid @ModelAttribute("user") User newUser, BindingResult resultUser,
-            @ModelAttribute("role") Role role, BindingResult resultRole, HttpServletRequest request) {
+    public ModelAndView registerUser(@Valid @ModelAttribute("form") SignupForm form, BindingResult resultForm,
+            HttpServletRequest request) {
 
-        if (resultUser.hasErrors()) {
-            ModelAndView mv = new ModelAndView("signup");
-            mv.addObject("user", newUser);
-            mv.addObject("errors", resultUser.getAllErrors());
+        ModelAndView mv = new ModelAndView(signupViewName);
+
+        if (resultForm.hasErrors()) {
+            mv.addObject("form", form);
+            mv.addObject("errors", resultForm.getAllErrors());
             return mv;
         }
 
+        User newUser = form.getUser();
+        Role role = form.getRole();
         String logMessage = String.format("Registering user account with information: {%s, %s}", newUser, role);
         LOGGER.info(logMessage);
 
         User registered = createUserAccount(newUser, role.getName());
         if (registered == null) {
             String message = String.format("This email is already taken");
-            ModelAndView mv = new ModelAndView("signup");
             mv.addObject("message", message);
-            mv.addObject("user", newUser);
+            mv.addObject("form", form);
             return mv;
         }
         try {
-            eventPublisher.publishEvent(new OnRegistrationCompleteEvent(registered, request.getLocale(), getAppUrl(request)));
+            eventPublisher
+                    .publishEvent(new OnRegistrationCompleteEvent(registered, request.getLocale(), getAppUrl(request)));
         } catch (Exception e) {
             String message = String.format("Action: %s, Message: %s", "signup", e.getMessage());
             LOGGER.error(message);
 
-            ModelAndView mv = new ModelAndView("signup");
             mv.addObject("message", e.getMessage());
-            mv.addObject("user", newUser);
+            mv.addObject("form", form);
             return mv;
         }
 
-        ModelAndView mv = new ModelAndView("registration/activationInfo");
+        mv.setViewName("registration/activationInfo");
         mv.addObject("username", newUser.getUsername());
         mv.addObject("email", newUser.getEmail());
         return mv;
     }
 
     @RequestMapping(value = "/registrationConfirm", method = RequestMethod.GET)
-    public ModelAndView confirmRegistration(HttpServletRequest request, Model model, @RequestParam("token") String token) {
+    public ModelAndView confirmRegistration(HttpServletRequest request, Model model,
+            @RequestParam("token") String token) {
 
         String logMessage = String.format("Verifying user account with information: {token = %s}", token);
         LOGGER.info(logMessage);

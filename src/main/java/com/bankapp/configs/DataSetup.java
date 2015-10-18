@@ -1,7 +1,5 @@
 package com.bankapp.configs;
 
-import java.util.Arrays;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
@@ -35,18 +33,20 @@ public class DataSetup implements ApplicationListener<ContextRefreshedEvent> {
             return;
         }
 
-        // == create initial roles
+        // Create initial roles
         for (Roles role : Roles.values()) {
             createRoleIfNotFound(role.toString());
-        };
+        }
 
         final Role adminRole = roleRepository.findByName("ROLE_CUSTOMER");
         final User user = new User();
         user.setUsername("Test");
         user.setPassword(passwordEncoder.encode("test123"));
         user.setEmail("test@test.com");
-        user.setRoles(Arrays.asList(adminRole));
+        user.setRole(adminRole);
         user.setEnabled(true);
+        user.setSecurityQuestion("Name?");
+        user.setSecurityAnswer("test");
         userRepository.save(user);
 
         alreadySetup = true;
