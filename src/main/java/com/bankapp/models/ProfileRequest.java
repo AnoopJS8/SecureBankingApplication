@@ -78,6 +78,11 @@ public class ProfileRequest {
         this.status = status;
     }
     
-    
+    @Override
+    public String toString() {
+        final String value = String.format("Profile [address=%s, phonenumber=%s, dob=%s, status=%s]", user.getId(),
+                address, phoneNumber, status);
+        return value;
+    }
 
 }

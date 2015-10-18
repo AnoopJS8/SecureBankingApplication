@@ -17,15 +17,21 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.bankapp.models.User;
+import com.bankapp.constants.Constants;
+import com.bankapp.models.ProfileRequest;
+import com.bankapp.services.IProfileRequestService;
 import com.bankapp.services.IUserService;
 
 @Controller
-public class MainController {
+public class MainController implements Constants{
     
     private final Logger LOGGER = Logger.getLogger(MainController.class);
 
     @Autowired
     private IUserService userService;
+    
+    @Autowired
+    private IProfileRequestService profileRequestService;
     
 	@RequestMapping(value = "/", method = RequestMethod.GET)
 	public ModelAndView home() {
@@ -113,13 +119,19 @@ public class MainController {
     public ModelAndView updateProfile(@ModelAttribute("user") @Valid User user, BindingResult result,
             WebRequest request, Errors errors, Principal principal) {
         ModelAndView mv = new ModelAndView();
-        User loggedIn = userService.getUserFromSession(principal);
-        loggedIn.setAddress(user.getAddress());
-        loggedIn.setDateOfBirth(user.getDateOfBirth());
-        loggedIn.setPhoneNumber(user.getPhoneNumber());
-        mv.addObject("role", loggedIn.getRole().getName());
-        userService.saveRegisteredUser(loggedIn);
-        mv.addObject("message", "Profile updates successfully");
+        ProfileRequest profile = new ProfileRequest();
+        profile.setAddress(user.getAddress());
+        profile.setDateOfBirth(user.getDateOfBirth());
+        profile.setPhoneNumber(user.getPhoneNumber());
+        profile.setStatus(S_PROFILE_UPDATE_PENDING);
+        profile.setUser(userService.getUserFromSession(principal));
+        String message = profileRequestService.saveProfileRequest(profile);
+        if(message.equalsIgnoreCase(ERROR)){
+            mv.addObject("message", "Error occured");
+            mv.setViewName("error");
+            return mv;
+        }
+        mv.addObject("message", "Request for changes are sent to out employee");
         mv.setViewName("success");
         return mv;
     }
