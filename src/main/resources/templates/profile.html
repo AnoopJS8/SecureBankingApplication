@@ -24,26 +24,6 @@
 				</div>
 			</div>
 			<div class="form-group">
-				<label class="col-md-3 control-label">Current Password: </label>
-				<div class="col-md-5">
-					<input type="password"
-						th:field="*{password}" class="form-control"
-						placeholder="Password" /> <label
-						th:if="${#fields.hasErrors('password')}"
-						th:errors="*{password}"></label>
-				</div>
-			</div>
-			<div class="form-group">
-				<label class="col-md-3 control-label">New Password: </label>
-				<div class="col-md-5">
-					<input type="password"
-						th:field="*{newpassword}" class="form-control"
-						placeholder="Password" /> <label
-						th:if="${#fields.hasErrors('newpassword')}"
-						th:errors="*{newpassword}"></label>
-				</div>
-			</div>
-			<div class="form-group">
 				<label class="col-md-3 control-label">Address: </label>
 				<div class="col-md-5">
 					<input type="text"

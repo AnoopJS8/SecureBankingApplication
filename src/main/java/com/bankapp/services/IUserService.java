@@ -31,5 +31,7 @@ public interface IUserService {
     OneTimePassword generateOTP(Transaction transaction);
 
     OneTimePassword generateNewOTP(String value);
+    
+    User updateUser(User user);
 
 }

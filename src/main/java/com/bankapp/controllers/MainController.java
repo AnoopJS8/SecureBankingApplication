@@ -2,6 +2,8 @@ package com.bankapp.controllers;
 
 import java.security.Principal;
 
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
@@ -12,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.bankapp.models.Transaction;
 import com.bankapp.models.User;
 import com.bankapp.services.IUserService;
 
@@ -40,11 +41,17 @@ public class MainController {
     }
 	
 	@RequestMapping(value = "/profile", method = RequestMethod.POST)
-    public ModelAndView updateProfile(@ModelAttribute("user") User user, BindingResult result,
+    public ModelAndView updateProfile(@ModelAttribute("user") @Valid User user, BindingResult result,
             WebRequest request, Errors errors, Principal principal) {
         ModelAndView mv = new ModelAndView();
-        System.out.println(user.getUsername());
-        mv.setViewName("profile");
+        User loggedIn = userService.getUserFromSession(principal);
+        loggedIn.setAddress(user.getAddress());
+        loggedIn.setDateOfBirth(user.getDateOfBirth());
+        loggedIn.setPhoneNumber(user.getPhoneNumber());
+        mv.addObject("role", loggedIn.getRoles().iterator().next().getName());
+        userService.updateUser(loggedIn);
+        mv.addObject("message", "Profile updates successfully");
+        mv.setViewName("success");
         return mv;
     }
 }
