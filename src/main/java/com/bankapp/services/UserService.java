@@ -1,7 +1,6 @@
 package com.bankapp.services;
 
 import java.security.Principal;
-import java.util.Arrays;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,7 +56,7 @@ public class UserService implements IUserService {
         newUser.setSecurityQuestion(user.getSecurityQuestion());
         newUser.setSecurityAnswer(user.getSecurityAnswer());
 
-        newUser.setRoles(Arrays.asList(roleRepository.findByName(roleName)));
+        newUser.setRole(roleRepository.findByName(roleName));
 
         return userRepository.save(newUser);
     }
