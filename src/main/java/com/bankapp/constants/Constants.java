@@ -5,13 +5,7 @@ public interface Constants {
 	public String SUCCESS = "success";
 	public String LESS_BALANCE = "lessbal";
 	public String ERROR = "error";
-<<<<<<< HEAD
-	public String S_PENDING = "P";
-    public String S_OTP_PENDING = "OP";
-    public String S_VERIFIED = "V";
-    public String S_OTP_VERIFIED = "OV";
 
-=======
 	//Status
 	public String S_PENDING = "P"; //pending for request like transfer money and profile
 	public String S_OTP_PENDING = "OP"; //critical transaction
@@ -20,5 +14,4 @@ public interface Constants {
 	public String S_PENDING_CUSTOMER_VERIFICATION = "PCV"; //merchant request for customer money pending 
 	public String S_CUSTOMER_VERIFIED = "CV"; //merchant request verified
 	
->>>>>>> 9527c2d9761605b9c1c6803669bef408eb33f2dc
 }
