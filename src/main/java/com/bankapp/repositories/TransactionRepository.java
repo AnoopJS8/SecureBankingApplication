@@ -9,5 +9,5 @@ import com.bankapp.models.Transaction;
 
 public interface TransactionRepository extends CrudRepository<Transaction, Long> {
 
-	List<Transaction> findByFromAccountOrToAccountOrderByCreatedAsc(Account fromAccount, Account toAccount );
+    List<Transaction> findByFromAccountOrToAccountOrderByCreatedAsc(Account fromAccount, Account toAccount);
 }
