@@ -6,10 +6,13 @@
 <body>
 <h1>System Admin Details</h1>
 <div>
-<form  th:action="@{/verifytransaction}" th:object="${transaction}" method="post">
-<a th:href="@{/sys}">update user details</a>
+
+<form action="#" th:action="@{/retrievedetails}" method="POST">
+<input type="text" name="userid" />
+<button type="submit">Submit</button>
 </form>
 </div>
+
 <div>
 <a th:href="@{/Sy}">Delete user</a>
 </div>
@@ -17,9 +20,6 @@
 <h2>Transactions to verify</h2>
 
 </div>
-
-
-
 <div>
 
 

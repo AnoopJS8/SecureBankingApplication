@@ -22,7 +22,7 @@ import com.bankapp.repositories.VerificationTokenRepository;
 @Service
 public class UserService implements IUserService {
 
-	 @Autowired
+	    @Autowired
 	    private UserRepository repository;
 
 	    @Autowired
@@ -123,14 +123,19 @@ public class UserService implements IUserService {
 	}
 
 	@Override
-	public void updateuser(Long l) {
-		// TODO Auto-generated method stub
+	public void update_name(String username,User user) {
+		// TODO Auto-generated method stub	
 		
+			user.setUsername(username);
+			repository.save(user);					
 		
-		User user2 = getUserById(l);
-		user2.setEmail("change@gmail.com");
-			
-				
+	}
+	
+	public void update_password(String userpassword,User user) {
+		// TODO Auto-generated method stub	
+		
+			user.setPassword(userpassword);
+			repository.save(user);				
 		
 	}
 
@@ -177,5 +182,11 @@ public class UserService implements IUserService {
 	public OneTimePassword generateOTP(Transaction transaction) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public User getuserbyName(String name) {
+		User user = repository.findByUsername(name);
+		return user;
 	}
 }

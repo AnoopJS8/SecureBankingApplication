@@ -3,8 +3,12 @@ package com.bankapp.controllers;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
@@ -25,15 +29,44 @@ public class SysadminController {
 	@Autowired
 	ITransactionService trans;
 	
-	@RequestMapping(value = "/sysadm", method = RequestMethod.GET)
-	public ModelAndView updateUserDetails() {
+	@RequestMapping(value = "/retrievedetails", method = RequestMethod.POST)
+	public ModelAndView RetrieveUserDetails(@ModelAttribute("userid") String userid, @ModelAttribute("users") @Valid User user,BindingResult result) {
 		
-		ModelAndView mv = new ModelAndView("sysadmin");
-		userservice.updateuser((long)3);
-		mv.addObject("message", "success");
+		ModelAndView mv = new ModelAndView("updatedetails");
+		System.out.println(userid);
+		User user1 = userservice.getUserById((long)Integer.parseInt(userid));
+		//userservice.updateuser((long)Integer.parseInt(userid));
+		mv.addObject("userdisplay", user1);
 		//mv.setViewName("/SysAd");
 		return mv;
 	}
+	
+	@RequestMapping(value = "/update_name", method = RequestMethod.POST)
+	public ModelAndView updateUserEmail(@ModelAttribute("username") String username, @ModelAttribute("userid") Long id,BindingResult result) {
+		
+		ModelAndView mv = new ModelAndView("updatedetails");
+		System.out.println(id);
+		User user1 = userservice.getuserbyName(username);
+		
+		mv.addObject("username_changed", "username changed");
+		
+		return mv;
+	}
+	
+	
+	@RequestMapping(value = "/update_password", method = RequestMethod.POST)
+	public ModelAndView updateUserPasseord(@ModelAttribute("userpassword") String userpassword, @ModelAttribute("userdisplay") @Valid User user,BindingResult result) {
+		
+		ModelAndView mv = new ModelAndView("updatedetails");
+		
+		User user1 = userservice.getUserById((long)user.getId());
+		userservice.update_password(userpassword,user1);
+		mv.addObject("passwordChanged", "passwordChanged");
+	
+		return mv;
+	}
+	
+	
 	@RequestMapping(value = "/sysgetdetails", method = RequestMethod.GET)
 	public ModelAndView getUserDetails() {
 		
@@ -83,6 +116,7 @@ public class SysadminController {
 		ModelAndView mv = new ModelAndView("sysadmin");
 		List<Transaction> details = (List<Transaction>) trans.transactiondisplay();
 		mv.addObject("Verify", details );
+		
 		//mv.setViewName("/SysAd");
 		return mv;
 	}
@@ -96,6 +130,8 @@ public class SysadminController {
 		
 		return mv;
 	}
+	
+	
 	
 	
 	

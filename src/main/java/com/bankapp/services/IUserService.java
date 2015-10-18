@@ -31,7 +31,11 @@ public interface IUserService {
     
     String AddUser(User user);
     
-    void updateuser(Long id);
+    void update_name(String useremail,User user);
+    
+    void update_password(String userpassword,User user);
+    
+    User getuserbyName(String name);
 
 	void deleteuser(Long id);
 
