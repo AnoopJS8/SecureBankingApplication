@@ -59,7 +59,6 @@ public class TransactionService implements ITransactionService, Constants{
 		return null;
 	}
 
-	@Override
 	public String TransactionVerifyDetails(Transaction t) {
 		// TODO Auto-generated method stub
 		
@@ -78,6 +77,26 @@ public class TransactionService implements ITransactionService, Constants{
 			
 			
 		}
+
+	@Override
+	public List<Transaction> transactiondisplay() {
+		// TODO Auto-generated method stub
+		List<Transaction> t = (List<Transaction>) transactionRepository.findByStatus("verif");
+		
+		return t;
+		
+	}
+
+	@Override
+	public void TransactionVerifyDetails(long id) {
+		// TODO Auto-generated method stub
+		Transaction t = transactionRepository.findByTransactionId(id);
+		t.setStatus("verified");
+		transactionRepository.save(t);
+		
+	}
+
+	
 
 	}
 

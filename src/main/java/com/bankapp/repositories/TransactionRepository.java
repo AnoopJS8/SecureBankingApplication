@@ -14,6 +14,10 @@ public interface TransactionRepository extends CrudRepository<Transaction, Long>
 	List<Transaction> findByUserOrderByCreatedAsc(User user);
 	List<Transaction> findByFromAccountOrToAccountOrderByCreatedAsc(Account fromAccount, Account toAccount );
 	
+	List<Transaction> findByStatus(String str);
+	
+	Transaction findByTransactionId(long id);
+	
 	Transaction save(Transaction t);
 
 	

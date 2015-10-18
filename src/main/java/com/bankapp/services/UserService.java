@@ -117,12 +117,9 @@ public class UserService implements IUserService {
 	public void deleteuser(Long l) {
 		// TODO Auto-generated method stub
 		
-		User user1 = getUserById((long)1);
-		Role role = roleRepository.findByName(user1.getUsername());
-		if(role.getId()==1)
-		{
+		User user1 = getUserById((long)l);
 		repository.delete(user1);
-		}
+		
 	}
 
 	@Override
@@ -131,13 +128,8 @@ public class UserService implements IUserService {
 		
 		
 		User user2 = getUserById(l);
-		Role role = roleRepository.findByName(user2.getUsername());
-		if(role.getId()==1)
-		{
-			user2.setEmail("change@gmail.com");
-			repository.save(user2);
-		}
-		
+		user2.setEmail("change@gmail.com");
+			
 				
 		
 	}

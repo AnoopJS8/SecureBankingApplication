@@ -12,7 +12,8 @@ import org.springframework.web.servlet.ModelAndView;
 import com.bankapp.models.Account;
 import com.bankapp.models.Transaction;
 import com.bankapp.models.User;
-import com.bankapp.services.ITransaction;
+
+import com.bankapp.services.ITransactionService;
 import com.bankapp.services.IUserService;
 
 @Controller
@@ -21,19 +22,19 @@ public class SysadminController {
 	@Autowired
 	IUserService userservice;
 	
+	@Autowired
+	ITransactionService trans;
 	
-	ITransaction trans;
-	
-	@RequestMapping(value = "/sys", method = RequestMethod.GET)
+	@RequestMapping(value = "/sysadm", method = RequestMethod.GET)
 	public ModelAndView updateUserDetails() {
 		
 		ModelAndView mv = new ModelAndView("sysadmin");
-		userservice.updateuser((long)1);
+		userservice.updateuser((long)3);
 		mv.addObject("message", "success");
 		//mv.setViewName("/SysAd");
 		return mv;
 	}
-	@RequestMapping(value = "/Sys", method = RequestMethod.GET)
+	@RequestMapping(value = "/sysgetdetails", method = RequestMethod.GET)
 	public ModelAndView getUserDetails() {
 		
 		ModelAndView mv = new ModelAndView("sysadmin");
@@ -48,17 +49,17 @@ public class SysadminController {
 	public ModelAndView AddUserDetails() {
 		
 		ModelAndView mv = new ModelAndView("sysadmin");
-		User user1 = userservice.getUserById((long)1);
+		User user1 = userservice.getUserById((long)3);
 		userservice.adduser(user1);
 		
 		return mv;
 	}
 	
-	@RequestMapping(value = "/Sy", method = RequestMethod.GET)
+	@RequestMapping(value = "/sysadmi", method = RequestMethod.GET)
 	public ModelAndView DeleteUserDetails() {
 		
 		ModelAndView mv = new ModelAndView("sysadmin");
-		userservice.deleteuser((long)1);		
+		userservice.deleteuser((long)2);		
 		
 		mv.addObject("delete", "Success");
 		
@@ -76,13 +77,23 @@ public class SysadminController {
 		return mv;
 	}
 	
-	@RequestMapping(value = "/transverify", method = RequestMethod.GET)
-	public ModelAndView VerifyInternalRequests(Transaction t) {
+	@RequestMapping(value = "/sysadmin", method = RequestMethod.GET)
+	public ModelAndView DisplayTransactions() {
 		
 		ModelAndView mv = new ModelAndView("sysadmin");
-		String getInfo = trans.TransactionVerifyDetails(t);
-		mv.addObject("Verify", getInfo );
+		List<Transaction> details = (List<Transaction>) trans.transactiondisplay();
+		mv.addObject("Verify", details );
 		//mv.setViewName("/SysAd");
+		return mv;
+	}
+	
+	@RequestMapping(value = "/verifytransaction", method = RequestMethod.POST)
+	public ModelAndView VerifyTransactions(Transaction t) {		
+		
+		ModelAndView mv = new ModelAndView("sysadmin");
+		trans.TransactionVerifyDetails(t.getTransactionId());
+		mv.addObject("Veri", "verified" );
+		
 		return mv;
 	}
 	
