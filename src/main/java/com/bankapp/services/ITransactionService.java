@@ -12,5 +12,6 @@ public interface ITransactionService {
 	public String saveTransaction(Transaction transaction, User user);
 	public String askCustomerPayment(Transaction transaction, User user);
 	public String initiateTransaction(Transaction transaction, User user);
+	public Transaction getTransactionsById(Long id);
 
 }

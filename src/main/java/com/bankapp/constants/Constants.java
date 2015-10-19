@@ -15,4 +15,9 @@ public interface Constants {
 	public String S_PROFILE_UPDATE_PENDING = "PUP"; //Profile Changes pending
 	public String S_PROFILE_UPDATE_VERFIED = "PUV";//profile changes verified
 	
+	//OTP Resource Name
+	public String R_TRANSACTION  = "TXN";
+	public String R_ACCOUNT  = "ACC";
+	public String R_USER  = "USER";
+	
 }

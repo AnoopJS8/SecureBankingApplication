@@ -83,4 +83,9 @@ public class TransactionService implements ITransactionService, Constants {
 		transactionRepository.save(transaction);
 		return SUCCESS;
 	}
+
+    @Override
+    public Transaction getTransactionsById(Long id) {
+        return transactionRepository.findOne(id);
+    }
 }

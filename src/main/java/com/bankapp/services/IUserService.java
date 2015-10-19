@@ -28,11 +28,15 @@ public interface IUserService {
     VerificationToken generateNewVerificationToken(String VerificationToken);
 
     // OTP Section
-    OneTimePassword generateOTP(Transaction transaction);
+    OneTimePassword generateOTP(Long resourceId, String resourceName);
 
     OneTimePassword generateNewOTP(String value);
 
     void generateTemporaryPassword(User user);
 
-    boolean verifyOTP(OneTimePassword otp);
+    boolean verifyOTP(String otp, Long id, String name);
+
+    boolean verifyPassword(User user, String currentPassword);
+    
+    boolean changePassword(User user);
 }
