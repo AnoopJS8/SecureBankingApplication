@@ -1,17 +1,17 @@
 package com.bankapp.services;
 
+import java.security.Principal;
 import java.util.List;
 
-import com.bankapp.models.Requests;
+import com.bankapp.exceptions.EmailExistsException;
+import com.bankapp.models.OneTimePassword;
 import com.bankapp.models.Transaction;
+
+import com.bankapp.models.VerificationToken;
 
 public interface IRegularEmployee {
 
-//	public List<Transaction> getTransactionByTflag(String str);
-
-	public List<Requests> getRequest(Long id);
-
-//	public List<Transaction> modifyTransaction(int user_ID);
+Double update_Amount(Double Amount, Transaction transaction);
 	
 
 }

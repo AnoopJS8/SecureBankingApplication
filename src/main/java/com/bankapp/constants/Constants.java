@@ -7,6 +7,7 @@ public interface Constants {
 	public String ERROR = "error";
 	//Status
 	public String S_PENDING = "P";
+	public String S_DECLINE = "D";	
 	public String S_OTP_PENDING = "OP";
 	public String S_VERIFIED = "V";
 	public String S_OTP_VERIFIED = "OV";

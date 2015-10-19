@@ -2,6 +2,7 @@ package com.bankapp.models;
 
 import java.util.Date;
 
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -122,5 +123,7 @@ public class Transaction {
     public void setTransferDate(Date transferDate) {
         this.transferDate = transferDate;
     }
+
+	
 
 }

@@ -29,4 +29,8 @@ public interface ISystemManagerService {
 
     public String reflectChangesToReceiver(Account account, Double balance, Double amount);
 
+	public String declineTransaction(Transaction transaction);
+	
+	public String modifyTransaction(Transaction transaction);
+
 }

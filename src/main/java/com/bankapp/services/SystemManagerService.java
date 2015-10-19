@@ -50,14 +50,38 @@ public class SystemManagerService implements ISystemManagerService {
     public String approveTransaction(Transaction transaction) {
 
         String result = "";
+        
+        transaction.setStatus("Approved");
 
         try {
             TransRepo.save(transaction);
             result = "Successull";
-            System.out.println("Done approve");
+            System.out.println("Transaction has been approved");
         } catch (Exception e) {
             result = "unsuccessull";
         }
+
+        return result;
+    }
+    
+    public String declineTransaction(Transaction transaction) {
+
+        String result = "";
+        	transaction.setStatus("Declined");
+            TransRepo.save(transaction);
+            result = "Transaction has been declined";
+            System.out.println("Not approved");
+
+        return result;
+    }
+    
+    public String modifyTransaction(Transaction transaction) {
+
+        String result = "";
+        	
+            TransRepo.save(transaction);
+            result = "Transaction has been modified";
+            System.out.println("Done modified");
 
         return result;
     }
