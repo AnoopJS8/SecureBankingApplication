@@ -1,6 +1,8 @@
+
 package com.bankapp.configs;
 
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
@@ -18,7 +20,19 @@ public class MvcConfig extends WebMvcConfigurerAdapter {
 
         registry.addViewController("/myaccount").setViewName("merchant/myaccount");
         registry.addViewController("/transferfunds").setViewName("merchant/transferfunds");
-
+        
+        
     }
+        @Override
+        public void addResourceHandlers(ResourceHandlerRegistry registry) {
+            if (!registry.hasMappingForPattern("/webjars/**")) {
+                registry.addResourceHandler("/webjars/**").addResourceLocations("classpath:/META-INF/resources/webjars/");
+            }
+        }
+
+       
+
+    
 
 }
+

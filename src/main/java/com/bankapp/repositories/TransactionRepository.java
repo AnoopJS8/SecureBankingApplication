@@ -1,3 +1,4 @@
+
 package com.bankapp.repositories;
 
 import java.util.List;
@@ -11,16 +12,19 @@ import com.bankapp.models.User;
 public interface TransactionRepository extends CrudRepository<Transaction, Long>{
 
 
-	List<Transaction> findByUserOrderByCreatedAsc(User user);
+	
 	List<Transaction> findByFromAccountOrToAccountOrderByCreatedAsc(Account fromAccount, Account toAccount );
 	
 	List<Transaction> findByStatus(String str);
 	
 	Transaction findByTransactionId(long id);
 	
-	Transaction save(Transaction t);
+	
 
 	
 	
 
 }
+
+
+

@@ -6,6 +6,13 @@
 <body>
 <h1>System Admin Details</h1>
 <div>
+<a th:href="@{/RetrieveManagerDetails}">Manager Details</a>
+<a th:href="@{/RetrieveEmployeeDetails}">Employee</a>
+
+</div>
+
+
+<div>
 
 <form action="#" th:action="@{/retrievedetails}" method="POST">
 <input type="text" name="userid" />

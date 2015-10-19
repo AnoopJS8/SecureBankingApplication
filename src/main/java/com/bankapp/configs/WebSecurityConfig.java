@@ -15,7 +15,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Configuration
 @EnableWebMvcSecurity
-@EnableGlobalMethodSecurity(prePostEnabled = true)
+@EnableGlobalMethodSecurity(securedEnabled = true, prePostEnabled = true)
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
@@ -28,30 +28,38 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(
                         "/", 
                         "/home", 
-                        "/webjars/**",
+                        "/login/identify",
+                        "/login/verifyIdentity",
                         "/signup",
                         "/registrationConfirm",
-                        "/updatedetails","/retrievedetails","/update_email","/update_password",
-                        "/resendRegistrationToken","/sysadmin","/sys","/verifytransaction",
-                        "/badUser"
+                        "/resendRegistrationToken",
+                        "/badUser","/sysadmin","/RetrieveEmployeeDetails","/RetrieveManagerDetails",
+                        "/change_Username_Manager","/change_Address_Manager","/change_username","/change_Address",
+                        "/DeleteUserManager","/DeleteUserEmployee",
+                        // Resources
+                        "/webjars/**"
+
                         ).permitAll()
                 .anyRequest().authenticated()
                 .and()
             .formLogin()
-                .loginPage("/login")
+                .loginPage("/")
                 .usernameParameter("m_email")
                 .passwordParameter("m_password")
+                .successHandler(new AuthSuccessHandler())
                 .permitAll()
                 .and()
             .logout()
-                .permitAll()
+                .logoutUrl("/logout")
+                .logoutSuccessUrl("/")
                 .and()
             .sessionManagement()
                  .maximumSessions(1);
     }
 
     @Override
-    protected void configure(final AuthenticationManagerBuilder auth) throws Exception {
+    protected void configure(final AuthenticationManagerBuilder auth)
+            throws Exception {
         auth.authenticationProvider(authProvider());
     }
 

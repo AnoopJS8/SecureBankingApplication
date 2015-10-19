@@ -29,7 +29,7 @@ public class RegistrationListener implements ApplicationListener<OnRegistrationC
         service.createVerificationToken(user, token);
         String recipientAddress = user.getEmail();
         String subject = "My ASU Bank - Registration Confirmation";
-        String confirmationUrl = "http://localhost:8081/registrationConfirm?token=" + token;
+        String confirmationUrl = event.getAppUrl() + "/registrationConfirm?token=" + token;
 
         String recipientUsername = user.getUsername();
         String textBody = String.format("Dear valued customer <b>%s</b>, <br><br>"

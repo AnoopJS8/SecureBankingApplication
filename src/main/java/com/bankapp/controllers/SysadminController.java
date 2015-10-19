@@ -41,6 +41,99 @@ public class SysadminController {
 		return mv;
 	}
 	
+	@RequestMapping(value = "/change_Username_Manager", method = RequestMethod.GET)
+	public ModelAndView username() {
+		
+		ModelAndView mv = new ModelAndView("sysadmin");
+		User user = new User();
+				
+		mv.addObject("users", user);
+		//mv.setViewName("/SysAd");
+		return mv;
+	}
+	
+	@RequestMapping(value = "/change_Username_Manager", method = RequestMethod.POST)
+	public ModelAndView change_username(@ModelAttribute("username") String username, @ModelAttribute("id") Long id,BindingResult result) {
+	  User user = userservice.getUserById(id);
+	  
+		ModelAndView mv = new ModelAndView("RetrieveManagerDetails");		
+		userservice.update_name(username, user);
+		
+		mv.addObject("userdisplay", "Success");
+		//mv.setViewName("/SysAd");
+		return mv;
+	}
+	
+
+	@RequestMapping(value = "/change_Address_Manager", method = RequestMethod.POST)
+	public ModelAndView change_Address(@ModelAttribute("useraddress") String useraddress, @ModelAttribute("id") Long id,BindingResult result) {
+		
+		ModelAndView mv = new ModelAndView("RetrieveManagerDetails");
+		User user = userservice.getUserById(id);
+		userservice.update_Address(useraddress, user);
+		
+		mv.addObject("userdisplay", "Success");
+		//mv.setViewName("/SysAd");
+		return mv;
+	}
+
+	
+	
+	@RequestMapping(value = "/change_username", method = RequestMethod.POST)
+	public ModelAndView change_name_Employee(@ModelAttribute("username") String username, @ModelAttribute("id") Long id,BindingResult result) {
+		
+		ModelAndView mv = new ModelAndView("RetrieveEmployeeDetails");
+		User user = userservice.getUserById(id);				
+		userservice.update_name(username, user);
+		
+		mv.addObject("userdisplay", "Success");
+		
+		
+		return mv;
+	}
+	
+
+	@RequestMapping(value = "/change_Address", method = RequestMethod.POST)
+	public ModelAndView change_Address_Employee(@ModelAttribute("useraddress") String useraddress, @ModelAttribute("id") Long id,BindingResult result) {
+		
+		ModelAndView mv = new ModelAndView("RetrieveEmployeeDetails");
+		User user = userservice.getUserById(id);
+		userservice.update_Address(useraddress, user);
+		
+		mv.addObject("userdisplay", "Success");
+		
+		return mv;
+	}
+
+
+	@RequestMapping(value = "/DeleteUserManager", method = RequestMethod.POST)
+	public ModelAndView DeleteUser(@ModelAttribute("id") Long id,BindingResult result) {
+		
+		ModelAndView mv = new ModelAndView("RetrieveManagerDetails");
+		User user = userservice.getUserById(id);
+		userservice.deleteuser(id);
+		
+		mv.addObject("userdisplay", "Success");
+		
+		return mv;
+	}
+	
+	@RequestMapping(value = "/DeleteUserEmployee", method = RequestMethod.POST)
+	public ModelAndView DeleteUserEmployee(@ModelAttribute("id") Long id,BindingResult result) {
+		
+		ModelAndView mv = new ModelAndView("RetrieveEmployeeDetails");
+		User user = userservice.getUserById(id);
+		userservice.deleteuser(id);
+		
+		mv.addObject("userdisplay", "Success");
+		
+		return mv;
+	}
+
+	
+	
+	
+	
 	@RequestMapping(value = "/update_name", method = RequestMethod.POST)
 	public ModelAndView updateUserEmail(@ModelAttribute("username") String username, @ModelAttribute("userid") Long id,BindingResult result) {
 		
@@ -54,17 +147,6 @@ public class SysadminController {
 	}
 	
 	
-	@RequestMapping(value = "/update_password", method = RequestMethod.POST)
-	public ModelAndView updateUserPasseord(@ModelAttribute("userpassword") String userpassword, @ModelAttribute("userdisplay") @Valid User user,BindingResult result) {
-		
-		ModelAndView mv = new ModelAndView("updatedetails");
-		
-		User user1 = userservice.getUserById((long)user.getId());
-		userservice.update_password(userpassword,user1);
-		mv.addObject("passwordChanged", "passwordChanged");
-	
-		return mv;
-	}
 	
 	
 	@RequestMapping(value = "/sysgetdetails", method = RequestMethod.GET)
@@ -110,23 +192,24 @@ public class SysadminController {
 		return mv;
 	}
 	
-	@RequestMapping(value = "/sysadmin", method = RequestMethod.GET)
-	public ModelAndView DisplayTransactions() {
+	@RequestMapping(value = "/RetrieveManagerDetails", method = RequestMethod.GET)
+	public ModelAndView RetrieveManagerDetails() {
 		
-		ModelAndView mv = new ModelAndView("sysadmin");
-		List<Transaction> details = (List<Transaction>) trans.transactiondisplay();
-		mv.addObject("Verify", details );
+		ModelAndView mv = new ModelAndView("RetrieveManagerDetails");
+		List<User> users = userservice.getManagers();
+				
+		mv.addObject("info", users);
 		
-		//mv.setViewName("/SysAd");
 		return mv;
 	}
 	
-	@RequestMapping(value = "/verifytransaction", method = RequestMethod.POST)
-	public ModelAndView VerifyTransactions(Transaction t) {		
+	@RequestMapping(value = "/RetrieveEmployeeDetails", method = RequestMethod.GET)
+	public ModelAndView RetrieveEmployeeDetails() {
 		
-		ModelAndView mv = new ModelAndView("sysadmin");
-		trans.TransactionVerifyDetails(t.getTransactionId());
-		mv.addObject("Veri", "verified" );
+		ModelAndView mv = new ModelAndView("RetrieveEmployeeDetails");
+		
+		List<User> users = userservice.getEmployees();
+		mv.addObject("info", users);
 		
 		return mv;
 	}

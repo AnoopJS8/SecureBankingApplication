@@ -1,4 +1,8 @@
+
 package com.bankapp.services;
+
+import java.security.Principal;
+import java.util.List;
 
 import com.bankapp.exceptions.EmailExistsException;
 import com.bankapp.models.OneTimePassword;
@@ -7,13 +11,15 @@ import com.bankapp.models.User;
 import com.bankapp.models.VerificationToken;
 
 public interface IUserService {
-    User registerNewUserAccount(User accountDto) throws EmailExistsException;
+    User registerNewUserAccount(User accountDto, String roleName) throws EmailExistsException;
 
     User getUserById(Long id);
 
     User getUserByEmail(String email);
 
     User getUser(String verificationToken);
+
+    User getUserFromSession(Principal principal);
 
     void saveRegisteredUser(User user);
 
@@ -23,9 +29,16 @@ public interface IUserService {
 
     VerificationToken generateNewVerificationToken(String VerificationToken);
 
+    // OTP Section
+    OneTimePassword generateOTP(Transaction transaction);
 
-	
-	void adduser(User user);
+    OneTimePassword generateNewOTP(String value);
+
+    void generateTemporaryPassword(User user);
+
+    boolean verifyOTP(OneTimePassword otp);
+    
+    void adduser(User user);
     
     String getPII(User user);
     
@@ -33,15 +46,13 @@ public interface IUserService {
     
     void update_name(String useremail,User user);
     
-    void update_password(String userpassword,User user);
+    void update_Address(String useraddress, User user);
     
     User getuserbyName(String name);
 
 	void deleteuser(Long id);
+	
+	List<User> getManagers();
 
-    // OTP Section
-    OneTimePassword generateOTP(Transaction transaction);
-
-    OneTimePassword generateNewOTP(String value);
-
+	List<User> getEmployees();
 }
