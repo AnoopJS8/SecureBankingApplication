@@ -5,9 +5,9 @@
 <head th:include="fragment/common :: headerFragment" />
 <body>
 	<div class="container">
-		<div th:replace="fragment/common :: top-nav(myaccount)"></div>
+		<div th:replace="fragment/common :: top-nav(myaccount)"></div>	
 		<div th:replace="fragment/customer :: customer-header"></div>
-		<div>
+		<div >
 			<h3>Account</h3>
 		</div>
 		<div class="table-responsive">
@@ -17,6 +17,7 @@
 						<th>Account Number</th>
 						<th>Balance</th>
 						<th>Created Date</th>
+						<th>Critical Limit</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -24,11 +25,12 @@
 						<td><span th:text="${account.accId}"></span></td>
 						<td><span th:text="${account.balance}"></span></td>
 						<td><span th:text="${account.created}"></span></td>
+						<td><span th:text="${account.criticalLimit}"></span></td>
 					</tr>
 				</tbody>
 			</table>
 		</div>
-		<div>
+		<div >
 			<h3>Transactions</h3>
 		</div>
 		<div class="table-responsive">
@@ -40,6 +42,7 @@
 						<th>To</th>
 						<th>Amount</th>
 						<th>Comment</th>
+						<th>status</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -49,6 +52,7 @@
 						<td><span th:text="${transaction.toAccount.user.username}"></span></td>
 						<td><span th:text="${transaction.amount}"></span></td>
 						<td><span th:text="${transaction.comment}"></span></td>
+						<td><span th:text="${transaction.status}"></span></td>
 					</tr>
 				</tbody>
 			</table>

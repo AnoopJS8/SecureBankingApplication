@@ -8,8 +8,9 @@
 		<div th:replace="fragment/common :: top-nav(initiatetransaction)"></div>
 		<div th:replace="fragment/customer :: customer-header"></div>
 		<form class="form-horizontal" role="form"
-			th:action="@{/customer/initiatetransaction}"
+			action="#" th:action="@{/customer/initiatetransaction}"
 			th:object="${transaction}" method="post">
+			<div th:text="${message}"></div>
 			<div class="form-group">
 				<label class="col-md-3 control-label">Recipient Account
 					Number: </label>
@@ -35,8 +36,11 @@
 			<div class="form-group">
 				<label class="col-md-3 control-label">Transfer Date: </label>
 				<div class="col-md-5">
-					<input type="datetime" class="form-control" name="transferdate"
-						id="transferdate" th:field="*{created}"></input>
+					<input type="text" class="form-control" name="transferdate"
+						id="transferdate" placeholder="YYYY/MM/DD"
+						th:field="*{transferDate}" /><label
+						th:if="${#fields.hasErrors('transferDate')}"
+						th:errors="*{transferDate}"></label>
 				</div>
 			</div>
 			<div class="form-group">

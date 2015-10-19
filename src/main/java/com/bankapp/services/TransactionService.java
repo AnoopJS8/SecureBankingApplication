@@ -21,6 +21,9 @@ public class TransactionService implements ITransactionService, Constants {
 
 	@Autowired
 	private IAccountService accountService;
+	
+	@Autowired
+	private IUserService userService;
 
 	@Transactional
 	@Override
@@ -81,11 +84,20 @@ public class TransactionService implements ITransactionService, Constants {
 	@Override
 	public String initiateTransaction(Transaction transaction, User user) {
 		Long accId = transaction.getToAccount().getAccId();
+		
+		try {
 		transaction.setToAccount(accountService.getAccountByAccountId(accId));
-		transaction.setFromAccount(accountService.getAccountsByUser(user));
+		transaction.setFromAccount(accountService.getAccountsByUser(user)); 
 		transaction.setStatus(S_PENDING);
+		
 		transactionRepository.save(transaction);
 
 		return SUCCESS;
+		} catch (Exception e) {
+			//e.printStackTrace();
+			System.out.println("Could not complete Transaction");
+			return ERROR;
+		}
+	
 	}
 }

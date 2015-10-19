@@ -3,6 +3,8 @@ package com.bankapp.controllers;
 import java.security.Principal;
 import java.util.List;
 
+import javax.validation.Valid;
+
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
@@ -46,10 +48,21 @@ public class CustomerController implements Constants {
 		List<Transaction> transactions = getTransactionsByAccount(account);
 		mv.addObject("accounts", account);
 		mv.addObject("transactions", transactions);
+		mv.addObject("role", "customer");
 		mv.setViewName("customer/myaccount");
 		return mv;
 	}
 
+	@RequestMapping(value = "/customer/myprofile", method = RequestMethod.GET)
+    public ModelAndView getProfile() {
+        ModelAndView mv = new ModelAndView();
+        System.out.print("Hello Customer");
+        User user = new User();
+        mv.addObject("user", user);
+        mv.setViewName("customer/myprofile");
+        return mv;
+    }
+	
 	@RequestMapping(value = "/customer/transferfunds", method = RequestMethod.GET)
 	public ModelAndView transferFunds() {
 		ModelAndView mv = new ModelAndView();
@@ -61,7 +74,7 @@ public class CustomerController implements Constants {
 	}
 
 	@RequestMapping(value = "/customer/transferfunds", method = RequestMethod.POST)
-	public ModelAndView saveTransaction(@ModelAttribute("transaction") Transaction transaction, BindingResult result,
+	public ModelAndView saveTransaction(@Valid @ModelAttribute("transaction") Transaction transaction, BindingResult result,
 			WebRequest request, Errors errors, Principal principal) {
 		ModelAndView mv = new ModelAndView();
 		User user = userService.getUserFromSession(principal);
@@ -108,9 +121,16 @@ public class CustomerController implements Constants {
 	}
 
 	@RequestMapping(value = "/customer/initiatetransaction", method = RequestMethod.POST)
-	public ModelAndView initiateTransaction(@ModelAttribute("transaction") Transaction transaction,
+	public ModelAndView initiateTransaction(@Valid @ModelAttribute("transaction") Transaction transaction,
 			BindingResult result, WebRequest request, Errors errors, Principal principal) {
 		ModelAndView mv = new ModelAndView();
+		if(result.hasErrors()) {
+		    mv.setViewName("/customer/initiatetransaction");
+            mv.addObject("transaction", transaction);
+		    mv.addObject("errors", result.getAllErrors());
+		    return mv;
+		}
+		 
 		User user = userService.getUserFromSession(principal);
 		String message = transactionService.initiateTransaction(transaction, user);
 		if (message != null) {
@@ -122,11 +142,12 @@ public class CustomerController implements Constants {
 				LOGGER.error(Msg);
 				mv.setViewName("success");
 			} else {
-				mv.addObject("message", "Some error occured");
+			    mv.setViewName("error");
+			    mv.addObject("message", "Some error occured");
 				mv.addObject("role", "customer");
 				String errorMsg = String.format("Action: %s, Message: %s", "Error", message);
 				LOGGER.error(errorMsg);
-				mv.setViewName("error");
+				
 			}
 		}
 		return mv;
