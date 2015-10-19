@@ -9,28 +9,34 @@
 		<div th:replace="fragment/customer :: customer-header"></div>
 		<form class="form-horizontal" role="form"
 			action="#" th:action="@{/customer/initiatetransaction}"
-			th:object="${transaction}" method="post">
+			th:object="${form}" method="post">
 			<div th:text="${message}"></div>
 			<div class="form-group">
 				<label class="col-md-3 control-label">Recipient Account
 					Number: </label>
 				<div class="col-md-5">
 					<input type="text" class="form-control" name="toAccount"
-						id="toAccount" th:field="*{toAccount.accId}"></input>
+						id="toAccount" th:field="*{accountId}"/><label
+						th:if="${#fields.hasErrors('accountId')}"
+						th:errors="*{accountId}"></label>
 				</div>
 			</div>
 			<div class="form-group">
 				<label class="col-md-3 control-label">Amount in dollars: </label>
 				<div class="col-md-5">
 					<input type="text" class="form-control" name="amount" id="amount"
-						th:field="*{amount}"></input>
+						th:field="*{amount}" /><label
+						th:if="${#fields.hasErrors('amount')}"
+						th:errors="*{amount}"></label>
 				</div>
 			</div>
 			<div class="form-group">
 				<label class="col-md-3 control-label">Message: </label>
 				<div class="col-md-5">
 					<textarea class="form-control" rows="2" name="comment"
-						th:field="*{comment}"></textarea>
+						th:field="*{comment}" ></textarea><label
+						th:if="${#fields.hasErrors('comment')}"
+						th:errors="*{comment}"></label>
 				</div>
 			</div>
 			<div class="form-group">

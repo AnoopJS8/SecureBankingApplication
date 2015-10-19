@@ -1,6 +1,5 @@
 package com.bankapp.services;
 
-import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,9 +21,6 @@ public class TransactionService implements ITransactionService, Constants {
 	@Autowired
 	private IAccountService accountService;
 	
-	@Autowired
-	private IUserService userService;
-
 	@Transactional
 	@Override
 	public List<Transaction> getTransactionsByAccount(Account fromAccount, Account toAccount) {

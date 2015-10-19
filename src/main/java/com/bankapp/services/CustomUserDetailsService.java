@@ -40,19 +40,13 @@ public class CustomUserDetailsService implements UserDetailsService {
         boolean accountNotLocked = true;
         try {
             final com.bankapp.models.User user = userRepository.findByEmail(email);
-            System.out.println(user);
             if (user == null) {
                 return new User(" ", " ", enabled, true, true, true,
-                        getAuthorities(roleRepository.findByName("ROLE_USER")));
+                        getAuthorities(roleRepository.findByName("ROLE_CUSTOMER")));
             }
-            
-            return new User(user.getEmail(), 
-                    user.getPassword(), 
-                    user.isEnabled(), 
-                    accountNotExpired,
-                    credentialsNotExpired,
-                    accountNotLocked,
-                    getAuthorities(user.getRole()));
+
+            return new User(user.getEmail(), user.getPassword(), user.isEnabled(), accountNotExpired,
+                    credentialsNotExpired, accountNotLocked, getAuthorities(user.getRole()));
         } catch (final Exception e) {
             throw new RuntimeException(e);
         }
