@@ -37,7 +37,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                         "/change_Username_Manager","/change_Address_Manager","/change_username","/change_Address",
                         "/DeleteUserManager","/DeleteUserEmployee",
                         // Resources
-                        "/webjars/**"
+
+                        "/webjars/**",
+                        "/css/**",
+                        "/js/**"
 
                         ).permitAll()
                 .anyRequest().authenticated()
