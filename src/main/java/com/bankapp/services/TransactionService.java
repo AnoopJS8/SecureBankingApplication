@@ -47,7 +47,7 @@ public class TransactionService implements ITransactionService, Constants {
 		if (fromAccount.getBalance() < transaction.getAmount()) {
             return LESS_BALANCE;
         }else{
-            boolean ifCritical = checkCriticalLimit(fromAccount, transaction);
+            boolean ifCritical = isBelowCriticalLimit(fromAccount, transaction);
             if(ifCritical){
                 transaction.setStatus(S_OTP_PENDING);
                 transactionRepository.save(transaction);
@@ -61,7 +61,7 @@ public class TransactionService implements ITransactionService, Constants {
 		
 	}
 
-	private boolean checkCriticalLimit(Account fromAccount, Transaction transaction) {
+	private boolean isBelowCriticalLimit(Account fromAccount, Transaction transaction) {
         double criticalLimit = fromAccount.getCriticalLimit();
         if(transaction.getAmount()>=criticalLimit){
             return true;

@@ -13,7 +13,6 @@ import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -22,14 +21,10 @@ import com.bankapp.forms.OTPForm;
 import com.bankapp.listeners.OnOtpEvent;
 import com.bankapp.models.Account;
 import com.bankapp.models.ProfileRequest;
-import com.bankapp.models.Transaction;
 import com.bankapp.models.User;
-import com.bankapp.services.AccountService;
 import com.bankapp.services.IAccountService;
 import com.bankapp.services.IProfileRequestService;
 import com.bankapp.services.IUserService;
-
-import scala.annotation.meta.setter;
 
 @Controller
 public class MainController implements Constants {

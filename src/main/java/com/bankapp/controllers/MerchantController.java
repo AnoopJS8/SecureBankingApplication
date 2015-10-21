@@ -66,7 +66,7 @@ public class MerchantController implements Constants {
     }
 
     @RequestMapping(value = "/merchant/transferfunds", method = RequestMethod.POST)
-    public ModelAndView saveTransaction(@ModelAttribute("transaction") Transaction transaction, BindingResult result,
+    public ModelAndView saveTransaction(@ModelAttribute("transaction") @Valid Transaction transaction, BindingResult result,
             WebRequest request, Errors errors, Principal principal) {
         ModelAndView mv = new ModelAndView();
         mv.addObject("role", "merchant");
@@ -109,7 +109,7 @@ public class MerchantController implements Constants {
     }
 
     @RequestMapping(value = "/merchant/userpayment", method = RequestMethod.POST)
-    public ModelAndView askUserPayment(@ModelAttribute("transaction") Transaction transaction, BindingResult result,
+    public ModelAndView askUserPayment(@ModelAttribute("transaction") @Valid Transaction transaction, BindingResult result,
             WebRequest request, Errors errors, Principal principal) {
         ModelAndView mv = new ModelAndView();
         mv.addObject("role", "merchant");
