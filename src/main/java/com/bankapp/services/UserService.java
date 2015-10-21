@@ -1,6 +1,7 @@
 package com.bankapp.services;
 
 import java.security.Principal;
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.bankapp.exceptions.EmailExistsException;
 import com.bankapp.models.OneTimePassword;
+import com.bankapp.models.Role;
 import com.bankapp.models.User;
 import com.bankapp.models.VerificationToken;
 import com.bankapp.repositories.OTPRepository;
@@ -19,7 +21,7 @@ import com.bankapp.repositories.VerificationTokenRepository;
 
 @Service
 public class UserService implements IUserService {
-    
+
     @Autowired
     private UserRepository userRepository;
 
@@ -82,13 +84,16 @@ public class UserService implements IUserService {
 
     @Override
     public User getUserFromSession(Principal principal) {
-        if(principal != null) {
+        if (principal != null) {
             String email = principal.getName();
-            User user = userRepository.findByEmail(email);
-            return user;
+            if (email != null) {
+                User user = userRepository.findByEmail(email);
+                return user;
+            } else {
+                return null;
+            }
         }
-        else 
-            return null;
+        return null;
     }
 
     @Override
@@ -137,14 +142,59 @@ public class UserService implements IUserService {
         mailService.sendEmail(recipientAddress, subject, textBody);
     }
 
+    @Override
+    public void updateUser(Long existingUserId, User updatedUser) {
+        User existingUser = userRepository.findById(existingUserId);
+        existingUser.setUsername(updatedUser.getUsername());
+        existingUser.setAddress(updatedUser.getAddress());
+        existingUser.setPhoneNumber(updatedUser.getPhoneNumber());
+        existingUser.setDateOfBirth(updatedUser.getDateOfBirth());
+        existingUser.setGender(updatedUser.getGender());
+        userRepository.save(existingUser);
+    }
+
+    @Override
+    public void deleteUser(User user) {
+        userRepository.delete(user);
+    }
+
+    @Override
+    public List<User> getManagers() {
+        Role managerRole = roleRepository.findByName("ROLE_MANAGER");
+        return userRepository.findByRole(managerRole);
+    }
+
+    @Override
+    public List<User> getEmployees() {
+        Role employeeRole = roleRepository.findByName("ROLE_EMPLOYEE");
+        return userRepository.findByRole(employeeRole);
+    }
+
+    @Override
+    public boolean verifyPassword(User user, String currentPassword) {
+        return passwordEncoder.matches(currentPassword, user.getPassword());
+    }
+
+    @Transactional
+    @Override
+    public boolean changePassword(User user) {
+        try {
+            user.setPassword(passwordEncoder.encode(user.getNewpassword()));
+            userRepository.save(user);
+        } catch (Exception e) {
+            return false;
+        }
+        return true;
+    }
+
     // OTP Part
     @Override
     public OneTimePassword generateOTP(Long resourceId, String resourceName) {
         OneTimePassword otp = oTPRepository.findByresourceIdAndResourceName(resourceId, resourceName);
-        if(otp!=null){
+        if (otp != null) {
             String newOtp = OneTimePassword.generateOTP();
             otp.setValue(newOtp);
-        }else{
+        } else {
             otp = new OneTimePassword(resourceId, resourceName);
         }
         oTPRepository.save(otp);
@@ -160,7 +210,7 @@ public class UserService implements IUserService {
         return existingOTP;
 
     }
-    
+
     @Override
     public boolean verifyOTP(String otp, Long id, String name) {
         OneTimePassword otpFromDB = oTPRepository.findByresourceIdAndResourceName(id, name);
@@ -170,23 +220,6 @@ public class UserService implements IUserService {
         } else {
             return false;
         }
-    }
-
-    @Override
-    public boolean verifyPassword(User user, String currentPassword) {
-        return passwordEncoder.matches(currentPassword, user.getPassword());
-    }
-
-    @Transactional
-    @Override
-    public boolean changePassword(User user) {
-        try{
-            user.setPassword(passwordEncoder.encode(user.getNewpassword()));
-            userRepository.save(user);
-        }catch(Exception e){
-            return false;
-        }
-        return true;
     }
 
 }

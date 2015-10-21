@@ -10,6 +10,7 @@
 	rel="stylesheet" media="screen" />
 <link href="../../static/css/app.css" th:href="@{/css/app.css}" rel="stylesheet" />
 <script th:src="@{/webjars/jquery/2.1.4/jquery.min.js}"></script>
+<script th:src="@{/webjars/bootstrap/3.3.4/js/bootstrap.min.js}"></script>
 </head>
 <body>
 	<nav th:fragment="top-nav(activeTab)"
@@ -39,14 +40,21 @@
 			<!-- User has logged in -->
 			<div sec:authorize="isAuthenticated()">
 				<ul class="nav navbar-nav navbar-right">
-					<div sec:authorize="hasRole('ROLE_ADMIN')">
-						<li th:class="${activeTab == ''} ? 'active' : null"><a
-							th:href="@{/}"></a></li>
-					</div>
-					<div sec:authorize="hasRole('ROLE_USER')">
-						<li th:class="${activeTab == ''} ? 'active' : null"><a
-							th:href="@{/}"></a></li>
-					</div>
+					<li sec:authorize="hasRole('ROLE_ADMIN')">
+                        <a th:href="@{/admin/myaccount}">My Account</a>
+                    </li>
+                    <li sec:authorize="hasRole('ROLE_MANAGER')">
+                        <a th:href="@{/manager/myaccount}">My Account</a>
+                    </li>
+                    <li sec:authorize="hasRole('ROLE_EMPLOYEE')">
+                        <a th:href="@{/employee/myaccount}">My Account</a>
+                    </li>
+                    <li sec:authorize="hasRole('ROLE_CUSTOMER')">
+                        <a th:href="@{/customer/myaccount}">My Account</a>
+                    </li>
+                    <li sec:authorize="hasRole('ROLE_MERCHANT')">
+                        <a th:href="@{/merchant/myaccount}">My Account</a>
+                    </li>
 					<li><a href="/logout" th:href="@{#}"
 						onclick="$('#logout-form').submit();">Logout</a>
 						<form style="visibility: hidden" id="logout-form" method="post"
@@ -56,7 +64,19 @@
 			<!-- /.navbar-top-links -->
 		</div>
 	</nav>
-	<footer class="footer" id="center-footer">
+	<div th:fragment="message">
+		<div th:if="${message}" th:object="${message}">
+			<div
+				th:class="*{status} == success ? 'alert alert-success alert-dismissible' : 'alert alert-danger alert-dismissible'"
+				role="alert">
+				<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+				<p th:text="*{msg}"></p>
+			</div>
+		</div>
+	</div>
+	<footer th:fragment="footer" class="footer" id="center-footer">
 		<div class="container">
 			<p class="text-muted">MyASUBank&copy;</p>
 		</div>

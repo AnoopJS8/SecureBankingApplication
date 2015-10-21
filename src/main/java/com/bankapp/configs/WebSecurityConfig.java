@@ -18,61 +18,43 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @EnableGlobalMethodSecurity(securedEnabled = true, prePostEnabled = true)
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
-    @Autowired
-    private UserDetailsService userDetailsService;
+	@Autowired
+	private UserDetailsService userDetailsService;
 
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
-        http
-            .authorizeRequests()
-                .antMatchers(
-                        "/", 
-                        "/home", 
-                        "/login/identify",
-                        "/login/verifyIdentity",
-                        "/signup",
-                        "/registrationConfirm",
-                        "/resendRegistrationToken",
-                        "/badUser",
-                        // Resources
-                        "/webjars/**",
-                        "/css/**",
-                        "/js/**"
-                        ).permitAll()
-                .anyRequest().authenticated()
-                .and()
-            .formLogin()
-                .loginPage("/")
-                .usernameParameter("m_email")
-                .passwordParameter("m_password")
-                .successHandler(new AuthSuccessHandler())
-                .permitAll()
-                .and()
-            .logout()
-                .logoutUrl("/logout")
+	@Override
+	protected void configure(HttpSecurity http) throws Exception {
+		http.authorizeRequests().antMatchers("/", "/home", "/login/identify", "/login/verifyIdentity", "/signup",
+		        "/registrationConfirm", "/resendRegistrationToken",
 
-                .logoutSuccessUrl("/")
-                .and()
-            .sessionManagement()
-                 .maximumSessions(1);
-    }
+		"/badUser", "/sysadmin", "/RetrieveEmployeeDetails", "/RetrieveManagerDetails", "/change_Username_Manager",
+		        "/change_Address_Manager", "/change_username", "/change_Address", "/DeleteUserManager",
+		        "/DeleteUserEmployee", "/profileRequest", "/changeRequest",
+		        // Resources
 
-    @Override
-    protected void configure(final AuthenticationManagerBuilder auth)
-            throws Exception {
-        auth.authenticationProvider(authProvider());
-    }
+		"/webjars/**", "/css/**", "/js/**"
 
-    @Bean
-    public DaoAuthenticationProvider authProvider() {
-        final DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-        authProvider.setUserDetailsService(userDetailsService);
-        authProvider.setPasswordEncoder(encoder());
-        return authProvider;
-    }
+		).permitAll().anyRequest().authenticated().and().formLogin().loginPage("/").usernameParameter("m_email")
+		        .passwordParameter("m_password").successHandler(new AuthSuccessHandler()).permitAll().and().logout()
+		        .logoutUrl("/logout")
 
-    @Bean
-    public PasswordEncoder encoder() {
-        return new BCryptPasswordEncoder(12);
-    }
+		.logoutSuccessUrl("/").and().sessionManagement().maximumSessions(1);
+	}
+
+	@Override
+	protected void configure(final AuthenticationManagerBuilder auth) throws Exception {
+		auth.authenticationProvider(authProvider());
+	}
+
+	@Bean
+	public DaoAuthenticationProvider authProvider() {
+		final DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
+		authProvider.setUserDetailsService(userDetailsService);
+		authProvider.setPasswordEncoder(encoder());
+		return authProvider;
+	}
+
+	@Bean
+	public PasswordEncoder encoder() {
+		return new BCryptPasswordEncoder(12);
+	}
 }

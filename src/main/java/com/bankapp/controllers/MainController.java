@@ -1,4 +1,6 @@
+
 package com.bankapp.controllers;
+
 
 import java.security.Principal;
 
@@ -27,13 +29,13 @@ import com.bankapp.services.IProfileRequestService;
 import com.bankapp.services.IUserService;
 
 @Controller
-public class MainController implements Constants {
-
+public class MainController implements Constants{
+    
     private final Logger LOGGER = Logger.getLogger(MainController.class);
 
     @Autowired
     private IUserService userService;
-
+    
     @Autowired
     private IProfileRequestService profileRequestService;
 
@@ -103,7 +105,7 @@ public class MainController implements Constants {
             return mv;
         } else {
             String expectedAnswer = registeredUser.getSecurityAnswer();
-            if (expectedAnswer.equalsIgnoreCase(answer)) {
+            if(expectedAnswer.equalsIgnoreCase(answer)) {
                 String message = String.format(
                         "Thank you for answering your security question. We have sent an email with a temporary password to %s",
                         email);
@@ -112,15 +114,14 @@ public class MainController implements Constants {
                 userService.generateTemporaryPassword(registeredUser);
                 return mv;
             } else {
-                String message = String
-                        .format("Sorry, we could not verify the answer you specified. Please try again.");
+                String message = String.format("Sorry, we could not verify the answer you specified. Please try again.");
                 mv.setViewName("error");
                 mv.addObject("message", message);
                 return mv;
             }
         }
     }
-
+    
     @RequestMapping(value = "/profile", method = RequestMethod.GET)
     public ModelAndView profile(Principal principal) {
         ModelAndView mv = new ModelAndView();
@@ -130,7 +131,7 @@ public class MainController implements Constants {
         mv.setViewName("profile");
         return mv;
     }
-
+    
     @RequestMapping(value = "/profile", method = RequestMethod.POST)
     public ModelAndView updateProfile(@ModelAttribute("user") @Valid User user, BindingResult result,
             WebRequest request, Errors errors, Principal principal) {
@@ -142,7 +143,7 @@ public class MainController implements Constants {
         profile.setStatus(S_PROFILE_UPDATE_PENDING);
         profile.setUser(userService.getUserFromSession(principal));
         String message = profileRequestService.saveProfileRequest(profile);
-        if (message.equalsIgnoreCase(ERROR)) {
+        if(message.equalsIgnoreCase(ERROR)){
             mv.addObject("message", "Error occured");
             mv.setViewName("error");
             return mv;

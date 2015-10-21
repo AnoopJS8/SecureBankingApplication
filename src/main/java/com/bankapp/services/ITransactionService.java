@@ -1,3 +1,4 @@
+
 package com.bankapp.services;
 
 import java.util.List;
@@ -15,3 +16,4 @@ public interface ITransactionService {
 	public Transaction getTransactionsById(Long id);
 
 }
+
