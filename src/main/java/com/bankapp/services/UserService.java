@@ -1,7 +1,6 @@
 package com.bankapp.services;
 
 import java.security.Principal;
-import java.util.Arrays;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,13 +13,14 @@ import com.bankapp.models.OneTimePassword;
 import com.bankapp.models.Transaction;
 import com.bankapp.models.User;
 import com.bankapp.models.VerificationToken;
-import com.bankapp.repositories.RoleRepository;
 import com.bankapp.repositories.OTPRepository;
+import com.bankapp.repositories.RoleRepository;
 import com.bankapp.repositories.UserRepository;
 import com.bankapp.repositories.VerificationTokenRepository;
 
 @Service
 public class UserService implements IUserService {
+    
     @Autowired
     private UserRepository userRepository;
 
@@ -56,8 +56,7 @@ public class UserService implements IUserService {
         newUser.setPhoneNumber(user.getPhoneNumber());
         newUser.setSecurityQuestion(user.getSecurityQuestion());
         newUser.setSecurityAnswer(user.getSecurityAnswer());
-
-        newUser.setRoles(Arrays.asList(roleRepository.findByName(roleName)));
+        newUser.setRole(roleRepository.findByName(roleName));
 
         return userRepository.save(newUser);
     }
@@ -84,9 +83,13 @@ public class UserService implements IUserService {
 
     @Override
     public User getUserFromSession(Principal principal) {
-        String email = principal.getName();
-        User user = userRepository.findByEmail(email);
-        return user;
+        if(principal != null) {
+            String email = principal.getName();
+            User user = userRepository.findByEmail(email);
+            return user;
+        }
+        else 
+            return null;
     }
 
     @Override
@@ -154,7 +157,7 @@ public class UserService implements IUserService {
         return existingOTP;
 
     }
-
+    
     public boolean verifyOTP(OneTimePassword otp) {
         OneTimePassword otpFromDB = oTPRepository.findOne(otp.getId());
         if (otp.getValue() == otpFromDB.getValue()) {

@@ -1,9 +1,11 @@
 package com.bankapp.services;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
@@ -29,6 +31,9 @@ public class CustomUserDetailsService implements UserDetailsService {
     @Autowired
     private RoleRepository roleRepository;
 
+    @Autowired
+    private HttpServletRequest request;
+
     public CustomUserDetailsService() {
         super();
     }
@@ -41,30 +46,36 @@ public class CustomUserDetailsService implements UserDetailsService {
         boolean accountNotLocked = true;
         try {
             final com.bankapp.models.User user = userRepository.findByEmail(email);
-
             if (user == null) {
                 return new User(" ", " ", enabled, true, true, true,
-                        getAuthorities(Arrays.asList(roleRepository.findByName("ROLE_USER"))));
+                        getAuthorities(roleRepository.findByName("ROLE_CUSTOMER")));
             }
-            return new User(user.getEmail(), 
-                    user.getPassword(), 
-                    user.isEnabled(), 
-                    accountNotExpired,
-                    credentialsNotExpired,
-                    accountNotLocked,
-                    getAuthorities(user.getRoles()));
+
+            saveLoginDetails(user);
+
+            return new User(user.getEmail(), user.getPassword(), user.isEnabled(), accountNotExpired,
+                    credentialsNotExpired, accountNotLocked, getAuthorities(user.getRole()));
         } catch (final Exception e) {
             throw new RuntimeException(e);
         }
     }
 
-    public final Collection<? extends GrantedAuthority> getAuthorities(final Collection<Role> roles) {
-        System.out.println(roles);
-        final List<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
-        for (final Role role : roles) {
-            authorities.add(new SimpleGrantedAuthority(role.getName()));
-        }
+    public final Collection<? extends GrantedAuthority> getAuthorities(final Role role) {
+        final List<SimpleGrantedAuthority> authorities = new ArrayList<SimpleGrantedAuthority>();
+        authorities.add(new SimpleGrantedAuthority(role.getName()));
         return authorities;
+    }
+
+    private void saveLoginDetails(com.bankapp.models.User user) {
+
+        String ip = request.getRemoteAddr();
+        String lastLoginIP = user.getCurrentLoginIP();
+        Date lastLoginDate = user.getCurrentLoginDate();
+        user.setLastLoginIP(lastLoginIP);
+        user.setLastLoginDate(lastLoginDate);
+        user.setCurrentLoginIP(ip);
+        user.setCurrentLoginDate(new Date());
+        userRepository.save(user);
     }
 
 }

@@ -35,12 +35,14 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                         "/resendRegistrationToken",
                         "/badUser",
                         // Resources
-                        "/webjars/**"
+                        "/webjars/**",
+                        "/css/**",
+                        "/js/**"
                         ).permitAll()
                 .anyRequest().authenticated()
                 .and()
             .formLogin()
-                .loginPage("/login")
+                .loginPage("/")
                 .usernameParameter("m_email")
                 .passwordParameter("m_password")
                 .successHandler(new AuthSuccessHandler())
@@ -48,14 +50,15 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
             .logout()
                 .logoutUrl("/logout")
-                .logoutSuccessUrl("/login")
+                .logoutSuccessUrl("/")
                 .and()
             .sessionManagement()
                  .maximumSessions(1);
     }
 
     @Override
-    protected void configure(final AuthenticationManagerBuilder auth) throws Exception {
+    protected void configure(final AuthenticationManagerBuilder auth)
+            throws Exception {
         auth.authenticationProvider(authProvider());
     }
 

@@ -1,14 +1,13 @@
 package com.bankapp.models;
 
-import java.util.Collection;
+import java.util.Date;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.Size;
 
@@ -36,6 +35,9 @@ public class User {
     @Size(min = 6, max = 60)
     private String password;
 
+    @Size(min = 6, max = 60)
+    private String newpassword;
+
     private String address;
 
     private String phoneNumber;
@@ -52,9 +54,48 @@ public class User {
 
     private String securityAnswer;
 
-    @ManyToMany
-    @JoinTable(name = "users_roles", joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id") , inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id") )
-    private Collection<Role> roles;
+    private String currentLoginIP;
+
+    private Date currentLoginDate;
+
+    private String lastLoginIP;
+
+    private Date lastLoginDate;
+
+    public String getCurrentLoginIP() {
+        return currentLoginIP;
+    }
+
+    public void setCurrentLoginIP(String currentLoginIP) {
+        this.currentLoginIP = currentLoginIP;
+    }
+
+    public Date getCurrentLoginDate() {
+        return currentLoginDate;
+    }
+
+    public void setCurrentLoginDate(Date currentLoginDate) {
+        this.currentLoginDate = currentLoginDate;
+    }
+
+    public Date getLastLoginDate() {
+        return lastLoginDate;
+    }
+
+    public void setLastLoginDate(Date lastLoginDate) {
+        this.lastLoginDate = lastLoginDate;
+    }
+
+    public String getLastLoginIP() {
+        return lastLoginIP;
+    }
+
+    public void setLastLoginIP(String lastLoginIP) {
+        this.lastLoginIP = lastLoginIP;
+    }
+
+    @ManyToOne(cascade = CascadeType.ALL)
+    private Role role;
 
     public User() {
         super();
@@ -126,12 +167,12 @@ public class User {
         this.gender = gender;
     }
 
-    public Collection<Role> getRoles() {
-        return roles;
+    public Role getRole() {
+        return role;
     }
 
-    public void setRoles(final Collection<Role> roles) {
-        this.roles = roles;
+    public void setRole(final Role role) {
+        this.role = role;
     }
 
     public boolean isEnabled() {
@@ -148,6 +189,14 @@ public class User {
 
     public void setTokenExpired(final boolean expired) {
         this.tokenExpired = expired;
+    }
+
+    public String getNewpassword() {
+        return newpassword;
+    }
+
+    public void setNewpassword(String newpassword) {
+        this.newpassword = newpassword;
     }
 
     @Override
