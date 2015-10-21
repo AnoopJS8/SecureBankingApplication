@@ -38,6 +38,9 @@ public class TransactionService implements ITransactionService, Constants {
 
 		Long accId = transaction.getToAccount().getAccId();
 		Account toAccount = accountService.getAccountByAccountId(accId);
+		if(toAccount==null){
+		    return ERR_ACCOUNT_NOT_EXISTS;
+		}
 		Account fromAccount = accountService.getAccountsByUser(user);
 		transaction.setToAccount(toAccount);
 		transaction.setFromAccount(fromAccount);

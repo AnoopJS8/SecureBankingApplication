@@ -5,6 +5,7 @@ public interface Constants {
 	public String SUCCESS = "success";
 	public String LESS_BALANCE = "lessbal";
 	public String ERROR = "error";
+	public String ERR_ACCOUNT_NOT_EXISTS = "Account does not Exists";
 	//Status
 	public String S_PENDING = "P"; //pending for request like transfer money and profile
 	public String S_OTP_PENDING = "OP"; //critical transaction
