@@ -248,5 +248,4 @@ public class User {
                 username, email, address, phoneNumber, dateOfBirth, gender, securityQuestion, securityAnswer);
         return value;
     }
-
 }

@@ -50,6 +50,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
             .logout()
                 .logoutUrl("/logout")
+
                 .logoutSuccessUrl("/")
                 .and()
             .sessionManagement()
