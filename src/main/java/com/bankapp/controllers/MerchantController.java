@@ -76,11 +76,14 @@ public class MerchantController implements Constants {
 			mv.addObject("message", msg);
 			String errorMsg = String.format("Action: %s, Message: %s", "save transaction", msg);
 			LOGGER.error(errorMsg);
-			mv.setViewName("success");
+			mv.setViewName("error");
 		} else if (message.equalsIgnoreCase(SUCCESS)) {
 			mv.addObject("message", "Money transfered successfully");
 			mv.setViewName("success");
-		} else {
+		} else if (message.equalsIgnoreCase(ERR_ACCOUNT_NOT_EXISTS)) {
+            mv.addObject("message", ERR_ACCOUNT_NOT_EXISTS);
+            mv.setViewName("error");
+        }else {
 			mv.addObject("message", "Error");
 			String errorMsg = String.format("Action: %s, Message: %s", "Error", message);
 			LOGGER.error(errorMsg);

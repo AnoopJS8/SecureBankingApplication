@@ -16,93 +16,101 @@ import javax.persistence.OneToOne;
 
 @Entity
 public class OneTimePassword {
-	private static final int EXPIRATION = 60 * 24;
+    private static final int EXPIRATION = 60 * 24;
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	private Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Long id;
+    private String resourceName;
+    private Long resourceId;
 
-	@OneToOne(targetEntity = Transaction.class, fetch = FetchType.EAGER)
-	@JoinColumn(nullable = false, name = "transaction_id")
-	private Transaction transaction;
+    private String value;
 
-	private String value;
+    public String getValue() {
+        return value;
+    }
 
-	public String getValue() {
-		return value;
-	}
+    public void setValue(String value) {
+        this.value = value;
+    }
 
-	public void setValue(String value) {
-		this.value = value;
-	}
+    public String getResourceName() {
+        return resourceName;
+    }
 
-	private Date expiryDate;
-	private boolean verified;
+    public void setResourceName(String resourceName) {
+        this.resourceName = resourceName;
+    }
 
-	public OneTimePassword() {
-		super();
-	}
+    public Long getResourceId() {
+        return resourceId;
+    }
 
-	public OneTimePassword(Transaction transaction) {
-		super();
-		this.value = generateOTP();
-		this.transaction = transaction;
-		this.expiryDate = calculateExpiryDate(EXPIRATION);
-		this.verified = false;
-	}
+    public void setResourceId(Long resourceId) {
+        this.resourceId = resourceId;
+    }
 
-	private Date calculateExpiryDate(int expiryTimeInMinutes) {
-		Calendar cal = Calendar.getInstance();
-		cal.setTime(new Timestamp(cal.getTime().getTime()));
-		cal.add(Calendar.MINUTE, expiryTimeInMinutes);
-		return new Date(cal.getTime().getTime());
-	}
+    private Date expiryDate;
+    private boolean verified;
 
-	public Long getId() {
-		return id;
-	}
+    public OneTimePassword() {
+        super();
+    }
 
-	public void setId(Long id) {
-		this.id = id;
-	}
+    public OneTimePassword(Long resourceId, String resourceName) {
+        super();
+        this.value = generateOTP();
+        this.resourceId = resourceId;
+        this.resourceName = resourceName;
+        this.expiryDate = calculateExpiryDate(EXPIRATION);
+        this.verified = false;
+    }
 
-	public Transaction getTransaction() {
-		return transaction;
-	}
+    private Date calculateExpiryDate(int expiryTimeInMinutes) {
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(new Timestamp(cal.getTime().getTime()));
+        cal.add(Calendar.MINUTE, expiryTimeInMinutes);
+        return new Date(cal.getTime().getTime());
+    }
 
-	public void setTransaction(Transaction transaction) {
-		this.transaction = transaction;
-	}
+    public Long getId() {
+        return id;
+    }
 
-	public Date getExpiryDate() {
-		return expiryDate;
-	}
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-	public void setExpiryDate(Date expiryDate) {
-		this.expiryDate = expiryDate;
-	}
+    public Date getExpiryDate() {
+        return expiryDate;
+    }
 
-	public boolean isVerified() {
-		return verified;
-	}
+    public void setExpiryDate(Date expiryDate) {
+        this.expiryDate = expiryDate;
+    }
 
-	public void setVerified(boolean verified) {
-		this.verified = verified;
-	}
+    public boolean isVerified() {
+        return verified;
+    }
 
-	public static int getExpiration() {
-		return EXPIRATION;
-	}
+    public void setVerified(boolean verified) {
+        this.verified = verified;
+    }
 
-	public static String generateOTP() {
-		String chars = "abcdefghijklmnopqrstuvwxyz"
-				+ "ABCDEFGHIJKLMNOPQRSTUVWXYZ" + "0123456789";
+    public static int getExpiration() {
+        return EXPIRATION;
+    }
 
-		final int pw_len = 7;
-		Random rnd = new SecureRandom();
-		StringBuilder pass = new StringBuilder();
-		for (int i = 0; i < pw_len; i++)
-			pass.append(chars.charAt(rnd.nextInt(chars.length())));
-		return pass.toString();
-	}
+    public static String generateOTP() {
+        String chars = "abcdefghijklmnopqrstuvwxyz" + "ABCDEFGHIJKLMNOPQRSTUVWXYZ" + "0123456789";
+
+        final int pw_len = 7;
+        Random rnd = new SecureRandom();
+        StringBuilder pass = new StringBuilder();
+        for (int i = 0; i < pw_len; i++)
+            pass.append(chars.charAt(rnd.nextInt(chars.length())));
+        return pass.toString();
+    }
+
+  
 }

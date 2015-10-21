@@ -15,51 +15,51 @@ import com.bankapp.repositories.UserRepository;
 @Component
 public class DataSetup implements ApplicationListener<ContextRefreshedEvent> {
 
-    private boolean alreadySetup = false;
+	private boolean alreadySetup = false;
 
-    @Autowired
-    private UserRepository userRepository;
+	@Autowired
+	private UserRepository userRepository;
 
-    @Autowired
-    private RoleRepository roleRepository;
+	@Autowired
+	private RoleRepository roleRepository;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+	@Autowired
+	private PasswordEncoder passwordEncoder;
 
-    @Override
-    @Transactional
-    public void onApplicationEvent(final ContextRefreshedEvent event) {
-        if (alreadySetup) {
-            return;
-        }
+	@Override
+	@Transactional
+	public void onApplicationEvent(final ContextRefreshedEvent event) {
+		if (alreadySetup) {
+			return;
+		}
 
-        // Create initial roles
-        for (Roles role : Roles.values()) {
-            createRoleIfNotFound(role.toString());
-        }
+		// Create initial roles
+		for (Roles role : Roles.values()) {
+			createRoleIfNotFound(role.toString());
+		}
 
-        final Role adminRole = roleRepository.findByName("ROLE_ADMIN");
-        final User user = new User();
-        user.setUsername("Test");
-        user.setPassword(passwordEncoder.encode("test123"));
-        user.setEmail("test@test.com");
-        user.setRole(adminRole);
-        user.setEnabled(true);
-        user.setSecurityQuestion("Name?");
-        user.setSecurityAnswer("test");
-        userRepository.save(user);
+		final Role adminRole = roleRepository.findByName("ROLE_ADMIN");
+		final User user = new User();
+		user.setUsername("Test");
+		user.setPassword(passwordEncoder.encode("test123"));
+		user.setEmail("test@test.com");
+		user.setRole(adminRole);
+		user.setEnabled(true);
+		user.setSecurityQuestion("Name?");
+		user.setSecurityAnswer("test");
+		userRepository.save(user);
 
-        alreadySetup = true;
-    }
+		alreadySetup = true;
+	}
 
-    @Transactional
-    private final Role createRoleIfNotFound(final String name) {
-        Role role = roleRepository.findByName(name);
-        if (role == null) {
-            role = new Role(name);
-            roleRepository.save(role);
-        }
-        return role;
-    }
+	@Transactional
+	private final Role createRoleIfNotFound(final String name) {
+		Role role = roleRepository.findByName(name);
+		if (role == null) {
+			role = new Role(name);
+			roleRepository.save(role);
+		}
+		return role;
+	}
 
 }

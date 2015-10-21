@@ -1,4 +1,5 @@
 
+
 package com.bankapp.services;
 
 import java.security.Principal;
@@ -140,13 +141,6 @@ public class UserService implements IUserService {
         mailService.sendEmail(recipientAddress, subject, textBody);
     }
 
-    // OTP Part
-    @Override
-    public OneTimePassword generateOTP(Transaction transaction) {
-        OneTimePassword otp = new OneTimePassword(transaction);
-        oTPRepository.save(otp);
-        return otp;
-    }
 
     @Override
     public OneTimePassword generateNewOTP(final String existingUsedOTP) {
@@ -252,6 +246,18 @@ public class UserService implements IUserService {
 		}
 		
 		return getmanager;
+	}
+
+	@Override
+	public OneTimePassword generateOTP(Transaction transaction) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public OneTimePassword generateOTP(Long resourceId, String resourceName) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

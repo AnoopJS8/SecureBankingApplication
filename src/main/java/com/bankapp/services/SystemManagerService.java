@@ -50,6 +50,7 @@ public class SystemManagerService implements ISystemManagerService {
     public String approveTransaction(Transaction transaction) {
 
         String result = "";
+        transaction.setStatus("Approved");
 
         try {
             TransRepo.save(transaction);
@@ -91,4 +92,5 @@ public class SystemManagerService implements ISystemManagerService {
         return "Success";
     }
 
+	
 }

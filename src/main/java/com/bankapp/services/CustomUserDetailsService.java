@@ -1,8 +1,12 @@
+
 package com.bankapp.services;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
@@ -28,6 +32,9 @@ public class CustomUserDetailsService implements UserDetailsService {
     @Autowired
     private RoleRepository roleRepository;
 
+    @Autowired
+    private HttpServletRequest request;
+
     public CustomUserDetailsService() {
         super();
     }
@@ -45,6 +52,8 @@ public class CustomUserDetailsService implements UserDetailsService {
                         getAuthorities(roleRepository.findByName("ROLE_CUSTOMER")));
             }
 
+            saveLoginDetails(user);
+
             return new User(user.getEmail(), user.getPassword(), user.isEnabled(), accountNotExpired,
                     credentialsNotExpired, accountNotLocked, getAuthorities(user.getRole()));
         } catch (final Exception e) {
@@ -56,6 +65,18 @@ public class CustomUserDetailsService implements UserDetailsService {
         final List<SimpleGrantedAuthority> authorities = new ArrayList<SimpleGrantedAuthority>();
         authorities.add(new SimpleGrantedAuthority(role.getName()));
         return authorities;
+    }
+
+    private void saveLoginDetails(com.bankapp.models.User user) {
+
+        String ip = request.getRemoteAddr();
+        String lastLoginIP = user.getCurrentLoginIP();
+        Date lastLoginDate = user.getCurrentLoginDate();
+        user.setLastLoginIP(lastLoginIP);
+        user.setLastLoginDate(lastLoginDate);
+        user.setCurrentLoginIP(ip);
+        user.setCurrentLoginDate(new Date());
+        userRepository.save(user);
     }
 
 }

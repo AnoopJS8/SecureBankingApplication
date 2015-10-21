@@ -4,31 +4,33 @@
 	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
 <head th:include="fragment/common :: headerFragment" />
 <body>
-<h2>Profile Request</h2>
+	<h2>Profile Request</h2>
 
-<div class="table-responsive">
-			<table class="table table-bordered table-hover">
-				<thead>
-					<tr>
-						<th>Request id</th>
-						<th>Request username</th>
-						<th>Request Status</th>
-					</tr>
-				</thead>
-				<tbody>
-					<tr style="cursor: pointer" th:each="requests : ${request}">
-						<td><span th:text="${requests.rId}"></span></td>
-						<td><span th:text="${requests.user.username}"></span></td>
-						<td><span th:text="${requests.status}"></span></td>
-						<td>
-			<form action="#" th:object="${requests}" th:action="@{/changeRequest}" method="POST">
-			<input type="hidden" name="rId" th:value="*{rId}" />
-			<button type="submit">Change Request</button>
-			</form>  </td>
-					</tr>
-				</tbody>
-			</table>
-		</div>
+	<div class="table-responsive">
+		<table class="table table-bordered table-hover">
+			<thead>
+				<tr>
+					<th>Request id</th>
+					<th>Request username</th>
+					<th>Request Status</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr style="cursor: pointer" th:each="requests : ${request}">
+					<td><span th:text="${requests.rId}"></span></td>
+					<td><span th:text="${requests.user.username}"></span></td>
+					<td><span th:text="${requests.status}"></span></td>
+					<td>
+						<form action="#" th:object="${requests}"
+							th:action="@{/changeRequest}" method="POST">
+							<input type="hidden" name="rId" th:value="*{rId}" />
+							<button type="submit">Change Request</button>
+						</form>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
 
 
 </body>
