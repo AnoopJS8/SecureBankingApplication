@@ -1,6 +1,7 @@
 package com.bankapp.configs;
 
 import org.springframework.boot.autoconfigure.thymeleaf.ThymeleafProperties;
+
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration.WebMvcAutoConfigurationAdapter;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
@@ -24,6 +25,7 @@ public class MvcConfig extends WebMvcAutoConfigurationAdapter {
         registry.addResourceHandler("/**").addResourceLocations(CLASSPATH_RESOURCE_LOCATIONS);
 
     }
+
 
     @Override
     public void addViewControllers(ViewControllerRegistry registry) {

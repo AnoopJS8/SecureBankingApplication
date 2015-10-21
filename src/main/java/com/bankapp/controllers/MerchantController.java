@@ -3,6 +3,8 @@ package com.bankapp.controllers;
 import java.security.Principal;
 import java.util.List;
 
+import javax.validation.Valid;
+
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
@@ -73,11 +75,14 @@ public class MerchantController implements Constants {
 			mv.addObject("message", msg);
 			String errorMsg = String.format("Action: %s, Message: %s", "save transaction", msg);
 			LOGGER.error(errorMsg);
-			mv.setViewName("success");
+			mv.setViewName("error");
 		} else if (message.equalsIgnoreCase(SUCCESS)) {
 			mv.addObject("message", "Money transfered successfully");
 			mv.setViewName("success");
-		} else {
+		} else if (message.equalsIgnoreCase(ERR_ACCOUNT_NOT_EXISTS)) {
+            mv.addObject("message", ERR_ACCOUNT_NOT_EXISTS);
+            mv.setViewName("error");
+        }else {
 			mv.addObject("message", "Error");
 			String errorMsg = String.format("Action: %s, Message: %s", "Error", message);
 			LOGGER.error(errorMsg);
@@ -134,7 +139,7 @@ public class MerchantController implements Constants {
 	}
 
 	@RequestMapping(value = "/merchant/initiatetransaction", method = RequestMethod.POST)
-	public ModelAndView initiateTransaction(@ModelAttribute("transaction") Transaction transaction,
+	public ModelAndView initiateTransaction(@ModelAttribute("transaction") @Valid Transaction transaction,
 			BindingResult result, WebRequest request, Errors errors, Principal principal) {
 		ModelAndView mv = new ModelAndView();
 		mv.addObject("role", "merchant");

@@ -41,12 +41,36 @@ public class SystemManagerController implements Constants {
     private final Logger LOGGER = Logger.getLogger(SystemManagerController.class);
 
     @RequestMapping(value = "/criticaltransaction", method = RequestMethod.GET)
-    public ModelAndView getPendingTransaction() {
+    public ModelAndView getCriticalTransaction() {
         List<Transaction> transactions = manager.getTransactionsByStatus(S_OTP_VERIFIED);
         ModelAndView mv = new ModelAndView();
         mv.addObject("critical", transactions);
-        mv.setViewName("manager/criticaltransactions");
+        mv.setViewName("/manager/viewTransaction");
         return mv;
+    }
+    
+    @RequestMapping(value = "/pendingtransaction", method = RequestMethod.GET)
+    public ModelAndView getInitiatedTransaction() {
+        List<Transaction> transactions = manager.getTransactionsByStatus(S_PENDING);
+        ModelAndView mv = new ModelAndView();
+        mv.addObject("pending", transactions);
+        mv.setViewName("/manager/viewPending");
+        return mv;
+    }
+    
+    @RequestMapping(value = "/getUserById", method = RequestMethod.GET)
+    public ModelAndView getuserId(){
+        ModelAndView mv = new ModelAndView();
+
+    	mv.setViewName("/manager/viewUserByIdForm");
+    	return mv;
+    }
+    @RequestMapping(value = "/getUserByEmail", method = RequestMethod.GET)
+    public ModelAndView getuserEmail(){
+        ModelAndView mv = new ModelAndView();
+
+    	mv.setViewName("/manager/viewUserByEmailForm");
+    	return mv;
     }
 
     @RequestMapping(value = "/approvetransaction", method = RequestMethod.POST)
@@ -76,13 +100,15 @@ public class SystemManagerController implements Constants {
         } else {
             str = "Unsuccessfull";
         }
-
+        System.out.println(str);
         mv.addObject("result1", str);
         System.out.println("Done");
-        mv.setViewName("manager/criticaltransactions");
+        mv.setViewName("/manager/viewTransaction");
 
         return mv;
     }
+    
+    
 
     @RequestMapping(value = "/manager_adduser", method = RequestMethod.POST)
     public ModelAndView addUser(User user_request) {
@@ -106,14 +132,15 @@ public class SystemManagerController implements Constants {
 
         ModelAndView mv = new ModelAndView();
         mv.addObject("manager_ceateuser", user);
-        mv.setViewName("manager/manager_view");
+        mv.setViewName("/manager/manager_view");
 
         return mv;
 
     }
 
-    @RequestMapping(value = "/manager_viewuser_byemail", method = RequestMethod.GET)
-    public ModelAndView getuser_byemail(String email) {
+    @RequestMapping(value = "/manager_viewuser_byemail", method = RequestMethod.POST)
+    public ModelAndView getuser_byemail(@ModelAttribute("email") String email, BindingResult result,
+            WebRequest request, Errors errors, Principal principal) {
 
         User user = null;
 
@@ -127,17 +154,18 @@ public class SystemManagerController implements Constants {
 
         ModelAndView mv = new ModelAndView();
         mv.addObject("viewuser", user);
-        mv.setViewName("manager/manager_view");
+        mv.setViewName("/manager/viewUser");
         return mv;
     }
 
-    @RequestMapping(value = "/manager_viewuser_byid", method = RequestMethod.GET)
-    public ModelAndView getuser_byid(Long id) {
+    @RequestMapping(value = "/manager_viewuser_byid", method = RequestMethod.POST)
+    public ModelAndView getuser_byid(@ModelAttribute("userid") Long Id, BindingResult result,
+            WebRequest request, Errors errors, Principal principal) {
 
         User user = null;
 
         try {
-            user = manager.viewUserById(id);
+            user = manager.viewUserById((long)Id);
         } catch (UserIdDoesNotExist e) {
             String message = String.format("Action: %s, Message: %s", "EmailDoesNotExist", e.getMessage());
             LOGGER.error(message);
@@ -146,7 +174,7 @@ public class SystemManagerController implements Constants {
 
         ModelAndView mv = new ModelAndView();
         mv.addObject("viewuser", user);
-        mv.setViewName("manager/manager_view");
+        mv.setViewName("/manager/viewUser");
         return mv;
     }
 

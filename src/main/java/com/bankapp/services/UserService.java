@@ -10,16 +10,16 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.bankapp.exceptions.EmailExistsException;
 import com.bankapp.models.OneTimePassword;
-import com.bankapp.models.Transaction;
 import com.bankapp.models.User;
 import com.bankapp.models.VerificationToken;
-import com.bankapp.repositories.RoleRepository;
 import com.bankapp.repositories.OTPRepository;
+import com.bankapp.repositories.RoleRepository;
 import com.bankapp.repositories.UserRepository;
 import com.bankapp.repositories.VerificationTokenRepository;
 
 @Service
 public class UserService implements IUserService {
+    
     @Autowired
     private UserRepository userRepository;
 
@@ -82,9 +82,13 @@ public class UserService implements IUserService {
 
     @Override
     public User getUserFromSession(Principal principal) {
-        String email = principal.getName();
-        User user = userRepository.findByEmail(email);
-        return user;
+        if(principal != null) {
+            String email = principal.getName();
+            User user = userRepository.findByEmail(email);
+            return user;
+        }
+        else 
+            return null;
     }
 
     @Override
@@ -135,8 +139,14 @@ public class UserService implements IUserService {
 
     // OTP Part
     @Override
-    public OneTimePassword generateOTP(Transaction transaction) {
-        OneTimePassword otp = new OneTimePassword(transaction);
+    public OneTimePassword generateOTP(Long resourceId, String resourceName) {
+        OneTimePassword otp = oTPRepository.findByresourceIdAndResourceName(resourceId, resourceName);
+        if(otp!=null){
+            String newOtp = OneTimePassword.generateOTP();
+            otp.setValue(newOtp);
+        }else{
+            otp = new OneTimePassword(resourceId, resourceName);
+        }
         oTPRepository.save(otp);
         return otp;
     }
@@ -144,21 +154,39 @@ public class UserService implements IUserService {
     @Override
     public OneTimePassword generateNewOTP(final String existingUsedOTP) {
         OneTimePassword existingOTP = oTPRepository.findByValue(existingUsedOTP);
-
         String temp = OneTimePassword.generateOTP();
-
         existingOTP.setValue(temp);
         existingOTP = oTPRepository.save(existingOTP);
         return existingOTP;
 
     }
-
-    public boolean verifyOTP(OneTimePassword otp) {
-        OneTimePassword otpFromDB = oTPRepository.findOne(otp.getId());
-        if (otp.getValue() == otpFromDB.getValue()) {
+    
+    @Override
+    public boolean verifyOTP(String otp, Long id, String name) {
+        OneTimePassword otpFromDB = oTPRepository.findByresourceIdAndResourceName(id, name);
+        if (otp.equals(otpFromDB.getValue())) {
+            oTPRepository.delete(otpFromDB.getId());
             return true;
         } else {
             return false;
         }
     }
+
+    @Override
+    public boolean verifyPassword(User user, String currentPassword) {
+        return passwordEncoder.matches(currentPassword, user.getPassword());
+    }
+
+    @Transactional
+    @Override
+    public boolean changePassword(User user) {
+        try{
+            user.setPassword(passwordEncoder.encode(user.getNewpassword()));
+            userRepository.save(user);
+        }catch(Exception e){
+            return false;
+        }
+        return true;
+    }
+
 }
