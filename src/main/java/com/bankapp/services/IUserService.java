@@ -4,7 +4,6 @@ import java.security.Principal;
 
 import com.bankapp.exceptions.EmailExistsException;
 import com.bankapp.models.OneTimePassword;
-import com.bankapp.models.Transaction;
 import com.bankapp.models.User;
 import com.bankapp.models.VerificationToken;
 
@@ -36,7 +35,7 @@ public interface IUserService {
 
     boolean verifyOTP(String otp, Long id, String name);
 
-    boolean verifyPassword(User user, String currentPassword);
-    
     boolean changePassword(User user);
+    
+    public boolean verifyPassword(User user, String currentPassword);
 }

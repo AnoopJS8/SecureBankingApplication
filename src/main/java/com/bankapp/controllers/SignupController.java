@@ -12,6 +12,7 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -28,6 +29,7 @@ import com.bankapp.models.Role;
 import com.bankapp.models.User;
 import com.bankapp.models.VerificationToken;
 import com.bankapp.services.IUserService;
+
 import com.bankapp.validators.RecaptchaFormValidator;
 import com.bankapp.services.IAccountService;
 import com.bankapp.services.IMailService;
@@ -53,6 +55,7 @@ public class SignupController {
 
     @Value("${com.bankapp.account.default_critical_limit}")
     private double defaultCriticalLimit;
+
 
     final private String signupViewName = "registration/signup";
     
@@ -104,6 +107,7 @@ public class SignupController {
             return mv;
         }
         try {
+
             eventPublisher
                     .publishEvent(new OnRegistrationCompleteEvent(registered, request.getLocale(), getAppUrl(request)));
         } catch (Exception e) {
@@ -124,7 +128,6 @@ public class SignupController {
     @RequestMapping(value = "/registrationConfirm", method = RequestMethod.GET)
     public ModelAndView confirmRegistration(HttpServletRequest request, Model model,
             @RequestParam("token") String token) {
-
         String logMessage = String.format("Verifying user account with information: {token = %s}", token);
         LOGGER.info(logMessage);
 

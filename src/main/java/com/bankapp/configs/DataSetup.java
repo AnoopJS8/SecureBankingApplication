@@ -33,6 +33,7 @@ public class DataSetup implements ApplicationListener<ContextRefreshedEvent> {
             return;
         }
 
+
         // Create initial roles
         for (Roles role : Roles.values()) {
             createRoleIfNotFound(role.toString());
