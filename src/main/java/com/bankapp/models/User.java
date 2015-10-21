@@ -32,6 +32,9 @@ public class User {
     @Email
     private String email;
 
+    @ManyToOne(cascade = CascadeType.ALL)
+    private Role role;
+
     @NotEmpty
     @Size(min = 6, max = 60)
     private String password;
@@ -62,41 +65,6 @@ public class User {
     private String lastLoginIP;
 
     private Date lastLoginDate;
-
-    public String getCurrentLoginIP() {
-        return currentLoginIP;
-    }
-
-    public void setCurrentLoginIP(String currentLoginIP) {
-        this.currentLoginIP = currentLoginIP;
-    }
-
-    public Date getCurrentLoginDate() {
-        return currentLoginDate;
-    }
-
-    public void setCurrentLoginDate(Date currentLoginDate) {
-        this.currentLoginDate = currentLoginDate;
-    }
-
-    public Date getLastLoginDate() {
-        return lastLoginDate;
-    }
-
-    public void setLastLoginDate(Date lastLoginDate) {
-        this.lastLoginDate = lastLoginDate;
-    }
-
-    public String getLastLoginIP() {
-        return lastLoginIP;
-    }
-
-    public void setLastLoginIP(String lastLoginIP) {
-        this.lastLoginIP = lastLoginIP;
-    }
-
-    @ManyToOne(cascade = CascadeType.ALL)
-    private Role role;
 
     public User() {
         super();
@@ -242,11 +210,43 @@ public class User {
         this.securityAnswer = securtiyAnswer;
     }
 
+    public String getCurrentLoginIP() {
+        return currentLoginIP;
+    }
+
+    public void setCurrentLoginIP(String currentLoginIP) {
+        this.currentLoginIP = currentLoginIP;
+    }
+
+    public Date getCurrentLoginDate() {
+        return currentLoginDate;
+    }
+
+    public void setCurrentLoginDate(Date currentLoginDate) {
+        this.currentLoginDate = currentLoginDate;
+    }
+
+    public Date getLastLoginDate() {
+        return lastLoginDate;
+    }
+
+    public void setLastLoginDate(Date lastLoginDate) {
+        this.lastLoginDate = lastLoginDate;
+    }
+
+    public String getLastLoginIP() {
+        return lastLoginIP;
+    }
+
+    public void setLastLoginIP(String lastLoginIP) {
+        this.lastLoginIP = lastLoginIP;
+    }
+
     @Override
     public String toString() {
         String value = String.format(
-                "User object [username=%s, email=%s, address=%s, phone number=%s, date of birth=%s, gender=%s, securityQuestion=%s, securityAnswer=%s]",
-                username, email, address, phoneNumber, dateOfBirth, gender, securityQuestion, securityAnswer);
+                "User object [id=%s, username=%s, email=%s, address=%s, phone number=%s, date of birth=%s, gender=%s, securityQuestion=%s, securityAnswer=%s]",
+                id, username, email, address, phoneNumber, dateOfBirth, gender, securityQuestion, securityAnswer);
         return value;
     }
 

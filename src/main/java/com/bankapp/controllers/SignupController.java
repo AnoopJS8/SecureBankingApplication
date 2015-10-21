@@ -90,7 +90,7 @@ public class SignupController {
 			mv.addObject("errors", resultForm.getAllErrors());
 			return mv;
 		}
-
+		
 		User newUser = form.getUser();
 		Role role = form.getRole();
 		String logMessage = String.format("Registering user account with information: {%s, %s}", newUser, role);

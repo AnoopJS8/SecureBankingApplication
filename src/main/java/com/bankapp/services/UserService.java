@@ -1,14 +1,8 @@
-
-
 package com.bankapp.services;
 
 import java.security.Principal;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -17,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.bankapp.exceptions.EmailExistsException;
 import com.bankapp.models.OneTimePassword;
+import com.bankapp.models.Role;
 import com.bankapp.models.Transaction;
 import com.bankapp.models.User;
 import com.bankapp.models.VerificationToken;
@@ -27,7 +22,7 @@ import com.bankapp.repositories.VerificationTokenRepository;
 
 @Service
 public class UserService implements IUserService {
-    
+
     @Autowired
     private UserRepository userRepository;
 
@@ -141,7 +136,6 @@ public class UserService implements IUserService {
         mailService.sendEmail(recipientAddress, subject, textBody);
     }
 
-
     @Override
     public OneTimePassword generateNewOTP(final String existingUsedOTP) {
         OneTimePassword existingOTP = oTPRepository.findByValue(existingUsedOTP);
@@ -153,7 +147,7 @@ public class UserService implements IUserService {
         return existingOTP;
 
     }
-    
+
     public boolean verifyOTP(OneTimePassword otp) {
         OneTimePassword otpFromDB = oTPRepository.findOne(otp.getId());
         if (otp.getValue() == otpFromDB.getValue()) {
@@ -163,101 +157,62 @@ public class UserService implements IUserService {
         }
     }
 
-	@Override
-	public void adduser(User user) {
-		// TODO Auto-generated method stub
-		
-	}
+    @Override
+    public void adduser(User user) {
+        // TODO Auto-generated method stub
 
-	@Override
-	public String getPII(User user) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    }
 
-	@Override
-	public String AddUser(User user) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    @Override
+    public String getPII(User user) {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
-	@Override
-	public void update_name(String username, User user) {
-		// TODO Auto-generated method stub
-		user.setUsername(username);
-		
-		userRepository.save(user);
-		
-		
-	}
-	
-	public void update_Address(String useraddress, User user) {
-		// TODO Auto-generated method stub
-		user.setAddress(useraddress);
-		
-		userRepository.save(user);
-		
-		
-	}
+    @Override
+    public String addUser(User user) {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
-	
+    @Override
+    public void updateUser(Long existingUserId, User updatedUser) {
+        User existingUser = userRepository.findById(existingUserId);
+        existingUser.setUsername(updatedUser.getUsername());
+        existingUser.setAddress(updatedUser.getAddress());
+        existingUser.setPhoneNumber(updatedUser.getPhoneNumber());
+        existingUser.setDateOfBirth(updatedUser.getDateOfBirth());
+        existingUser.setGender(updatedUser.getGender());
+        userRepository.save(existingUser);
+    }
 
-	@Override
-	public User getuserbyName(String name) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    @Override
+    public void deleteUser(User user) {
+        userRepository.delete(user);
+    }
 
-	@Override
-	public void deleteuser(Long id) {
-		// TODO Auto-generated method stub
-		User user = userRepository.findById(id);
-		userRepository.delete(user);
-		
-	}
+    @Override
+    public List<User> getManagers() {
+        Role managerRole = roleRepository.findByName("ROLE_MANAGER");
+        return userRepository.findByRole(managerRole);
+    }
 
-	@Override
-	public List<User> getManagers() {
-		// TODO Auto-generated method stub
-		
-		List<User> getmanager = new ArrayList();
-		List<User> user1 = (List<User>) userRepository.findAll();
-		for (int i = 0; i < user1.size(); i++) {
-			if(user1.get(i).getRole().getId()==1)
-			{
-				getmanager.add(user1.get(i));
-			}
-		}
-		
-		return getmanager;
-	}
-	
-	@Override
-	public List<User> getEmployees() {
-		// TODO Auto-generated method stub
-		
-		List<User> getmanager = new ArrayList();
-		List<User> user1 = (List<User>) userRepository.findAll();
-		for (int i = 0; i < user1.size(); i++) {
-			if(user1.get(i).getRole().getId()==6)
-			{
-				getmanager.add(user1.get(i));
-			}
-		}
-		
-		return getmanager;
-	}
+    @Override
+    public List<User> getEmployees() {
+        Role employeeRole = roleRepository.findByName("ROLE_EMPLOYEE");
+        return userRepository.findByRole(employeeRole);
+    }
 
-	@Override
-	public OneTimePassword generateOTP(Transaction transaction) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    @Override
+    public OneTimePassword generateOTP(Transaction transaction) {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
-	@Override
-	public OneTimePassword generateOTP(Long resourceId, String resourceName) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    @Override
+    public OneTimePassword generateOTP(Long resourceId, String resourceName) {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
 }

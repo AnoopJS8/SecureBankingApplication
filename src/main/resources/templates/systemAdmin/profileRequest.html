@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+<head th:include="fragment/common :: headerFragment" />
+<body>
+	<div class="container">
+		<div th:replace="fragment/common :: top-nav(admin)"></div>
+		<div th:replace="fragment/admin :: admin-header"></div>
+		<h2>Profile Requests</h2>
+		<div th:replace="fragment/common :: message"></div>
+		<div class="table-responsive">
+			<table class="table table-bordered table-hover">
+				<thead>
+					<tr class="info">
+						<th>ID</th>
+						<th>Username</th>
+						<th>Status</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr style="cursor: pointer" th:each="request : ${requests}">
+						<td><span th:text="${request.rId}"></span></td>
+						<td><span th:text="${request.user.username}"></span></td>
+						<td><span th:text="${request.status}"></span></td>
+						<td>
+							<form action="#" th:object="${request}"
+								th:action="@{/approveProfileRequest}" method="POST">
+								<input type="hidden" name="rId" th:value="*{rId}" />
+								<button type="submit" class="btn btn-primary">Approve</button>
+							</form>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+		<div th:replace="fragment/common :: footer"></div>
+	</div>
+</body>
+</html>

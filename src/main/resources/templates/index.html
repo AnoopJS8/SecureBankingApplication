@@ -62,6 +62,21 @@
 					<div class="panel-body">
 						<ul class="nav nav-pills nav-stacked">
 							<li><a th:href="@{/profile}">Profile</a></li>
+							<li sec:authorize="hasRole('ROLE_ADMIN')">
+								<a th:href="@{/admin/myaccount}">My Account</a>
+							</li>
+							<li sec:authorize="hasRole('ROLE_MANAGER')">
+								<a th:href="@{/manager/myaccount}">My Account</a>
+							</li>
+							<li sec:authorize="hasRole('ROLE_EMPLOYEE')">
+								<a th:href="@{/employee/myaccount}">My Account</a>
+							</li>
+							<li sec:authorize="hasRole('ROLE_CUSTOMER')">
+								<a th:href="@{/customer/myaccount}">My Account</a>
+							</li>
+							<li sec:authorize="hasRole('ROLE_MERCHANT')">
+								<a th:href="@{/merchant/myaccount}">My Account</a>
+							</li>
 							<li class="disabled"><a href="#">Last logged in at <strong
 									th:text="${lastLoginDate}"></strong></a></li>
 							<li class="disabled"><a href="#">Last login IP <strong

@@ -1,5 +1,4 @@
 
-
 package com.bankapp.services;
 
 import java.security.Principal;
@@ -29,8 +28,22 @@ public interface IUserService {
     VerificationToken getVerificationToken(String VerificationToken);
 
     VerificationToken generateNewVerificationToken(String VerificationToken);
-    
+
     OneTimePassword generateOTP(Long resourceId, String resourceName);
+
+    void adduser(User user);
+
+    String getPII(User user);
+
+    String addUser(User user);
+
+    void updateUser(Long existingUserId, User newUser);
+
+    void deleteUser(User user);
+
+    List<User> getManagers();
+
+    List<User> getEmployees();
 
     // OTP Section
     OneTimePassword generateOTP(Transaction transaction);
@@ -40,23 +53,5 @@ public interface IUserService {
     void generateTemporaryPassword(User user);
 
     boolean verifyOTP(OneTimePassword otp);
-    
-    void adduser(User user);
-    
-    String getPII(User user);
-    
-    String AddUser(User user);
-    
-    void update_name(String useremail,User user);
-    
-    void update_Address(String useraddress, User user);
-    
-    User getuserbyName(String name);
-
-	void deleteuser(Long id);
-	
-	List<User> getManagers();
-
-	List<User> getEmployees();
 
 }
