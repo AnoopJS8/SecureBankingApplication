@@ -76,7 +76,13 @@ public class CustomerController implements Constants {
             mv.addObject("message", "Money transfered successfully");
             mv.addObject("role", "customer");
             mv.setViewName("success");
-        } else {
+        } else if (message.equalsIgnoreCase(ERR_ACCOUNT_NOT_EXISTS)) {
+            mv.addObject("message", ERR_ACCOUNT_NOT_EXISTS);
+            mv.setViewName("error");
+        } else if (message.equalsIgnoreCase(CRITICAL)) {
+            mv.addObject("message", "Its a critical transaction so it will be handled by our employees shortly");
+            mv.setViewName("success");
+        }else {
             mv.addObject("message", "Error");
             mv.addObject("role", "customer");
             String errorMsg = String.format("Action: %s, Message: %s", "Error", message);

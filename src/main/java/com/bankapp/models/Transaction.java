@@ -38,8 +38,8 @@ public class Transaction {
     @NotNull
     private Double amount;
 
-    @Future(message="Please enter a future date")
     private Date transferDate;
+    
     private Date created;
     private Date updated;
 
