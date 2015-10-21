@@ -44,17 +44,32 @@ public class TransactionService implements ITransactionService, Constants {
 		transaction.setFromAccount(fromAccount);
 		Date date = new Date();
 		transaction.setTransferDate(date);
-		String message = accountService.updateBalance(transaction);
-		if (message.equalsIgnoreCase(LESS_BALANCE)) {
-			return LESS_BALANCE;
-		} else {
-			transaction.setStatus(S_VERIFIED);
-			transactionRepository.save(transaction);
-			return SUCCESS;
-		}
+		if (fromAccount.getBalance() < transaction.getAmount()) {
+            return LESS_BALANCE;
+        }else{
+            boolean ifCritical = isBelowCriticalLimit(fromAccount, transaction);
+            if(ifCritical){
+                transaction.setStatus(S_OTP_PENDING);
+                transactionRepository.save(transaction);
+                return CRITICAL;
+            }
+            String message = accountService.updateBalance(transaction);
+            transaction.setStatus(S_VERIFIED);
+            transactionRepository.save(transaction);
+            return message;
+        }
+		
 	}
 
-	@Transactional
+	private boolean isBelowCriticalLimit(Account fromAccount, Transaction transaction) {
+        double criticalLimit = fromAccount.getCriticalLimit();
+        if(transaction.getAmount()>=criticalLimit){
+            return true;
+        }
+        return false;
+    }
+
+    @Transactional
 	@Override
 	public String askCustomerPayment(Transaction transaction, User user) {
 		Long accId = transaction.getToAccount().getAccId();

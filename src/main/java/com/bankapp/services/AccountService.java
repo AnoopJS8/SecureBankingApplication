@@ -36,9 +36,6 @@ public class AccountService implements IAccountService, Constants {
         double amount = transaction.getAmount();
         Account fromAccount = transaction.getFromAccount();
         Account toAccount = transaction.getToAccount();
-        if (fromAccount.getBalance() < amount) {
-            return LESS_BALANCE;
-        }
         toAccount.setBalance(toAccount.getBalance() + amount);
         fromAccount.setBalance(fromAccount.getBalance() - amount);
         accountRepository.saveAndFlush(toAccount);
