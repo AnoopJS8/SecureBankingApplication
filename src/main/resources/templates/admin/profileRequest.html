@@ -16,9 +16,13 @@
 						<th>ID</th>
 						<th>Username</th>
 						<th>Status</th>
+						<th>Options</th>
 					</tr>
 				</thead>
 				<tbody>
+				    <tr th:if="${requests.size()} == 0">
+                        <td colspan="4">There are no requests</td>
+                    </tr>
 					<tr style="cursor: pointer" th:each="request : ${requests}">
 						<td><span th:text="${request.rId}"></span></td>
 						<td><span th:text="${request.user.username}"></span></td>

@@ -36,13 +36,13 @@ public class AdminController {
 
     @RequestMapping(value = "/admin/myaccount", method = RequestMethod.GET)
     public ModelAndView AdminDetails() {
-        ModelAndView mv = new ModelAndView("/systemAdmin/dashboard");
+        ModelAndView mv = new ModelAndView("/admin/myaccount");
         return mv;
     }
 
     @RequestMapping(value = "/admin/managers", method = RequestMethod.GET)
     public ModelAndView managerDetails() {
-        ModelAndView mv = new ModelAndView("/systemAdmin/managerDetails");
+        ModelAndView mv = new ModelAndView("/admin/managerDetails");
         List<User> managers = userService.getManagers();
         UpdateUsersForm form = new UpdateUsersForm();
         form.setUsers(managers);
@@ -75,7 +75,7 @@ public class AdminController {
 
     @RequestMapping(value = "/admin/employees", method = RequestMethod.GET)
     public ModelAndView employeeDetails() {
-        ModelAndView mv = new ModelAndView("/systemAdmin/employeeDetails");
+        ModelAndView mv = new ModelAndView("/admin/employeeDetails");
         List<User> employees = userService.getEmployees();
         UpdateUsersForm form = new UpdateUsersForm();
         form.setUsers(employees);
@@ -108,7 +108,7 @@ public class AdminController {
 
     @RequestMapping(value = "/admin/requests", method = RequestMethod.GET)
     public ModelAndView profileRequest() {
-        ModelAndView mv = new ModelAndView("/systemAdmin/profileRequest");
+        ModelAndView mv = new ModelAndView("/admin/profileRequest");
         List<ProfileRequest> requests = profileService.getPendingRequests();
         mv.addObject("requests", requests);
         return mv;
