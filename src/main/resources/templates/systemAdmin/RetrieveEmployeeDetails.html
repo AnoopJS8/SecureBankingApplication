@@ -6,26 +6,27 @@
 <body>
 <h1>Employee Details</h1>
 
-<thead>
-		<tr>
-			<th>username</th>
-			<th>Address</th>
-
-		</tr>
-	</thead>
-
-	<tr th:each="users : ${info}">
-
-		<td><span th:text="${users.username}"></span></td>
-		<td><span th:text="${users.address}"></span></td>
-		<td><form action="#" th:object="${users}" th:action="@{/change_username}"
+<div class="table-responsive">
+			<table class="table table-bordered table-hover">
+				<thead>
+					<tr>
+						<th>username</th>
+						<th>Address</th>
+						
+					</tr>
+				</thead>
+				<tbody>
+					<tr style="cursor: pointer" th:each="users : ${info}">
+						<td><span th:text="${users.username}"></span></td>
+						<td><span th:text="${users.address}"></span></td>
+						<td><form action="#" th:object="${users}" th:action="@{/change_username}"
 				method="POST">
 
 				<input type="text" name="username" />
 				<input type="hidden" name="id" th:value="*{id}" />
 				<button type="submit">Change Username</button>
 			</form></td>
-		<td><form action="#" th:object="${users}" th:action="@{/change_Address}" method="POST">
+						<td><form action="#" th:object="${users}" th:action="@{/change_Address}" method="POST">
 				<input type="text" name="useraddress" />
 				<input type="hidden" name="id" th:value="*{id}" />
 				<button type="submit">Change Address</button>
@@ -37,8 +38,14 @@
 			<button type="submit">Delete user</button>
 			</form>
 		</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+
+	
 
 
-	</tr>
+
 </body>
 </html>

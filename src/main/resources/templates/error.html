@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
 	xmlns:th="http://www.thymeleaf.org"
@@ -5,6 +6,7 @@
 <head th:include="fragment/common :: headerFragment" />
 <body>
 	<div class="container">
+
 		<div th:replace="fragment/common :: top-nav(error)"></div>
 		<div th:if="${role == 'merchant'}">
 			<div th:replace="fragment/merchant :: merchant-header"></div>
@@ -18,3 +20,6 @@
 	</div>
 </body>
 </html>
+
+
+

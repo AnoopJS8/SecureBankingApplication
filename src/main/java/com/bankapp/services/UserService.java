@@ -6,6 +6,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -16,13 +19,14 @@ import com.bankapp.models.OneTimePassword;
 import com.bankapp.models.Transaction;
 import com.bankapp.models.User;
 import com.bankapp.models.VerificationToken;
-import com.bankapp.repositories.RoleRepository;
 import com.bankapp.repositories.OTPRepository;
+import com.bankapp.repositories.RoleRepository;
 import com.bankapp.repositories.UserRepository;
 import com.bankapp.repositories.VerificationTokenRepository;
 
 @Service
 public class UserService implements IUserService {
+    
     @Autowired
     private UserRepository userRepository;
 
@@ -155,7 +159,7 @@ public class UserService implements IUserService {
         return existingOTP;
 
     }
-
+    
     public boolean verifyOTP(OneTimePassword otp) {
         OneTimePassword otpFromDB = oTPRepository.findOne(otp.getId());
         if (otp.getValue() == otpFromDB.getValue()) {

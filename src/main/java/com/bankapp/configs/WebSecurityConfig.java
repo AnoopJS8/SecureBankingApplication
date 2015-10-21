@@ -35,7 +35,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                         "/resendRegistrationToken",
                         "/badUser","/sysadmin","/RetrieveEmployeeDetails","/RetrieveManagerDetails",
                         "/change_Username_Manager","/change_Address_Manager","/change_username","/change_Address",
-                        "/DeleteUserManager","/DeleteUserEmployee",
+                        "/DeleteUserManager","/DeleteUserEmployee","/profileRequest","/changeRequest",
                         // Resources
 
                         "/webjars/**",
