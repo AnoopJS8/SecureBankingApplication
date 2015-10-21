@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:th="http://www.thymeleaf.org">
+<head th:include="fragment/common :: headerFragment" />
+<body>
+ <div>
+    <p th:text="${result1}">MyASU BANK </p>
+    </div>
+    <div class="table-responsive">
+			<table class="table table-bordered table-hover">
+				<thead>
+					<tr>
+					
+						<th>To Account Number</th>
+						<th>Amount</th>
+						
+					</tr>
+				</thead>
+			
+				<tbody>
+					<tr th:each="row : ${modify_transaction}">
+					<td><span th:text="${row.toAccount}"></span></td>
+						<td><span th:text="${row.amount}"></span></td>
+					
+					
+						<td> <form  action="#" th:action="@{/modifyamount_transactions}" th:object="${row}" method="post">
+					
+					 <input type="text" name="amount"/> 
+						 <input type="hidden" name="transactionId" th:value="*{transactionId}" />  
+						  <button type = "Submit" name="action" value="Updateamount"> Update </button>
+                        </form> 
+						</td>
+						<td> <form  action="#" th:action="@{/modifytoAccount_transactions}" th:object="${row}" method="post">
+					
+					 <input type="text" name="to_Account"/> 
+						 <input type="hidden" name="transactionId" th:value="*{transactionId}" />  
+						  <button type = "Submit" name="action" value="Updateaccount"> Update </button>
+                        </form> 
+						</td>
+						
+					</tr>
+				</tbody>
+			</table>
+			
+		</div>
+ 
+</body>
+</html>

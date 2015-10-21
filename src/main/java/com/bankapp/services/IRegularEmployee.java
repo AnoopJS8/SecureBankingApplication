@@ -11,7 +11,7 @@ import com.bankapp.models.VerificationToken;
 
 public interface IRegularEmployee {
 
-Double update_Amount(Double Amount, Transaction transaction);
+void update_Amount(Double Amount, Transaction transaction);
 	
 
 }

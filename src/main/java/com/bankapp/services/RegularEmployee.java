@@ -4,6 +4,7 @@ import java.util.List;
 
 
 
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -51,11 +52,11 @@ private TransactionRepository TransRepo1;
 //	}
 
 	
-	public Double update_Amount(Double amount2, Transaction transaction) {
+	public void update_Amount(Double amount2, Transaction transaction) {
 		// TODO Auto-generated method stub
 		transaction.setAmount(amount2);
 		TransRepo1.save(transaction);
-		return null;
+		
 	}
 	
 }
