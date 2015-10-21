@@ -3,12 +3,15 @@ package com.bankapp.services;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.bankapp.models.Account;
+import com.bankapp.models.OneTimePassword;
 import com.bankapp.models.Transaction;
 import com.bankapp.models.User;
 import com.bankapp.repositories.AccountRepository;
+import com.bankapp.repositories.OTPRepository;
 import com.bankapp.repositories.TransactionRepository;
 import com.bankapp.repositories.UserRepository;
 
@@ -23,6 +26,8 @@ public class SystemManagerService implements ISystemManagerService {
 
     @Autowired
     private AccountRepository AccountRepo;
+    
+
 
     @Override
     public List<Transaction> getTransactionsByStatus(String status) {
@@ -91,6 +96,9 @@ public class SystemManagerService implements ISystemManagerService {
 
         return "Success";
     }
+    
+    
+   
 
 	
 }

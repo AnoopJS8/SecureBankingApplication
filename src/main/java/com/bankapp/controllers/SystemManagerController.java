@@ -6,8 +6,13 @@ package com.bankapp.controllers;
 import java.security.Principal;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
+
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.Errors;
@@ -22,10 +27,17 @@ import com.bankapp.exceptions.EmailExistsException;
 import com.bankapp.exceptions.UserAlreadyExistException;
 import com.bankapp.exceptions.UserIdDoesNotExist;
 import com.bankapp.exceptions.UserNameExistsException;
+import com.bankapp.forms.ManagerCreateUser;
+import com.bankapp.forms.SignupForm;
+import com.bankapp.listeners.OnRegistrationCompleteEvent;
 import com.bankapp.models.Account;
+import com.bankapp.models.OneTimePassword;
+import com.bankapp.models.Role;
 import com.bankapp.models.Transaction;
 import com.bankapp.models.User;
+import com.bankapp.repositories.RoleRepository;
 import com.bankapp.services.ISystemManagerService;
+import com.bankapp.services.IUserService;
 import com.bankapp.constants.Constants;;;
 
 /**
@@ -37,6 +49,20 @@ public class SystemManagerController implements Constants {
 
     @Autowired
     private ISystemManagerService manager;
+    
+    @Autowired
+    private RoleRepository roleRepository;
+
+    
+    @Autowired
+    private IUserService user_service;
+    
+    
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+    
+    @Autowired
+    ApplicationEventPublisher eventPublisher;
 
     private final Logger LOGGER = Logger.getLogger(SystemManagerController.class);
 
@@ -72,7 +98,8 @@ public class SystemManagerController implements Constants {
     	mv.setViewName("/manager/viewUserByEmailForm");
     	return mv;
     }
-
+    
+    
     @RequestMapping(value = "/approvetransaction", method = RequestMethod.POST)
     public ModelAndView approvetransaction(@ModelAttribute("row") Transaction Id, BindingResult result,
             WebRequest request, Errors errors, Principal principal) {
@@ -108,34 +135,58 @@ public class SystemManagerController implements Constants {
         return mv;
     }
     
-    
+    @RequestMapping(value = "/addUserForm", method = RequestMethod.GET)
+    public ModelAndView getUserAddage() {
+        ModelAndView modelAndView = new ModelAndView("manager/addUserForm", "form", new ManagerCreateUser());
+        return modelAndView;
+    }
 
     @RequestMapping(value = "/manager_adduser", method = RequestMethod.POST)
-    public ModelAndView addUser(User user_request) {
-        User user = null;
+    public ModelAndView addUser(@ModelAttribute("form") ManagerCreateUser form, BindingResult resultForm,
+            HttpServletRequest request) {
+        	 	User user=new User();   
+        	 	Role role = form.getRole();
+        	 	
+	        	User registered = null;
+	
+	            user.setEmail(form.getEmail());
+	            user.setUsername(form.getUsername());
+	             
+	            String temporaryPassword = OneTimePassword.generateOTP();
+	            user.setPassword(passwordEncoder.encode(temporaryPassword));
+	            String message= "Success";
+	            try {
+					registered = user_service.registerNewUserAccount(user, role.getName());
+				} catch (EmailExistsException e1) {
+	                message = String.format("Action: %s, Message: %s", "signup", e1.getMessage());
+					
+				}
+	             
+	            if(registered != null)
+	            {
+	            	try {
+	
+	                    eventPublisher.publishEvent(new OnRegistrationCompleteEvent(registered, request.getLocale(), getAppUrl(request)));
+	                } catch (Exception e) {
+	                    message = String.format("Action: %s, Message: %s", "signup", e.getMessage());
+	                    LOGGER.error(message);
+	
+	                   
+	                }
+	            	
+	            	user_service.generateTemporaryPassword(registered);
+	            }
+	
+	            ModelAndView mv = new ModelAndView();
+	            mv.addObject("message", message);
+	            mv.setViewName("/manager/addUserForm");
+	
+	            return mv;
 
-        try {
-            user = manager.addUser(user_request);
-        } catch (EmailExistsException e) {
-            String message = String.format("Action: %s, Message: %s", "email_exists", e.getMessage());
-            LOGGER.error(message);
-            return null;
-        } catch (UserNameExistsException e) {
-            String message = String.format("Action: %s, Message: %s", "username_exists", e.getMessage());
-            LOGGER.error(message);
-            return null;
-        } catch (UserAlreadyExistException e) {
-            String message = String.format("Action: %s, Message: %s", "user_exists", e.getMessage());
-            LOGGER.error(message);
-            return null;
-        }
-
-        ModelAndView mv = new ModelAndView();
-        mv.addObject("manager_ceateuser", user);
-        mv.setViewName("/manager/manager_view");
-
-        return mv;
-
+    }
+    
+    private String getAppUrl(HttpServletRequest request) {
+        return request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort();
     }
 
     @RequestMapping(value = "/manager_viewuser_byemail", method = RequestMethod.POST)
