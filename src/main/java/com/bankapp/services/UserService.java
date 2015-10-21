@@ -3,10 +3,6 @@ package com.bankapp.services;
 import java.security.Principal;
 import java.util.UUID;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-
-import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -14,7 +10,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.bankapp.exceptions.EmailExistsException;
 import com.bankapp.models.OneTimePassword;
-import com.bankapp.models.Transaction;
 import com.bankapp.models.User;
 import com.bankapp.models.VerificationToken;
 import com.bankapp.repositories.OTPRepository;
@@ -87,9 +82,13 @@ public class UserService implements IUserService {
 
     @Override
     public User getUserFromSession(Principal principal) {
-        String email = principal.getName();
-        User user = userRepository.findByEmail(email);
-        return user;
+        if(principal != null) {
+            String email = principal.getName();
+            User user = userRepository.findByEmail(email);
+            return user;
+        }
+        else 
+            return null;
     }
 
     @Override
