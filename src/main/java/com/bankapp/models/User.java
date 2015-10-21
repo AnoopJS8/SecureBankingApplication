@@ -32,6 +32,9 @@ public class User {
     @NotEmpty
     @Size(min = 6, max = 60)
     private String password;
+    
+    @Size(min = 6, max = 60)
+    private String newpassword;
 
     private String address;
 
@@ -144,6 +147,15 @@ public class User {
 
     public void setTokenExpired(final boolean expired) {
         this.tokenExpired = expired;
+    }
+    
+
+    public String getNewpassword() {
+        return newpassword;
+    }
+
+    public void setNewpassword(String newpassword) {
+        this.newpassword = newpassword;
     }
 
     @Override

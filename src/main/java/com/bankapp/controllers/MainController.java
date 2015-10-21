@@ -1,30 +1,44 @@
 package com.bankapp.controllers;
 
-import org.apache.log4j.Logger;
+
+import java.security.Principal;
+
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.Errors;
+import org.apache.log4j.Logger;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.bankapp.models.User;
+import com.bankapp.constants.Constants;
+import com.bankapp.models.ProfileRequest;
+import com.bankapp.services.IProfileRequestService;
 import com.bankapp.services.IUserService;
 
 @Controller
-public class MainController {
+public class MainController implements Constants{
+    
     private final Logger LOGGER = Logger.getLogger(MainController.class);
 
     @Autowired
     private IUserService userService;
-
-    @RequestMapping(value = "/", method = RequestMethod.GET)
-    public ModelAndView home() {
-        ModelAndView mv = new ModelAndView();
-        mv.setViewName("index");
-        return mv;
-    }
+    
+    @Autowired
+    private IProfileRequestService profileRequestService;
+    
+	@RequestMapping(value = "/", method = RequestMethod.GET)
+	public ModelAndView home() {
+		ModelAndView mv = new ModelAndView();
+		mv.setViewName("index");
+		return mv;
+	}
 
     @RequestMapping(value = "/login/identify", method = RequestMethod.GET)
     public ModelAndView getRecoverPassword() {
@@ -89,5 +103,36 @@ public class MainController {
                 return mv;
             }
         }
+    }
+    
+    @RequestMapping(value = "/profile", method = RequestMethod.GET)
+    public ModelAndView profile(Principal principal) {
+        ModelAndView mv = new ModelAndView();
+        User loggedInUser = userService.getUserFromSession(principal);
+        mv.addObject("user", loggedInUser);
+        mv.addObject("role", loggedInUser.getRole().getName());
+        mv.setViewName("profile");
+        return mv;
+    }
+    
+    @RequestMapping(value = "/profile", method = RequestMethod.POST)
+    public ModelAndView updateProfile(@ModelAttribute("user") @Valid User user, BindingResult result,
+            WebRequest request, Errors errors, Principal principal) {
+        ModelAndView mv = new ModelAndView();
+        ProfileRequest profile = new ProfileRequest();
+        profile.setAddress(user.getAddress());
+        profile.setDateOfBirth(user.getDateOfBirth());
+        profile.setPhoneNumber(user.getPhoneNumber());
+        profile.setStatus(S_PROFILE_UPDATE_PENDING);
+        profile.setUser(userService.getUserFromSession(principal));
+        String message = profileRequestService.saveProfileRequest(profile);
+        if(message.equalsIgnoreCase(ERROR)){
+            mv.addObject("message", "Error occured");
+            mv.setViewName("error");
+            return mv;
+        }
+        mv.addObject("message", "Request for changes are sent to out employee");
+        mv.setViewName("success");
+        return mv;
     }
 }
