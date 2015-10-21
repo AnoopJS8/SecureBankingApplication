@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+<head th:include="fragment/common :: headerFragment" />
+<body>
+	<div class="container">
+		<div th:replace="fragment/common :: top-nav(myaccount)"></div>	
+		<div th:replace="fragment/manager :: manager-header"></div>
+		<div >
+			<h3>Add User Form</h3>
+		</div>
+		<div class="table-responsive">
+			
+					
+			<form id="addUser-form" action="#" th:action="@{/manager_adduser}" th:object="${form}" method="post" class="form-horizontal">
+            	<div th:text="${message}"></div>
+						<div class="form-group">
+                <label class="col-sm-2 control-label">Name</label>
+                <div class="col-sm-10">
+                    <input type="text" th:field="*{username}" th:errorclass="fieldError" class="form-control" placeholder="User name" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label">Email</label>
+                <div class="col-sm-10">
+                    <input type="text" th:field="*{email}" th:errorclass="fieldError" class="form-control" placeholder="Email address" />
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label class="col-sm-2 control-label" for="role">Account Type</label>
+                <div class="col-sm-10">
+                    <select th:field="*{role.name}" class="form-control">
+                        <option th:value="ROLE_CUSTOMER">Customer</option>
+                        <option th:value="ROLE_MERCHANT">Merchant</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <div class="col-sm-offset-2 col-sm-10">
+                    <button type="submit" class="btn btn-primary">Sign Up</button>
+                </div>
+            </div>
+        </form>
+						
+					
+		</div>
+		
+	
+	</div>
+</body>
+</html>

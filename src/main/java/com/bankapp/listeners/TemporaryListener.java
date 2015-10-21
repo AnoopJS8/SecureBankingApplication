@@ -4,37 +4,53 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Component;
 
+import com.bankapp.constants.Constants;
 import com.bankapp.models.OneTimePassword;
 import com.bankapp.models.Transaction;
 import com.bankapp.models.User;
 import com.bankapp.services.IMailService;
+import com.bankapp.services.ITransactionService;
 import com.bankapp.services.IUserService;
 
 @Component
-public class TemporaryListener implements ApplicationListener<OnCriticalTransaction> {
+public class TemporaryListener implements ApplicationListener<OnOtpEvent>, Constants {
     @Autowired
-    private IUserService oTPService;
+    private IUserService userService;
 
     @Autowired
     private IMailService mailService;
+    
+    @Autowired
+    private ITransactionService transactionService;
 
     @Override
-    public void onApplicationEvent(OnCriticalTransaction event) {
-        this.confirmRegistration(event);
+    public void onApplicationEvent(OnOtpEvent event) {
+        this.confirmOTP(event);
     }
 
-    private void confirmRegistration(OnCriticalTransaction event) {
-        Transaction transaction = event.getTransaction();
-        OneTimePassword otp = oTPService.generateOTP(transaction);
-        User recipientUser = transaction.getFromAccount().getUser();
+    private void confirmOTP(OnOtpEvent event) {
+        Long resourceId = event.getResourceId();
+        String resourceName = event.getResourceName();
+        OneTimePassword otp = userService.generateOTP(resourceId, resourceName);
+        String recipientUsername, recipientEmail = null, textBody = null;
         String subject = "My ASU Bank - OTP";
-        long transactionID = transaction.getTransactionId();
-        String recipientUsername = recipientUser.getUsername();
-        String recipientEmail = recipientUser.getEmail();
-        String textBody = String.format("Dear valued customer <b>%s</b>, <br><br>"
-                + "Please find the One Time Password for the transaction# %d: %s<br />"
-                + "Regards,<br />My ASU Bank<br>", recipientUsername, transactionID, otp.getValue());
-
+        if(resourceName.equals(R_TRANSACTION)){
+            Transaction transaction = transactionService.getTransactionsById(resourceId);
+            User recipientUser = transaction.getFromAccount().getUser();
+            long transactionID = transaction.getTransactionId();
+             recipientUsername = recipientUser.getUsername();
+             recipientEmail = recipientUser.getEmail();
+             textBody = String.format("Dear valued customer <b>%s</b>, <br><br>"
+                    + "Please find the One Time Password for the transaction# %d: %s<br />"
+                    + "Regards,<br />My ASU Bank<br>", recipientUsername, transactionID, otp.getValue());
+        }else if(resourceName.equals(R_USER)){
+            User recipientUser = userService.getUserById(resourceId);
+             recipientUsername = recipientUser.getUsername();
+             recipientEmail = recipientUser.getEmail();
+             textBody = String.format("Dear valued customer <b>%s</b>, <br><br>"
+                    + "Please find the One Time Password for the change password %s<br />"
+                    + "Regards,<br />My ASU Bank<br>", recipientUsername, otp.getValue());
+        }
         mailService.sendEmail(recipientEmail, subject, textBody);
     }
 }
