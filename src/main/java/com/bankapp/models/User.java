@@ -1,5 +1,7 @@
 package com.bankapp.models;
 
+import java.util.Date;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -32,7 +34,7 @@ public class User {
     @NotEmpty
     @Size(min = 6, max = 60)
     private String password;
-    
+
     @Size(min = 6, max = 60)
     private String newpassword;
 
@@ -51,6 +53,46 @@ public class User {
     private String securityQuestion;
 
     private String securityAnswer;
+
+    private String currentLoginIP;
+
+    private Date currentLoginDate;
+
+    private String lastLoginIP;
+
+    private Date lastLoginDate;
+
+    public String getCurrentLoginIP() {
+        return currentLoginIP;
+    }
+
+    public void setCurrentLoginIP(String currentLoginIP) {
+        this.currentLoginIP = currentLoginIP;
+    }
+
+    public Date getCurrentLoginDate() {
+        return currentLoginDate;
+    }
+
+    public void setCurrentLoginDate(Date currentLoginDate) {
+        this.currentLoginDate = currentLoginDate;
+    }
+
+    public Date getLastLoginDate() {
+        return lastLoginDate;
+    }
+
+    public void setLastLoginDate(Date lastLoginDate) {
+        this.lastLoginDate = lastLoginDate;
+    }
+
+    public String getLastLoginIP() {
+        return lastLoginIP;
+    }
+
+    public void setLastLoginIP(String lastLoginIP) {
+        this.lastLoginIP = lastLoginIP;
+    }
 
     @ManyToOne(cascade = CascadeType.ALL)
     private Role role;
@@ -148,7 +190,6 @@ public class User {
     public void setTokenExpired(final boolean expired) {
         this.tokenExpired = expired;
     }
-    
 
     public String getNewpassword() {
         return newpassword;

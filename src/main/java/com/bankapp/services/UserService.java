@@ -3,9 +3,6 @@ package com.bankapp.services;
 import java.security.Principal;
 import java.util.UUID;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -86,9 +83,13 @@ public class UserService implements IUserService {
 
     @Override
     public User getUserFromSession(Principal principal) {
-        String email = principal.getName();
-        User user = userRepository.findByEmail(email);
-        return user;
+        if(principal != null) {
+            String email = principal.getName();
+            User user = userRepository.findByEmail(email);
+            return user;
+        }
+        else 
+            return null;
     }
 
     @Override
