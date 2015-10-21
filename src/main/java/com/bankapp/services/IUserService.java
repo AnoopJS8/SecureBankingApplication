@@ -32,4 +32,8 @@ public interface IUserService {
 
     OneTimePassword generateNewOTP(String value);
 
+
+    void generateTemporaryPassword(User user);
+
+    boolean verifyOTP(OneTimePassword otp);
 }
