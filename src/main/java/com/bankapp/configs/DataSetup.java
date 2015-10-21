@@ -72,6 +72,17 @@ public class DataSetup implements ApplicationListener<ContextRefreshedEvent> {
         managerUser.setSecurityAnswer("test");
         userRepository.save(managerUser);
 
+        final Role customerRole = roleRepository.findByName("ROLE_CUSTOMER");
+        User customerUser = new User();
+        customerUser.setUsername("Test Custoemr");
+        customerUser.setPassword(passwordEncoder.encode("test123"));
+        customerUser.setEmail("test@customer.com");
+        customerUser.setRole(customerRole);
+        customerUser.setEnabled(true);
+        customerUser.setSecurityQuestion("Name?");
+        customerUser.setSecurityAnswer("test");
+        userRepository.save(customerUser);
+
         alreadySetup = true;
     }
 

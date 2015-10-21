@@ -40,6 +40,7 @@
 			<!-- User has logged in -->
 			<div sec:authorize="isAuthenticated()">
 				<ul class="nav navbar-nav navbar-right">
+    				<li><a th:href="@{/profile}">Profile</a></li>
 					<li sec:authorize="hasRole('ROLE_ADMIN')">
                         <a th:href="@{/admin/myaccount}">My Account</a>
                     </li>
