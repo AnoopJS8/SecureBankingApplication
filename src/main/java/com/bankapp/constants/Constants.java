@@ -1,3 +1,4 @@
+
 package com.bankapp.constants;
 
 public interface Constants {
@@ -6,6 +7,7 @@ public interface Constants {
 	public String LESS_BALANCE = "lessbal";
 	public String ERROR = "error";
 	public String ERR_ACCOUNT_NOT_EXISTS = "Account does not Exists";
+	public String CRITICAL = "Critical transaction";
 	//Status
 	public String S_PENDING = "P"; //pending for request like transfer money and profile
 	public String S_OTP_PENDING = "OP"; //critical transaction

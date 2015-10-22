@@ -33,7 +33,7 @@ public class SystemManagerService implements ISystemManagerService {
     public List<Transaction> getTransactionsByStatus(String status) {
 
         List<Transaction> list = TransRepo.findByStatus(status);
-        System.out.println(list);
+        //System.out.println(list);
         return list;
     }
 
@@ -60,7 +60,7 @@ public class SystemManagerService implements ISystemManagerService {
         try {
             TransRepo.save(transaction);
             result = "Successull";
-            System.out.println("Done approve");
+            //System.out.println("Done approve");
         } catch (Exception e) {
             result = "unsuccessull";
         }

@@ -12,6 +12,7 @@ import javax.validation.Valid;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
@@ -45,6 +46,7 @@ import com.bankapp.constants.Constants;;;
  *
  */
 @Controller
+@Secured("ROLE_MANAGER")
 public class SystemManagerController implements Constants {
 
     @Autowired
@@ -100,22 +102,34 @@ public class SystemManagerController implements Constants {
     }
     
     
+    @RequestMapping(value = "/manager/myaccount", method = RequestMethod.GET)
+    public ModelAndView getmanagerhome(Principal principal) {
+        ModelAndView mv = new ModelAndView();
+        User loggedInUser = user_service.getUserFromSession(principal);
+        String Username = loggedInUser.getUsername(); 
+        //System.out.println("username" + Username);
+        mv.addObject("username", Username);       
+        mv.setViewName("manager/myaccount");
+        return mv;
+    }
+    
+    
     @RequestMapping(value = "/approvetransaction", method = RequestMethod.POST)
     public ModelAndView approvetransaction(@ModelAttribute("row") Transaction Id, BindingResult result,
             WebRequest request, Errors errors, Principal principal) {
         ModelAndView mv = new ModelAndView();
-        System.out.println("Entered Approve");
-        System.out.println("Transaction" + Id.getTransactionId());
+     //   //System.out.println("Entered Approve");
+       // //System.out.println("Transaction" + Id.getTransactionId());
 
         Transaction transaction = manager.getTransactionbyid(Id.getTransactionId());
 
         Account FromAccount = transaction.getFromAccount();
         Account ToAccount = transaction.getToAccount();
         Double AmountToBeSent = transaction.getAmount();
-        System.out.println(AmountToBeSent);
+        //System.out.println(AmountToBeSent);
 
         Double FromAccountBalance = FromAccount.getBalance();
-        System.out.println(FromAccountBalance);
+        //System.out.println(FromAccountBalance);
 
         String str = "";
 
@@ -127,9 +141,9 @@ public class SystemManagerController implements Constants {
         } else {
             str = "Unsuccessfull";
         }
-        System.out.println(str);
+        //System.out.println(str);
         mv.addObject("result1", str);
-        System.out.println("Done");
+        //System.out.println("Done");
         mv.setViewName("/manager/viewTransaction");
 
         return mv;
@@ -228,5 +242,5 @@ public class SystemManagerController implements Constants {
         mv.setViewName("/manager/viewUser");
         return mv;
     }
-
+	
 }

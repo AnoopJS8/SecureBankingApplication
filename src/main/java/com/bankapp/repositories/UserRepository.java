@@ -1,9 +1,14 @@
 package com.bankapp.repositories;
 
+
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
+
+import com.bankapp.models.Role;
 import com.bankapp.models.User;
 
 @Repository
@@ -12,4 +17,10 @@ public interface UserRepository extends CrudRepository<User, Long> {
     public User findByEmail(String email);
 
     public User findById(Long id);
+
+
+    public User findByUsername(String name);
+
+    public List<User> findByRole(Role role);
+
 }

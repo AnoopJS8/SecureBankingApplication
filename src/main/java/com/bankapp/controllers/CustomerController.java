@@ -42,8 +42,8 @@ public class CustomerController implements Constants {
     public ModelAndView getTransactions(Principal principal) {
         ModelAndView mv = new ModelAndView();
         User loggedInUser = userService.getUserFromSession(principal);
-        Account account = getAccountByUserId(loggedInUser.getId());
-        List<Transaction> transactions = getTransactionsByAccount(account);
+        Account account = accountService.getAccountByUser(loggedInUser);
+        List<Transaction> transactions = transactionService.getTransactionsByAccount(account, account);
         mv.addObject("accounts", account);
         mv.addObject("transactions", transactions);
         mv.setViewName("customer/myaccount");
@@ -76,6 +76,12 @@ public class CustomerController implements Constants {
             mv.addObject("message", "Money transfered successfully");
             mv.addObject("role", "customer");
             mv.setViewName("success");
+        } else if (message.equalsIgnoreCase(ERR_ACCOUNT_NOT_EXISTS)) {
+            mv.addObject("message", ERR_ACCOUNT_NOT_EXISTS);
+            mv.setViewName("error");
+        } else if (message.equalsIgnoreCase(CRITICAL)) {
+            mv.addObject("message", "Its a critical transaction so it will be handled by our employees shortly");
+            mv.setViewName("success");
         } else {
             mv.addObject("message", "Error");
             mv.addObject("role", "customer");
@@ -89,7 +95,6 @@ public class CustomerController implements Constants {
     @RequestMapping(value = "/customer/initiatetransaction", method = RequestMethod.GET)
     public ModelAndView initiateTransaction() {
         ModelAndView mv = new ModelAndView();
-        System.out.print("Hello Customer");
         Transaction transaction = new Transaction();
         mv.addObject("transaction", transaction);
         mv.setViewName("customer/initiatetransaction");
@@ -117,17 +122,5 @@ public class CustomerController implements Constants {
             mv.setViewName("error");
         }
         return mv;
-    }
-
-    private Account getAccountByUserId(long id) {
-        User user = userService.getUserById(id);
-        Account account = accountService.getAccountsByUser(user);
-        return account;
-    }
-
-    private List<Transaction> getTransactionsByAccount(Account account) {
-        List<Transaction> transactions = transactionService.getTransactionsByAccount(account, account);
-        System.out.println(transactions.size());
-        return transactions;
     }
 }

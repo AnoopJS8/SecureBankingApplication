@@ -39,27 +39,42 @@ public class TransactionService implements ITransactionService, Constants {
 		if(toAccount==null){
 		    return ERR_ACCOUNT_NOT_EXISTS;
 		}
-		Account fromAccount = accountService.getAccountsByUser(user);
+		Account fromAccount = accountService.getAccountByUser(user);
 		transaction.setToAccount(toAccount);
 		transaction.setFromAccount(fromAccount);
 		Date date = new Date();
 		transaction.setTransferDate(date);
-		String message = accountService.updateBalance(transaction);
-		if (message.equalsIgnoreCase(LESS_BALANCE)) {
-			return LESS_BALANCE;
-		} else {
-			transaction.setStatus(S_VERIFIED);
-			transactionRepository.save(transaction);
-			return SUCCESS;
-		}
+		if (fromAccount.getBalance() < transaction.getAmount()) {
+            return LESS_BALANCE;
+        }else{
+            boolean ifCritical = isBelowCriticalLimit(fromAccount, transaction);
+            if(ifCritical){
+                transaction.setStatus(S_OTP_PENDING);
+                transactionRepository.save(transaction);
+                return CRITICAL;
+            }
+            String message = accountService.updateBalance(transaction);
+            transaction.setStatus(S_VERIFIED);
+            transactionRepository.save(transaction);
+            return message;
+        }
+		
 	}
 
-	@Transactional
+	private boolean isBelowCriticalLimit(Account fromAccount, Transaction transaction) {
+        double criticalLimit = fromAccount.getCriticalLimit();
+        if(transaction.getAmount()>=criticalLimit){
+            return true;
+        }
+        return false;
+    }
+
+    @Transactional
 	@Override
 	public String askCustomerPayment(Transaction transaction, User user) {
 		Long accId = transaction.getToAccount().getAccId();
 		try {
-			transaction.setToAccount(accountService.getAccountsByUser(user));
+			transaction.setToAccount(accountService.getAccountByUser(user));
 			transaction.setFromAccount(accountService.getAccountByAccountId(accId));
 			transaction.setStatus(S_PENDING_CUSTOMER_VERIFICATION);
 			Date date = new Date();
@@ -77,7 +92,7 @@ public class TransactionService implements ITransactionService, Constants {
 	public String initiateTransaction(Transaction transaction, User user) {
 		Long accId = transaction.getToAccount().getAccId();
 		transaction.setToAccount(accountService.getAccountByAccountId(accId));
-		transaction.setFromAccount(accountService.getAccountsByUser(user));
+		transaction.setFromAccount(accountService.getAccountByUser(user));
 		transaction.setStatus(S_PENDING);
 		System.out.println(transaction.getTransferDate());
 		transaction.setTransferDate(transaction.getTransferDate());
@@ -90,3 +105,4 @@ public class TransactionService implements ITransactionService, Constants {
         return transactionRepository.findOne(id);
     }
 }
+
