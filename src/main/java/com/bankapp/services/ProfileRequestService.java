@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.bankapp.constants.Constants;
 import com.bankapp.models.ProfileRequest;
+import com.bankapp.models.User;
 import com.bankapp.repositories.ProfileRequestRepository;
 
 @Service
@@ -29,14 +30,36 @@ public class ProfileRequestService implements IProfileRequestService, Constants 
 
     @Override
     public List<ProfileRequest> getPendingRequests() {
-        return profileRequestRepository.findByStatus(S_PROFILE_UPDATE_PENDING);
+        Long manager = new Long(1);
+        Long employee = new Long(6);
+        List<ProfileRequest> profileRequest = profileRequestRepository.findByStatusAndRoleId(S_PROFILE_UPDATE_PENDING,
+                manager);
+        profileRequest.addAll(profileRequestRepository.findByStatusAndRoleId(S_PROFILE_UPDATE_PENDING, employee));
+        return profileRequest;
     }
 
+    @Transactional
     @Override
     public void setRequestToVerified(Long id) {
         ProfileRequest profile = profileRequestRepository.findOne(id);
-        profile.setStatus("verified");
+        changeUserData(profile);
+        profile.setStatus(S_PROFILE_UPDATE_VERFIED);
         profileRequestRepository.save(profile);
+    }
+
+    private void changeUserData(ProfileRequest profile) {
+        User user = profile.getUser();
+        user.setAddress(profile.getAddress());
+        user.setPhoneNumber(profile.getPhoneNumber());
+        user.setDateOfBirth(profile.getDateOfBirth());
+    }
+
+    @Override
+    public void declineRequest(Long id) {
+        ProfileRequest profile = profileRequestRepository.findOne(id);
+        profile.setStatus(S_PROFILE_UPDATE_DECLINED);
+        profileRequestRepository.save(profile);
+        
     }
 
 }

@@ -72,35 +72,41 @@ public class TransactionService implements ITransactionService, Constants {
     }
 
     @Transactional
-    @Override
-    public String askCustomerPayment(Transaction transaction, User user) {
-        Long accId = transaction.getToAccount().getAccId();
-        try {
-            transaction.setToAccount(accountService.getAccountByUser(user));
-            transaction.setFromAccount(accountService.getAccountByAccountId(accId));
-            transaction.setStatus(S_PENDING_CUSTOMER_VERIFICATION);
-            Date date = new Date();
-            transaction.setTransferDate(date);
-            transactionRepository.save(transaction);
-            return SUCCESS;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ERROR;
+	@Override
+	public String askCustomerPayment(Transaction transaction, User user) {
+		Long accId = transaction.getToAccount().getAccId();
+		if(accId==null){
+            return ERR_ACCOUNT_NOT_EXISTS;
         }
-    }
+		try {
+			transaction.setToAccount(accountService.getAccountByUser(user));
+			transaction.setFromAccount(accountService.getAccountByAccountId(accId));
+			transaction.setStatus(S_PENDING_CUSTOMER_VERIFICATION);
+			Date date = new Date();
+			transaction.setTransferDate(date);
+			transactionRepository.save(transaction);
+			return SUCCESS;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ERROR;
+		}
+	}
 
-    @Transactional
-    @Override
-    public String initiateTransaction(Transaction transaction, User user) {
-        Long accId = transaction.getToAccount().getAccId();
-        transaction.setToAccount(accountService.getAccountByAccountId(accId));
-        transaction.setFromAccount(accountService.getAccountByUser(user));
-        transaction.setStatus(S_PENDING);
-        System.out.println(transaction.getTransferDate());
-        transaction.setTransferDate(transaction.getTransferDate());
-        transactionRepository.save(transaction);
-        return SUCCESS;
-    }
+	@Transactional
+	@Override
+	public String initiateTransaction(Transaction transaction, User user) {
+		Long accId = transaction.getToAccount().getAccId();
+		if(accId==null){
+            return ERR_ACCOUNT_NOT_EXISTS;
+        }
+		transaction.setToAccount(accountService.getAccountByAccountId(accId));
+		transaction.setFromAccount(accountService.getAccountByUser(user));
+		transaction.setStatus(S_PENDING);
+		System.out.println(transaction.getTransferDate());
+		transaction.setTransferDate(transaction.getTransferDate());
+		transactionRepository.save(transaction);
+		return SUCCESS;
+	}
 
     @Override
     public Transaction getTransactionsById(Long id) {
