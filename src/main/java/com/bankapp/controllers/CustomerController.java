@@ -8,14 +8,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.bankapp.constants.Constants;
+import com.bankapp.constants.Message;
 import com.bankapp.models.Account;
 import com.bankapp.models.Transaction;
 import com.bankapp.models.User;
@@ -47,6 +48,11 @@ public class CustomerController implements Constants {
         mv.addObject("accounts", account);
         mv.addObject("transactions", transactions);
         mv.setViewName("customer/myaccount");
+
+        String message = String.format("[Action=%s, Method=%s][User=%s, Account=%s, NumberOfTransactions=%s]", "myaccount",
+                "GET", loggedInUser.getEmail(), account.getAccId(), transactions.size());
+        LOGGER.info(message);
+
         return mv;
     }
 
@@ -56,40 +62,55 @@ public class CustomerController implements Constants {
         Transaction transaction = new Transaction();
         mv.addObject("transaction", transaction);
         mv.setViewName("customer/transferfunds");
+
+        String logMessage = String.format("[Action=%s, Method=%s]", "transferfunds", "GET");
+        LOGGER.info(logMessage);
+
         return mv;
     }
 
     @RequestMapping(value = "/customer/transferfunds", method = RequestMethod.POST)
-    public ModelAndView saveTransaction(@ModelAttribute("transaction") Transaction transaction, BindingResult result,
-            WebRequest request, Errors errors, Principal principal) {
-        ModelAndView mv = new ModelAndView();
+    public String saveTransaction(@ModelAttribute("transaction") Transaction transaction, BindingResult result,
+            WebRequest request, Principal principal, RedirectAttributes attributes) {
+
+        String status;
+        String message;
+        String redirectUrl;
+        String logMessage;
+
         User user = userService.getUserFromSession(principal);
-        String message = transactionService.saveTransaction(transaction, user);
-        if (message.equalsIgnoreCase(LESS_BALANCE)) {
-            String msg = "You are low on balance, the transaction cannot go through.";
-            mv.addObject("message", msg);
-            mv.addObject("role", "customer");
-            String errorMsg = String.format("Action: %s, Message: %s", "low on balance", msg);
-            LOGGER.error(errorMsg);
-            mv.setViewName("error");
-        } else if (message.equalsIgnoreCase(SUCCESS)) {
-            mv.addObject("message", "Money transfered successfully");
-            mv.addObject("role", "customer");
-            mv.setViewName("success");
-        } else if (message.equalsIgnoreCase(ERR_ACCOUNT_NOT_EXISTS)) {
-            mv.addObject("message", ERR_ACCOUNT_NOT_EXISTS);
-            mv.setViewName("error");
-        } else if (message.equalsIgnoreCase(CRITICAL)) {
-            mv.addObject("message", "Its a critical transaction so it will be handled by our employees shortly");
-            mv.setViewName("success");
+        String dbStatus = transactionService.saveTransaction(transaction, user);
+
+        if (dbStatus.equalsIgnoreCase(LESS_BALANCE)) {
+            status = "error";
+            message = "You are low on balance, the transaction cannot go through.";
+            redirectUrl = "redirect:/customer/transferfunds";
+        } else if (dbStatus.equalsIgnoreCase(SUCCESS)) {
+            status = "success";
+            message = "Money transfered successfully";
+            redirectUrl = "redirect:/customer/myaccount";
+        } else if (dbStatus.equalsIgnoreCase(ERR_ACCOUNT_NOT_EXISTS)) {
+            status = "error";
+            message = ERR_ACCOUNT_NOT_EXISTS;
+            redirectUrl = "redirect:/customer/transferfunds";
+        } else if (dbStatus.equalsIgnoreCase(CRITICAL)) {
+            status = "success";
+            message = "Its a critical transaction, so it will be handled by our employees shortly";
+            redirectUrl = "redirect:/customer/myaccount";
         } else {
-            mv.addObject("message", "Error");
-            mv.addObject("role", "customer");
-            String errorMsg = String.format("Action: %s, Message: %s", "Error", message);
-            LOGGER.error(errorMsg);
-            mv.setViewName("error");
+            status = "error";
+            message = "An unhandled error occurred. Please contact the administrator";
+            redirectUrl = "redirect:/customer/transferfunds";
         }
-        return mv;
+
+        attributes.addFlashAttribute("message", new Message(status, message));
+        attributes.addFlashAttribute("role", "customer");
+
+        logMessage = String.format("[Action=%s, Method=%s][Status=%s][Message=%s]", "transferfunds", "POST", dbStatus,
+                message);
+        LOGGER.info(logMessage);
+
+        return redirectUrl;
     }
 
     @RequestMapping(value = "/customer/initiatetransaction", method = RequestMethod.GET)
@@ -98,29 +119,43 @@ public class CustomerController implements Constants {
         Transaction transaction = new Transaction();
         mv.addObject("transaction", transaction);
         mv.setViewName("customer/initiatetransaction");
+
+        String logMessage = String.format("[Action=%s, Method=%s]", "initiatetransaction", "GET");
+        LOGGER.info(logMessage);
+
         return mv;
     }
 
     @RequestMapping(value = "/customer/initiatetransaction", method = RequestMethod.POST)
-    public ModelAndView initiateTransaction(@ModelAttribute("transaction") Transaction transaction,
-            BindingResult result, WebRequest request, Errors errors, Principal principal) {
-        ModelAndView mv = new ModelAndView();
+    public String initiateTransaction(@ModelAttribute("transaction") Transaction transaction,
+            BindingResult result, WebRequest request, Principal principal, RedirectAttributes attributes) {
+
+        String status;
+        String message;
+        String redirectUrl;
+        String logMessage;
+
         User user = userService.getUserFromSession(principal);
-        String message = transactionService.initiateTransaction(transaction, user);
-        if (message.equalsIgnoreCase(SUCCESS)) {
-            String m = "Your transaction is initiated and will be handled by our employees";
-            mv.addObject("message", m);
-            mv.addObject("role", "customer");
-            String Msg = String.format("Action: %s, Message: %s", "Success", m);
-            LOGGER.error(Msg);
-            mv.setViewName("success");
+        String dbStatus = transactionService.initiateTransaction(transaction, user);
+
+        if (dbStatus.equalsIgnoreCase(SUCCESS)) {
+            status = "success";
+            message = "Your transaction is initiated and will be handled by our employees";
+            redirectUrl = "redirect:/customer/myaccount";
         } else {
-            mv.addObject("message", "Some error occured");
-            mv.addObject("role", "customer");
-            String errorMsg = String.format("Action: %s, Message: %s", "Error", message);
-            LOGGER.error(errorMsg);
-            mv.setViewName("error");
+            status = "error";
+            message = "An unhandled error occurred. Please contact the administrator";
+            redirectUrl = "redirect:/customer/initiatetransaction";
         }
-        return mv;
+
+        attributes.addFlashAttribute("message", new Message(status, message));
+        attributes.addFlashAttribute("role", "customer");
+
+
+        logMessage = String.format("[Action=%s, Method=%s][Status=%s][Message=%s]", "initiatetransaction", "POST",
+                dbStatus, message);
+        LOGGER.info(logMessage);
+
+        return redirectUrl;
     }
 }

@@ -7,15 +7,17 @@
 	<div class="container">
 		<div th:replace="fragment/common :: top-nav(myaccount)"></div>
 		<div th:replace="fragment/customer :: customer-header"></div>
-		<div>
-			<h3>Account</h3>
-		</div>
+		<div class="page-header">
+            <h1>My Account</h1>
+        </div>
+        <div th:replace="fragment/common :: message"></div>
 		<div class="table-responsive">
 			<table class="table table-bordered table-hover">
 				<thead>
 					<tr>
 						<th>Account Number</th>
 						<th>Balance</th>
+						<th>Critical Limit</th>
 						<th>Created Date</th>
 					</tr>
 				</thead>
@@ -23,6 +25,7 @@
 					<tr style="cursor: pointer" th:each="account : ${accounts}">
 						<td><span th:text="${account.accId}"></span></td>
 						<td><span th:text="${account.balance}"></span></td>
+						<td><span th:text="${account.criticalLimit}"></span></td>
 						<td><span th:text="${account.created}"></span></td>
 					</tr>
 				</tbody>

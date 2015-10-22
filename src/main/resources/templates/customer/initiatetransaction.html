@@ -7,6 +7,12 @@
 	<div class="container">
 		<div th:replace="fragment/common :: top-nav(initiatetransaction)"></div>
 		<div th:replace="fragment/customer :: customer-header"></div>
+		<div class="page-header">
+			<h1>
+				Initiate Transaction
+			</h1>
+		</div>
+		<div th:replace="fragment/common :: message"></div>
 		<form class="form-horizontal" role="form"
 			th:action="@{/customer/initiatetransaction}"
 			th:object="${transaction}" method="post">
@@ -45,6 +51,7 @@
 				</div>
 			</div>
 		</form>
+		<div th:replace="fragment/common :: footer"></div>
 	</div>
 </body>
 </html>

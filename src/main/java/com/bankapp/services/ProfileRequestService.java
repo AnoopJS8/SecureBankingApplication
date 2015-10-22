@@ -29,7 +29,7 @@ public class ProfileRequestService implements IProfileRequestService, Constants 
 
     @Override
     public List<ProfileRequest> getPendingRequests() {
-        return profileRequestRepository.findByStatus(S_PENDING);
+        return profileRequestRepository.findByStatus(S_PROFILE_UPDATE_PENDING);
     }
 
     @Override
