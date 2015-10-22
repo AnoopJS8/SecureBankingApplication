@@ -1,6 +1,5 @@
 package com.bankapp.forms;
 
-
 import java.util.Date;
 
 import javax.validation.constraints.Future;
@@ -10,48 +9,48 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 public class InitiateTransactionForm {
 
-   @NotNull
-   Long accountId;
-   
-   @NotNull
-   Double amount;
-   
-   String comment;
-   
-   @NotNull
-   @DateTimeFormat(pattern = "yyyy/MM/dd")
-   @Future
-   Date transferDate;
+    @NotNull
+    Long accountId;
 
-   public Long getAccountId() {
-       return accountId;
-   }
+    @NotNull
+    Double amount;
 
-   public void setAccountId(Long accountId) {
-       this.accountId = accountId;
-   }
+    String comment;
 
-   public Double getAmount() {
-       return amount;
-   }
+    @NotNull
+    @DateTimeFormat(pattern = "MM/dd/yyyy")
+    @Future
+    Date transferDate;
 
-   public void setAmount(Double amount) {
-       this.amount = amount;
-   }
+    public Long getAccountId() {
+        return accountId;
+    }
 
-   public String getComment() {
-       return comment;
-   }
+    public void setAccountId(Long accountId) {
+        this.accountId = accountId;
+    }
 
-   public void setComment(String comment) {
-       this.comment = comment;
-   }
+    public Double getAmount() {
+        return amount;
+    }
 
-   public Date getTransferDate() {
-       return transferDate;
-   }
+    public void setAmount(Double amount) {
+        this.amount = amount;
+    }
 
-   public void setTransferDate(Date transferDate) {
-       this.transferDate = transferDate;
-   }
+    public String getComment() {
+        return comment;
+    }
+
+    public void setComment(String comment) {
+        this.comment = comment;
+    }
+
+    public Date getTransferDate() {
+        return transferDate;
+    }
+
+    public void setTransferDate(Date transferDate) {
+        this.transferDate = transferDate;
+    }
 }
