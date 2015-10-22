@@ -142,6 +142,7 @@ public class MainController implements Constants{
         profile.setPhoneNumber(user.getPhoneNumber());
         profile.setStatus(S_PROFILE_UPDATE_PENDING);
         profile.setUser(userService.getUserFromSession(principal));
+        profile.setRoleId(userService.getUserFromSession(principal).getRole().getId());
         String message = profileRequestService.saveProfileRequest(profile);
         if(message.equalsIgnoreCase(ERROR)){
             mv.addObject("message", "Error occured");
@@ -217,7 +218,7 @@ public class MainController implements Constants{
     public ModelAndView changeLimit(Principal principal) {
         ModelAndView mv = new ModelAndView();
         User loggedInUser = userService.getUserFromSession(principal);
-        mv.addObject("account", accountService.getAccountsByUser(loggedInUser));
+        mv.addObject("account", accountService.getAccountByUser(loggedInUser));
         mv.addObject("role", loggedInUser.getRole().getName());
         mv.setViewName("criticallimit");
         return mv;
@@ -229,7 +230,7 @@ public class MainController implements Constants{
         ModelAndView mv = new ModelAndView();
         User loggedInUser = userService.getUserFromSession(principal);
         mv.addObject("role", loggedInUser.getRole().getName());
-        Account newAccount = accountService.getAccountsByUser(loggedInUser);
+        Account newAccount = accountService.getAccountByUser(loggedInUser);
         newAccount.setCriticalLimit(account.getCriticalLimit());
         accountService.saveAccount(newAccount);
         mv.addObject("message", "Changes the critical limit");

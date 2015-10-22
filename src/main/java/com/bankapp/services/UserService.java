@@ -238,16 +238,17 @@ public class UserService implements IUserService {
         String temporaryPassword = OneTimePassword.generateOTP();
         user.setPassword(passwordEncoder.encode(temporaryPassword));
         user.setRole(roleRepository.findByName(roleName));
+        user.setEnabled(true);
         userRepository.save(user);
 
         String userName = user.getUsername();
         String recipientAddress = user.getEmail();
-        String subject = "My ASU Bank - Temporary Password";
+        String subject = "My ASU Bank - New Account Creation";
         String role = user.getRole().getName();
 
-        if (role == "ROLE_MANAGER")
+        if (role.equalsIgnoreCase("ROLE_MANAGER"))
             role = "MANAGER";
-        else if (role == "ROLE_ADMIN")
+        else if (role.equalsIgnoreCase("ROLE_ADMIN"))
             role = "ADMIN";
         else
             role = "EMPLOYEE";

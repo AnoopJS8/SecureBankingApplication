@@ -14,8 +14,8 @@
 				<label class="col-md-3 control-label">Recipient Account
 					Number: </label>
 				<div class="col-md-5">
-					<input type="text" class="form-control" name="toAccount"
-						id="toAccount" th:field="*{accountId}" /><label
+					<input type="text" class="form-control" name="accountId"
+						id="accountId" th:field="*{accountId}" /><label
 						th:if="${#fields.hasErrors('accountId')}" th:errors="*{accountId}"></label>
 				</div>
 			</div>

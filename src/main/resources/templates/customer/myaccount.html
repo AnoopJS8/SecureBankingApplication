@@ -7,23 +7,30 @@
 	<div class="container">
 		<div th:replace="fragment/common :: top-nav(myaccount)"></div>
 		<div th:replace="fragment/customer :: customer-header"></div>
-		<div>
-			<h3>Account</h3>
-		</div>
+		<div class="page-header">
+            <h1>My Account</h1>
+        </div>
+        <div th:replace="fragment/common :: message"></div>
 		<div class="table-responsive">
 			<table class="table table-bordered table-hover">
 				<thead>
 					<tr>
 						<th>Account Number</th>
 						<th>Balance</th>
+						<th>Critical Limit</th>
 						<th>Created Date</th>
+						<th>Critical Limit</th>
+						<th>Action</th>
 					</tr>
 				</thead>
 				<tbody>
 					<tr style="cursor: pointer" th:each="account : ${accounts}">
 						<td><span th:text="${account.accId}"></span></td>
 						<td><span th:text="${account.balance}"></span></td>
+						<td><span th:text="${account.criticalLimit}"></span></td>
 						<td><span th:text="${account.created}"></span></td>
+						<td><span th:text="${account.criticalLimit}"></span></td>
+						<td><a th:href="@{/changelimit}">Change Limit</a></td>
 					</tr>
 				</tbody>
 			</table>
@@ -40,19 +47,30 @@
 						<th>To</th>
 						<th>Amount</th>
 						<th>Comment</th>
+						<th>status</th>
 					</tr>
 				</thead>
 				<tbody>
+				    <tr th:if="${transactions.size()} == 0">
+				        <td colspan="5">There are no transactions</td>
+				    </tr>
 					<tr th:each="transaction : ${transactions}">
-						<td><span th:text="${transaction.created}"></span></td>
+						<td><span th:text="${transaction.transferDate}"></span></td>
 						<td><span th:text="${transaction.fromAccount.user.username}"></span></td>
 						<td><span th:text="${transaction.toAccount.user.username}"></span></td>
 						<td><span th:text="${transaction.amount}"></span></td>
 						<td><span th:text="${transaction.comment}"></span></td>
+						<td th:if="${transaction.status.equalsIgnoreCase('V') || transaction.status.equalsIgnoreCase('OV')}">
+							<span th:text="Completed"></span>
+						</td>
+						<td th:if="${transaction.status.equalsIgnoreCase('P') || transaction.status.equalsIgnoreCase('OP') || transaction.status.equalsIgnoreCase('PCV') || transaction.status.equalsIgnoreCase('CV')}">
+							<span th:text="Pending"></span>
+						</td>
 					</tr>
 				</tbody>
 			</table>
 		</div>
+		<div th:replace="fragment/common :: footer"></div>
 	</div>
 </body>
 </html>

@@ -18,7 +18,7 @@ public class AccountService implements IAccountService, Constants {
 
     @Transactional
     @Override
-    public Account getAccountsByUser(User user) {
+    public Account getAccountByUser(User user) {
         Account account = accountRepository.findByUser(user);
         return account;
     }

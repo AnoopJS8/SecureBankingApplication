@@ -15,9 +15,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.bankapp.constants.Message;
 import com.bankapp.exceptions.EmailExistsException;
-import com.bankapp.exceptions.UserAlreadyExistException;
-import com.bankapp.exceptions.UserNameExistsException;
 import com.bankapp.forms.AddEmployeeForm;
 import com.bankapp.forms.UpdateUsersForm;
 import com.bankapp.models.ProfileRequest;
@@ -128,9 +127,8 @@ public class AdminController {
     }
 
     @RequestMapping(value = "/approveProfileRequest", method = RequestMethod.POST)
-    public String ChangeRequest(@ModelAttribute("rId") Long rid,
-            BindingResult result, RedirectAttributes attributes) {
-        profileService.setRequestToVerified(rid);
+    public String changeRequest(@ModelAttribute("request") ProfileRequest profileRequest, BindingResult result, RedirectAttributes attributes) {
+        profileService.setRequestToVerified(profileRequest.getrId());
         Map<String, String> message = new HashMap<String, String>();
         message.put("status", "success");
         message.put("msg", "Profile request has been approved");
@@ -166,8 +164,17 @@ public class AdminController {
             attr.addFlashAttribute("message", new Message("error", "Email already exists"));
             return redirectFailureURL;
         } finally {
-            LOGGER.error(logMessage);
+            LOGGER.info(logMessage);
         }
     }
 
+    @RequestMapping(value = "/declineProfileRequest", method = RequestMethod.POST)
+    public String declineRequest(@ModelAttribute("request") ProfileRequest profileRequest, BindingResult result, RedirectAttributes attributes) {
+        profileService.setRequestToVerified(profileRequest.getrId());
+        Map<String, String> message = new HashMap<String, String>();
+        message.put("status", "success");
+        message.put("msg", "Profile request has been Declined");
+        attributes.addFlashAttribute("message", message);
+        return "redirect:/admin/requests";
+    }
 }

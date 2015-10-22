@@ -122,7 +122,10 @@ public class MerchantController implements Constants {
                     "Notified the user for approval and transaction is in pending state till customers approval");
             LOGGER.error(Msg);
             mv.setViewName("success");
-        } else {
+        } else if (message.equalsIgnoreCase(ERR_ACCOUNT_NOT_EXISTS)) {
+            mv.addObject("message", ERR_ACCOUNT_NOT_EXISTS);
+            mv.setViewName("error");
+        }else {
             mv.addObject("message", "Some error occured");
             String errorMsg = String.format("Action: %s, Message: %s", "Error", message);
             LOGGER.error(errorMsg);
@@ -154,9 +157,13 @@ public class MerchantController implements Constants {
         }
 
         User user = userService.getUserFromSession(principal);
-
         Transaction transaction = new Transaction();
         Account toAccount = accountService.getAccountByAccountId(form.getAccountId());
+        if(toAccount==null){
+            mv.addObject("message", ERR_ACCOUNT_NOT_EXISTS);
+            mv.setViewName("error");
+            return mv;
+        }
         transaction.setAmount(form.getAmount());
         transaction.setToAccount(toAccount);
         transaction.setComment(form.getComment());
@@ -169,6 +176,9 @@ public class MerchantController implements Constants {
             String Msg = String.format("Action: %s, Message: %s", "Success", m);
             LOGGER.error(Msg);
             mv.setViewName("success");
+        }else if (message.equalsIgnoreCase(ERR_ACCOUNT_NOT_EXISTS)) {
+            mv.addObject("message", ERR_ACCOUNT_NOT_EXISTS);
+            mv.setViewName("error");
         } else {
             mv.addObject("message", "Some error occured");
             String errorMsg = String.format("Action: %s, Message: %s", "Error", message);
@@ -182,7 +192,7 @@ public class MerchantController implements Constants {
 
     private Account getAccountByUserId(long id) {
         User user = userService.getUserById(id);
-        Account account = accountService.getAccountsByUser(user);
+        Account account = accountService.getAccountByUser(user);
         return account;
     }
 
