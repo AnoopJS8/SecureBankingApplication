@@ -11,5 +11,7 @@ public interface IProfileRequestService {
     List<ProfileRequest> getPendingRequests();
 
     void setRequestToVerified(Long id);
+    
+    void declineRequest(Long id);
 
 }

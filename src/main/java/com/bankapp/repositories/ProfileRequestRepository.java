@@ -8,7 +8,7 @@ import com.bankapp.models.ProfileRequest;
 
 public interface ProfileRequestRepository extends CrudRepository<ProfileRequest, Long> {
     
-	List<ProfileRequest> findByStatus(String status);
+	List<ProfileRequest> findByStatusAndRoleId(String status, Long roleId);
 	
 	ProfileRequest findByRId(Long id);
 	

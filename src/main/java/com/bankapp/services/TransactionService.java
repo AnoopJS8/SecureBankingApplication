@@ -74,6 +74,9 @@ public class TransactionService implements ITransactionService, Constants {
 	@Override
 	public String askCustomerPayment(Transaction transaction, User user) {
 		Long accId = transaction.getToAccount().getAccId();
+		if(accId==null){
+            return ERR_ACCOUNT_NOT_EXISTS;
+        }
 		try {
 			transaction.setToAccount(accountService.getAccountByUser(user));
 			transaction.setFromAccount(accountService.getAccountByAccountId(accId));
@@ -92,6 +95,9 @@ public class TransactionService implements ITransactionService, Constants {
 	@Override
 	public String initiateTransaction(Transaction transaction, User user) {
 		Long accId = transaction.getToAccount().getAccId();
+		if(accId==null){
+            return ERR_ACCOUNT_NOT_EXISTS;
+        }
 		transaction.setToAccount(accountService.getAccountByAccountId(accId));
 		transaction.setFromAccount(accountService.getAccountByUser(user));
 		transaction.setStatus(S_PENDING);
