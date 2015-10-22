@@ -1,13 +1,22 @@
 package com.bankapp.controllers;
 
 import java.security.Principal;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+
+import javax.validation.Valid;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.Errors;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -17,6 +26,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.bankapp.constants.Constants;
 import com.bankapp.constants.Message;
+import com.bankapp.forms.InitiateTransactionForm;
 import com.bankapp.models.Account;
 import com.bankapp.models.Transaction;
 import com.bankapp.models.User;
@@ -39,6 +49,12 @@ public class CustomerController implements Constants {
     @Autowired
     private IUserService userService;
 
+    @InitBinder("form")
+    public void initBinder(WebDataBinder binder) {
+        CustomDateEditor editor = new CustomDateEditor(new SimpleDateFormat("MM/dd/yyyy"), true);
+        binder.registerCustomEditor(Date.class, editor);
+    }
+
     @RequestMapping(value = "/customer/myaccount", method = RequestMethod.GET)
     public ModelAndView getTransactions(Principal principal) {
         ModelAndView mv = new ModelAndView();
@@ -47,10 +63,11 @@ public class CustomerController implements Constants {
         List<Transaction> transactions = transactionService.getTransactionsByAccount(account, account);
         mv.addObject("accounts", account);
         mv.addObject("transactions", transactions);
+        mv.addObject("role", "customer");
         mv.setViewName("customer/myaccount");
 
-        String message = String.format("[Action=%s, Method=%s][User=%s, Account=%s, NumberOfTransactions=%s]", "myaccount",
-                "GET", loggedInUser.getEmail(), account.getAccId(), transactions.size());
+        String message = String.format("[Action=%s, Method=%s][User=%s, Account=%s, NumberOfTransactions=%s]",
+                "myaccount", "GET", loggedInUser.getEmail(), account.getAccId(), transactions.size());
         LOGGER.info(message);
 
         return mv;
@@ -71,7 +88,7 @@ public class CustomerController implements Constants {
 
     @RequestMapping(value = "/customer/transferfunds", method = RequestMethod.POST)
     public String saveTransaction(@ModelAttribute("transaction") Transaction transaction, BindingResult result,
-            WebRequest request, Principal principal, RedirectAttributes attributes) {
+            WebRequest request, Principal principal, Errors errors, RedirectAttributes attributes) {
 
         String status;
         String message;
@@ -115,10 +132,8 @@ public class CustomerController implements Constants {
 
     @RequestMapping(value = "/customer/initiatetransaction", method = RequestMethod.GET)
     public ModelAndView initiateTransaction() {
-        ModelAndView mv = new ModelAndView();
-        Transaction transaction = new Transaction();
-        mv.addObject("transaction", transaction);
-        mv.setViewName("customer/initiatetransaction");
+
+        ModelAndView mv = new ModelAndView("customer/initiatetransaction", "form", new InitiateTransactionForm());
 
         String logMessage = String.format("[Action=%s, Method=%s]", "initiatetransaction", "GET");
         LOGGER.info(logMessage);
@@ -127,15 +142,26 @@ public class CustomerController implements Constants {
     }
 
     @RequestMapping(value = "/customer/initiatetransaction", method = RequestMethod.POST)
-    public String initiateTransaction(@ModelAttribute("transaction") Transaction transaction,
-            BindingResult result, WebRequest request, Principal principal, RedirectAttributes attributes) {
+    public String initiateTransaction(final ModelMap model, @ModelAttribute("form") @Valid InitiateTransactionForm form, BindingResult result,
+            WebRequest request, Principal principal, RedirectAttributes attributes) {
 
         String status;
         String message;
         String redirectUrl;
         String logMessage;
 
+        if (result.hasErrors()) {
+            model.addAttribute("form", form); 
+            return "customer/initiatetransaction";
+        }
+
         User user = userService.getUserFromSession(principal);
+        Transaction transaction = new Transaction();
+        Account toAccount = accountService.getAccountByAccountId(form.getAccountId());
+        transaction.setAmount(form.getAmount());
+        transaction.setToAccount(toAccount);
+        transaction.setComment(form.getComment());
+        transaction.setTransferDate(form.getTransferDate());
         String dbStatus = transactionService.initiateTransaction(transaction, user);
 
         if (dbStatus.equalsIgnoreCase(SUCCESS)) {
@@ -150,7 +176,6 @@ public class CustomerController implements Constants {
 
         attributes.addFlashAttribute("message", new Message(status, message));
         attributes.addFlashAttribute("role", "customer");
-
 
         logMessage = String.format("[Action=%s, Method=%s][Status=%s][Message=%s]", "initiatetransaction", "POST",
                 dbStatus, message);
