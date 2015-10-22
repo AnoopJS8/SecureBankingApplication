@@ -23,21 +23,31 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
-		http.authorizeRequests().antMatchers("/", "/home", "/login/identify", "/login/verifyIdentity", "/signup",
-		        "/registrationConfirm", "/resendRegistrationToken",
-
-		"/badUser", "/sysadmin", "/RetrieveEmployeeDetails", "/RetrieveManagerDetails", "/change_Username_Manager",
-		        "/change_Address_Manager", "/change_username", "/change_Address", "/DeleteUserManager",
-		        "/DeleteUserEmployee", "/profileRequest", "/changeRequest",
+		http.authorizeRequests().antMatchers(
+		        "/", 
+		        "/home", 
+		        "/login/identify", 
+		        "/login/verifyIdentity", 
+		        "/signup",
+		        "/registrationConfirm", 
+		        "/resendRegistrationToken",
+		        "/badUser",
 		        // Resources
-
-		"/webjars/**", "/css/**", "/js/**"
-
-		).permitAll().anyRequest().authenticated().and().formLogin().loginPage("/").usernameParameter("m_email")
-		        .passwordParameter("m_password").successHandler(new AuthSuccessHandler()).permitAll().and().logout()
+		        "/webjars/**",
+		        "/css/**", 
+		        "/js/**"
+		).permitAll().anyRequest().authenticated().and()
+		    .formLogin()
+		        .loginPage("/")
+		        .usernameParameter("m_email")
+		        .passwordParameter("m_password")
+		        .successHandler(new AuthSuccessHandler())
+		        .permitAll().and()
+	        .logout()
 		        .logoutUrl("/logout")
-
-		.logoutSuccessUrl("/").and().sessionManagement().maximumSessions(1);
+		        .logoutSuccessUrl("/").and()
+	        .sessionManagement()
+	            .maximumSessions(1);
 	}
 
 	@Override
