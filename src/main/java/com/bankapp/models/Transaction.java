@@ -38,7 +38,6 @@ public class Transaction {
     @NotNull
     private Double amount;
 
-    @Future
     private Date transferDate;
     private Date created;
     private Date updated;

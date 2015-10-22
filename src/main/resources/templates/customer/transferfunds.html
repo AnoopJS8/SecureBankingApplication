@@ -7,7 +7,7 @@
 	<div class="container">
 		<div th:replace="fragment/common :: top-nav(transferfunds)"></div>
 		<div th:replace="fragment/customer :: customer-header"></div>
-		<form class="form-horizontal" role="form"
+		<form id="tF-form" class="form-horizontal" role="form"
 			th:action="@{/customer/transferfunds}" th:object="${transaction}"
 			method="post">
 			<div class="form-group">
@@ -39,5 +39,7 @@
 			</div>
 		</form>
 	</div>
+	<script th:src="@{/webjars/jquery-validation/1.14.0/jquery.validate.min.js}"></script>
+	<script type="text/javascript" th:src="@{/js/tranFund.js}"></script>
 </body>
 </html>
