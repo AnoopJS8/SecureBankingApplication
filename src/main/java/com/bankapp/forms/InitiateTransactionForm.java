@@ -1,7 +1,5 @@
 package com.bankapp.forms;
 
-
-
 import java.util.Date;
 
 import javax.validation.constraints.Future;
@@ -13,12 +11,12 @@ public class InitiateTransactionForm {
 
     @NotNull
     Long accountId;
-    
+
     @NotNull
     Double amount;
-    
+
     String comment;
-    
+
     @NotNull
     @DateTimeFormat(pattern = "yyyy/MM/dd")
     @Future

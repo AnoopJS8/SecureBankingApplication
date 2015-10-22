@@ -57,8 +57,8 @@ public class CustomerController implements Constants {
     public ModelAndView getTransactions(Principal principal) {
         ModelAndView mv = new ModelAndView();
         User loggedInUser = userService.getUserFromSession(principal);
-        Account account = getAccountByUserId(loggedInUser.getId());
-        List<Transaction> transactions = getTransactionsByAccount(account);
+        Account account = accountService.getAccountByUser(loggedInUser);
+        List<Transaction> transactions = transactionService.getTransactionsByAccount(account, account);
         mv.addObject("accounts", account);
         mv.addObject("transactions", transactions);
         mv.addObject("role", "customer");
@@ -92,26 +92,24 @@ public class CustomerController implements Constants {
         ModelAndView mv = new ModelAndView();
         User user = userService.getUserFromSession(principal);
         String message = transactionService.saveTransaction(transaction, user);
-        if (message != null) {
-            if (message.equalsIgnoreCase(LESS_BALANCE)) {
-                String msg = "You are low on balance, the transaction cannot go through.";
-                mv.addObject("message", msg);
-                mv.addObject("role", "customer");
-                String errorMsg = String.format("Action: %s, Message: %s", "low on balance", msg);
-                LOGGER.error(errorMsg);
-                mv.setViewName("error");
-            } else if (message.equalsIgnoreCase(SUCCESS)) {
-                mv.addObject("message", "Money transfered successfully");
-                mv.addObject("role", "customer");
-                mv.setViewName("success");
-            } else {
-                mv.addObject("message", "Error");
-                mv.addObject("role", "customer");
-                String errorMsg = String.format("Action: %s, Message: %s", "Error", message);
-                LOGGER.error(errorMsg);
-                mv.setViewName("error");
-            }
 
+        if (message.equalsIgnoreCase(LESS_BALANCE)) {
+            String msg = "You are low on balance, the transaction cannot go through.";
+            mv.addObject("message", msg);
+            mv.addObject("role", "customer");
+            String errorMsg = String.format("Action: %s, Message: %s", "low on balance", msg);
+            LOGGER.error(errorMsg);
+            mv.setViewName("error");
+        } else if (message.equalsIgnoreCase(SUCCESS)) {
+            mv.addObject("message", "Money transfered successfully");
+            mv.addObject("role", "customer");
+            mv.setViewName("success");
+        } else if (message.equalsIgnoreCase(ERR_ACCOUNT_NOT_EXISTS)) {
+            mv.addObject("message", ERR_ACCOUNT_NOT_EXISTS);
+            mv.setViewName("error");
+        } else if (message.equalsIgnoreCase(CRITICAL)) {
+            mv.addObject("message", "Its a critical transaction so it will be handled by our employees shortly");
+            mv.setViewName("success");
         } else {
             mv.addObject("message", "Invalid Receipent Account Number");
             mv.addObject("role", "customer");
@@ -171,18 +169,4 @@ public class CustomerController implements Constants {
         }
         return mv;
 
-    }
-
-    private Account getAccountByUserId(long id) {
-        User user = userService.getUserById(id);
-        Account account = accountService.getAccountsByUser(user);
-        return account;
-    }
-
-    private List<Transaction> getTransactionsByAccount(Account account) {
-        List<Transaction> transactions = transactionService.getTransactionsByAccount(account, account);
-        System.out.println(transactions.size());
-        return transactions;
-    }
-
-}
+    }}

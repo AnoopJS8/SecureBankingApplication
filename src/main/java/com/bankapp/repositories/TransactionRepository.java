@@ -7,6 +7,7 @@ import org.springframework.data.repository.CrudRepository;
 import com.bankapp.models.Account;
 import com.bankapp.models.Transaction;
 
+
 public interface TransactionRepository extends CrudRepository<Transaction, Long> {
 
 
@@ -16,3 +17,4 @@ public interface TransactionRepository extends CrudRepository<Transaction, Long>
 
     List<Transaction> findByStatus(String str);
 }
+

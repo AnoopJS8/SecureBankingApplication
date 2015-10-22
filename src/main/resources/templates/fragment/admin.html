@@ -1,18 +1,17 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
-    xmlns:th="http://www.thymeleaf.org">
+	xmlns:th="http://www.thymeleaf.org">
 <body>
-	<div th:fragment="merchant-header" >
+	<div th:fragment="admin-header">
 		<nav class="navbar navbar-default">
 			<div class="container-fluid">
 				<!-- Collect the nav links, forms, and other content for toggling -->
 				<div class="collapse navbar-collapse"
 					id="bs-example-navbar-collapse-1">
 					<ul class="nav navbar-nav">
-						<li><a th:href="@{/merchant/myaccount}">Accounts</a></li>
-						<li><a th:href="@{/merchant/transferfunds}">Transfer Funds</a></li>
-						<li><a th:href="@{/merchant/userpayment}">Payment from customer</a></li>
-						<li><a th:href="@{/merchant/initiatetransaction}">Initiate Transaction</a></li>
+						<li><a th:href="@{/admin/requests}">Profile Requests</a></li>
+						<li><a th:href="@{/admin/employees}">Employees</a></li>
+						<li><a th:href="@{/admin/managers}">Managers</a></li>
 					</ul>
 				</div>
 				<!-- /.navbar-collapse -->

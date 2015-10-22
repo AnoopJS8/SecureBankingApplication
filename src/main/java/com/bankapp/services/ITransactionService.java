@@ -1,3 +1,4 @@
+
 package com.bankapp.services;
 
 import java.util.List;
@@ -18,3 +19,4 @@ public interface ITransactionService {
 	public String askCustomerPayment(Transaction transaction, User user);
 
 }
+

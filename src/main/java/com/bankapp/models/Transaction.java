@@ -39,6 +39,7 @@ public class Transaction {
     private Double amount;
 
     private Date transferDate;
+
     private Date created;
     private Date updated;
 

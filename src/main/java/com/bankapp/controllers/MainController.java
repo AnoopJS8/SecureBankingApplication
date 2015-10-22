@@ -1,4 +1,6 @@
+
 package com.bankapp.controllers;
+
 
 import java.security.Principal;
 
@@ -13,32 +15,36 @@ import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.bankapp.constants.Constants;
 import com.bankapp.forms.OTPForm;
 import com.bankapp.listeners.OnOtpEvent;
+import com.bankapp.models.Account;
 import com.bankapp.models.ProfileRequest;
 import com.bankapp.models.User;
+import com.bankapp.services.IAccountService;
 import com.bankapp.services.IProfileRequestService;
 import com.bankapp.services.IUserService;
 
 @Controller
-public class MainController implements Constants {
-
+public class MainController implements Constants{
+    
     private final Logger LOGGER = Logger.getLogger(MainController.class);
 
     @Autowired
     private IUserService userService;
-
+    
     @Autowired
     private IProfileRequestService profileRequestService;
 
     @Autowired
+    private IAccountService accountService;
+
+    @Autowired
     ApplicationEventPublisher eventPublisher;
-    	
+
     @RequestMapping(value = "/", method = RequestMethod.GET)
     public ModelAndView home(Principal principal) {
         ModelAndView mv = new ModelAndView();
@@ -99,7 +105,7 @@ public class MainController implements Constants {
             return mv;
         } else {
             String expectedAnswer = registeredUser.getSecurityAnswer();
-            if (expectedAnswer.equalsIgnoreCase(answer)) {
+            if(expectedAnswer.equalsIgnoreCase(answer)) {
                 String message = String.format(
                         "Thank you for answering your security question. We have sent an email with a temporary password to %s",
                         email);
@@ -108,15 +114,14 @@ public class MainController implements Constants {
                 userService.generateTemporaryPassword(registeredUser);
                 return mv;
             } else {
-                String message = String
-                        .format("Sorry, we could not verify the answer you specified. Please try again.");
+                String message = String.format("Sorry, we could not verify the answer you specified. Please try again.");
                 mv.setViewName("error");
                 mv.addObject("message", message);
                 return mv;
             }
         }
     }
-
+    
     @RequestMapping(value = "/profile", method = RequestMethod.GET)
     public ModelAndView profile(Principal principal) {
         ModelAndView mv = new ModelAndView();
@@ -126,7 +131,7 @@ public class MainController implements Constants {
         mv.setViewName("profile");
         return mv;
     }
-
+    
     @RequestMapping(value = "/profile", method = RequestMethod.POST)
     public ModelAndView updateProfile(@ModelAttribute("user") @Valid User user, BindingResult result,
             WebRequest request, Errors errors, Principal principal) {
@@ -138,7 +143,7 @@ public class MainController implements Constants {
         profile.setStatus(S_PROFILE_UPDATE_PENDING);
         profile.setUser(userService.getUserFromSession(principal));
         String message = profileRequestService.saveProfileRequest(profile);
-        if (message.equalsIgnoreCase(ERROR)) {
+        if(message.equalsIgnoreCase(ERROR)){
             mv.addObject("message", "Error occured");
             mv.setViewName("error");
             return mv;
@@ -147,7 +152,7 @@ public class MainController implements Constants {
         mv.setViewName("success");
         return mv;
     }
-    
+
     @RequestMapping(value = "/changepassword", method = RequestMethod.GET)
     public ModelAndView changePassword(Principal principal) {
         ModelAndView mv = new ModelAndView();
@@ -157,7 +162,7 @@ public class MainController implements Constants {
         mv.setViewName("changepassword");
         return mv;
     }
-    
+
     @RequestMapping(value = "/changepassword", method = RequestMethod.POST)
     public ModelAndView otpVerification(@ModelAttribute("user") @Valid User user, BindingResult result,
             WebRequest request, Errors errors, Principal principal) {
@@ -166,12 +171,11 @@ public class MainController implements Constants {
         mv.addObject("user", loggedInUser);
         mv.addObject("role", loggedInUser.getRole().getName());
         boolean checkPassword = userService.verifyPassword(loggedInUser, user.getPassword());
-        if(checkPassword){
+        if (checkPassword) {
             loggedInUser.setNewpassword(user.getNewpassword());
             userService.saveRegisteredUser(loggedInUser);
             try {
-                eventPublisher
-                        .publishEvent(new OnOtpEvent(loggedInUser.getId(), R_USER));
+                eventPublisher.publishEvent(new OnOtpEvent(loggedInUser.getId(), R_USER));
             } catch (Exception e) {
                 String message = String.format("Action: %s, Message: %s", "change password", e.getMessage());
                 LOGGER.error(message);
@@ -183,30 +187,53 @@ public class MainController implements Constants {
             OTPForm enteredValue = new OTPForm();
             mv.addObject("otp", enteredValue);
             mv.setViewName("otp");
-        }else{
+        } else {
             mv.addObject("message", "Wrong password");
             mv.setViewName("changepassword");
         }
         return mv;
     }
-    
+
     @RequestMapping(value = "/otp", method = RequestMethod.POST)
-    public ModelAndView otpVerification(@Valid @ModelAttribute("otp")  OTPForm otp, BindingResult result,
+    public ModelAndView otpVerification(@Valid @ModelAttribute("otp") OTPForm otp, BindingResult result,
             WebRequest request, Errors errors, Principal principal) {
         ModelAndView mv = new ModelAndView();
         User loggedInUser = userService.getUserFromSession(principal);
         mv.addObject("user", loggedInUser);
         mv.addObject("role", loggedInUser.getRole().getName());
         boolean checkOtp = userService.verifyOTP(otp.getOtp(), loggedInUser.getId(), R_USER);
-        if(checkOtp){
+        if (checkOtp) {
             userService.changePassword(loggedInUser);
             mv.addObject("message", "Password changed successfully");
             mv.setViewName("success");
-        }else{
+        } else {
             mv.addObject("message", "Error in saving password");
             mv.setViewName("error");
         }
         return mv;
     }
-}
 
+    @RequestMapping(value = "/changelimit", method = RequestMethod.GET)
+    public ModelAndView changeLimit(Principal principal) {
+        ModelAndView mv = new ModelAndView();
+        User loggedInUser = userService.getUserFromSession(principal);
+        mv.addObject("account", accountService.getAccountByUser(loggedInUser));
+        mv.addObject("role", loggedInUser.getRole().getName());
+        mv.setViewName("criticallimit");
+        return mv;
+    }
+
+    @RequestMapping(value = "/changelimit", method = RequestMethod.POST)
+    public ModelAndView changeLimit(@ModelAttribute("account") @Valid Account account, BindingResult result,
+            WebRequest request, Errors errors, Principal principal) {
+        ModelAndView mv = new ModelAndView();
+        User loggedInUser = userService.getUserFromSession(principal);
+        mv.addObject("role", loggedInUser.getRole().getName());
+        Account newAccount = accountService.getAccountByUser(loggedInUser);
+        newAccount.setCriticalLimit(account.getCriticalLimit());
+        accountService.saveAccount(newAccount);
+        mv.addObject("message", "Changes the critical limit");
+        mv.setViewName("success");
+        return mv;
+    }
+}

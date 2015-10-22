@@ -1,3 +1,4 @@
+
 package com.bankapp.services;
 
 import java.util.ArrayList;
@@ -77,4 +78,5 @@ public class CustomUserDetailsService implements UserDetailsService {
         user.setCurrentLoginDate(new Date());
         userRepository.save(user);
     }
+
 }
