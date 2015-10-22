@@ -12,21 +12,23 @@
 		</div>
 		<div th:replace="fragment/common :: message"></div>
 		<form id="tF-form" class="form-horizontal" role="form"
-			th:action="@{/customer/transferfunds}" th:object="${transaction}"
+			th:action="@{/customer/transferfunds}" th:object="${form}"
 			method="post">
 			<div class="form-group">
 				<label class="col-md-3 control-label">Recipient Account
 					Number: </label>
 				<div class="col-md-5">
-					<input type="text" class="form-control" name="toAccount"
-						id="toAccount" th:field="*{toAccount.accId}"></input>
+					<input type="text" class="form-control" name="accountId"
+						id="toAccount" th:field="*{accountId}"></input><label
+						th:if="${#fields.hasErrors('accountId')}" th:errors="*{accountId}"></label>
 				</div>
 			</div>
 			<div class="form-group">
 				<label class="col-md-3 control-label">Amount in dollars: </label>
 				<div class="col-md-5">
 					<input type="text" class="form-control" name="amount" id="amount"
-						th:field="*{amount}"></input>
+						th:field="*{amount}"></input><label
+						th:if="${#fields.hasErrors('amount')}" th:errors="*{amount}"></label>
 				</div>
 			</div>
 			<div class="form-group">
@@ -34,6 +36,8 @@
 				<div class="col-md-5">
 					<textarea class="form-control" rows="2" name="comment"
 						th:field="*{comment}"></textarea>
+					<label th:if="${#fields.hasErrors('comment')}"
+						th:errors="*{comment}"></label>
 				</div>
 			</div>
 			<div class="form-group">
@@ -44,7 +48,8 @@
 		</form>
 		<div th:replace="fragment/common :: footer"></div>
 	</div>
-	<script th:src="@{/webjars/jquery-validation/1.14.0/jquery.validate.min.js}"></script>
+	<script
+		th:src="@{/webjars/jquery-validation/1.14.0/jquery.validate.min.js}"></script>
 	<script type="text/javascript" th:src="@{/js/tranFund.js}"></script>
 </body>
 </html>
