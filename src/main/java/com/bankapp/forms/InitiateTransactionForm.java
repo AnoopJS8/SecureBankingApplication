@@ -18,7 +18,7 @@ public class InitiateTransactionForm {
     String comment;
 
     @NotNull
-    @DateTimeFormat(pattern = "yyyy/MM/dd")
+    @DateTimeFormat(pattern = "MM/dd/yyyy")
     @Future
     Date transferDate;
 

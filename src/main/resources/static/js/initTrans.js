@@ -14,8 +14,8 @@ $(document).ready(function() {
 			required : false
 		},
 		'transferDate' : {
-			required : true,
-			dateFA: true
+			required : true//,
+			//dateFA: true
 		}
 	},
 	// Specify the validation error messages
@@ -29,8 +29,8 @@ $(document).ready(function() {
 			digits:	"Please enter valid amount"
 		},
 		'transferDate' : {
-			required: "Transfer date cannot be NULL", 
-			dateFA:	"Please enter Data in YYYY/MM/DD format"
+			required: "Transfer date cannot be NULL" //, 
+			//dateFA:	"Please enter Data in YYYY/MM/DD format"
 		}},
 
 	submitHandler : function(form) {

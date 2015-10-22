@@ -44,7 +44,7 @@
 				<label class="col-md-3 control-label">Date of Birth: </label>
 				<div class="col-md-5">
 					<input type="text" th:field="*{dateOfBirth}" class="form-control"
-						placeholder="Date of Birth (mm/dd/yyyy)" /> <label
+						placeholder="Date of Birth (MM/dd/yyyy)" /> <label
 						th:if="${#fields.hasErrors('dateOfBirth')}"
 						th:errors="*{dateOfBirth}"></label>
 				</div>
