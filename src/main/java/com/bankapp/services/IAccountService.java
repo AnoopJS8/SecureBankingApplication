@@ -5,7 +5,7 @@ import com.bankapp.models.Transaction;
 import com.bankapp.models.User;
 
 public interface IAccountService {
-    public Account getAccountsByUser(User user);
+    public Account getAccountByUser(User user);
 
     public Account getAccountByAccountId(Long id);
 

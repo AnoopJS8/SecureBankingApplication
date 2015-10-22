@@ -192,7 +192,7 @@ public class MerchantController implements Constants {
 
     private Account getAccountByUserId(long id) {
         User user = userService.getUserById(id);
-        Account account = accountService.getAccountsByUser(user);
+        Account account = accountService.getAccountByUser(user);
         return account;
     }
 

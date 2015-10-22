@@ -217,7 +217,7 @@ public class MainController implements Constants{
     public ModelAndView changeLimit(Principal principal) {
         ModelAndView mv = new ModelAndView();
         User loggedInUser = userService.getUserFromSession(principal);
-        mv.addObject("account", accountService.getAccountsByUser(loggedInUser));
+        mv.addObject("account", accountService.getAccountByUser(loggedInUser));
         mv.addObject("role", loggedInUser.getRole().getName());
         mv.setViewName("criticallimit");
         return mv;
@@ -229,7 +229,7 @@ public class MainController implements Constants{
         ModelAndView mv = new ModelAndView();
         User loggedInUser = userService.getUserFromSession(principal);
         mv.addObject("role", loggedInUser.getRole().getName());
-        Account newAccount = accountService.getAccountsByUser(loggedInUser);
+        Account newAccount = accountService.getAccountByUser(loggedInUser);
         newAccount.setCriticalLimit(account.getCriticalLimit());
         accountService.saveAccount(newAccount);
         mv.addObject("message", "Changes the critical limit");
