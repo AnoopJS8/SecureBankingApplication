@@ -27,6 +27,8 @@ public class ProfileRequest {
 
     private String dateOfBirth;
     
+    private Long roleId;
+    
     @NotNull
     private String status;
 
@@ -83,6 +85,14 @@ public class ProfileRequest {
         final String value = String.format("Profile [address=%s, phonenumber=%s, dob=%s, status=%s]", user.getId(),
                 address, phoneNumber, status);
         return value;
+    }
+
+    public Long getRoleId() {
+        return roleId;
+    }
+
+    public void setRoleId(Long roleId) {
+        this.roleId = roleId;
     }
 
 }
