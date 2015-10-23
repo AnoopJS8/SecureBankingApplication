@@ -32,16 +32,19 @@ public class SystemManagerService implements ISystemManagerService {
         return list;
     }
 
-    public User viewUserById(Long id) {
+    @Override
+    public User viewUserById(String id) {
         User user = UserRepo.findById(id);
         return user;
     }
 
+    @Override
     public User viewUserByEmail(String email) {
         User user = UserRepo.findByEmail(email);
         return user;
     }
 
+    @Override
     public User addUser(User user) {
         UserRepo.save(user);
         return user;
@@ -64,7 +67,7 @@ public class SystemManagerService implements ISystemManagerService {
     }
 
     @Override
-    public Transaction getTransactionbyid(Long id) {
+    public Transaction getTransactionbyid(String id) {
         Transaction transaction = TransRepo.findOne(id);
         return transaction;
     }

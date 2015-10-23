@@ -10,8 +10,8 @@ public interface IProfileRequestService {
 
     List<ProfileRequest> getPendingRequests();
 
-    void setRequestToVerified(Long id);
+    void setRequestToVerified(String id);
     
-    void declineRequest(Long id);
+    void declineRequest(String id);
 
 }

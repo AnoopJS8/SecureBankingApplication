@@ -35,7 +35,7 @@ public class TransactionService implements ITransactionService, Constants {
     @Override
     public String saveTransaction(Transaction transaction, User user) {
 
-        Long accId = transaction.getToAccount().getAccId();
+        String accId = transaction.getToAccount().getAccId();
         Account toAccount = accountService.getAccountByAccountId(accId);
         if (toAccount == null) {
             return ERR_ACCOUNT_NOT_EXISTS;
@@ -109,7 +109,7 @@ public class TransactionService implements ITransactionService, Constants {
 	}
 
     @Override
-    public Transaction getTransactionsById(Long id) {
+    public Transaction getTransactionsById(String id) {
         return transactionRepository.findOne(id);
     }
 }

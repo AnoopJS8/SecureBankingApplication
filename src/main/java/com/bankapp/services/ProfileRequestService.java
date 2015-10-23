@@ -8,11 +8,16 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.bankapp.constants.Constants;
 import com.bankapp.models.ProfileRequest;
+import com.bankapp.models.Role;
 import com.bankapp.models.User;
 import com.bankapp.repositories.ProfileRequestRepository;
+import com.bankapp.repositories.RoleRepository;
 
 @Service
 public class ProfileRequestService implements IProfileRequestService, Constants {
+    
+    @Autowired
+    private RoleRepository roleRepository;
 
     @Autowired
     private ProfileRequestRepository profileRequestRepository;
@@ -30,17 +35,17 @@ public class ProfileRequestService implements IProfileRequestService, Constants 
 
     @Override
     public List<ProfileRequest> getPendingRequests() {
-        Long manager = new Long(1);
-        Long employee = new Long(6);
-        List<ProfileRequest> profileRequest = profileRequestRepository.findByStatusAndRoleId(S_PROFILE_UPDATE_PENDING,
+        Role manager = roleRepository.findByName("ROLE_MANAGER");
+        Role employee = roleRepository.findByName("ROLE_EMPLOYEE");
+        List<ProfileRequest> profileRequest = profileRequestRepository.findByStatusAndRole(S_PROFILE_UPDATE_PENDING,
                 manager);
-        profileRequest.addAll(profileRequestRepository.findByStatusAndRoleId(S_PROFILE_UPDATE_PENDING, employee));
+        profileRequest.addAll(profileRequestRepository.findByStatusAndRole(S_PROFILE_UPDATE_PENDING, employee));
         return profileRequest;
     }
 
     @Transactional
     @Override
-    public void setRequestToVerified(Long id) {
+    public void setRequestToVerified(String id) {
         ProfileRequest profile = profileRequestRepository.findOne(id);
         changeUserData(profile);
         profile.setStatus(S_PROFILE_UPDATE_VERFIED);
@@ -55,7 +60,7 @@ public class ProfileRequestService implements IProfileRequestService, Constants 
     }
 
     @Override
-    public void declineRequest(Long id) {
+    public void declineRequest(String id) {
         ProfileRequest profile = profileRequestRepository.findOne(id);
         profile.setStatus(S_PROFILE_UPDATE_DECLINED);
         profileRequestRepository.save(profile);
