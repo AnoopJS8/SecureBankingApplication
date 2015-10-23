@@ -15,7 +15,7 @@ import com.bankapp.repositories.RoleRepository;
 
 @Service
 public class ProfileRequestService implements IProfileRequestService, Constants {
-    
+
     @Autowired
     private RoleRepository roleRepository;
 
@@ -64,7 +64,59 @@ public class ProfileRequestService implements IProfileRequestService, Constants 
         ProfileRequest profile = profileRequestRepository.findOne(id);
         profile.setStatus(S_PROFILE_UPDATE_DECLINED);
         profileRequestRepository.save(profile);
-        
+
+    }
+
+    @Override
+    public List<ProfileRequest> getRequestsByStatus(String status) {
+        Role merchant = roleRepository.findByName("ROLE_MERCHANT");
+        Role customer = roleRepository.findByName("ROLE_CUSTOMER");
+
+        List<ProfileRequest> list = profileRequestRepository.findByStatusAndRole(status, merchant);
+
+        list.addAll(profileRequestRepository.findByStatusAndRole(status, customer));
+        return list;
+    }
+
+    @Override
+    public ProfileRequest getRequestById(String id) {
+
+        ProfileRequest request = profileRequestRepository.findOne(id);
+        return request;
+    }
+
+    public String authorizeRequest(ProfileRequest requests) {
+
+        String result = "";
+
+        requests.setStatus(S_PROFILE_UPDATE_VERFIED);
+
+        try {
+            profileRequestRepository.save(requests);
+            result = "Profile modification has been approved";
+
+        } catch (Exception e) {
+            result = "unsuccessull";
+        }
+
+        return result;
+    }
+
+    @Override
+    public String declineRequest(ProfileRequest requests) {
+        // TODO Auto-generated method stub
+        String result = "";
+        requests.setStatus(S_PROFILE_UPDATE_DECLINED);
+
+        try {
+            profileRequestRepository.save(requests);
+            result = "Profile modification has been declined";
+
+        } catch (Exception e) {
+            result = "unsuccessull";
+        }
+
+        return result;
     }
 
 }
