@@ -23,9 +23,11 @@ import com.bankapp.constants.Message;
 import com.bankapp.forms.OTPForm;
 import com.bankapp.listeners.OnOtpEvent;
 import com.bankapp.models.Account;
+import com.bankapp.models.PersonalIdentificationInfo;
 import com.bankapp.models.ProfileRequest;
 import com.bankapp.models.User;
 import com.bankapp.services.IAccountService;
+import com.bankapp.services.IPIIService;
 import com.bankapp.services.IProfileRequestService;
 import com.bankapp.services.IUserService;
 
@@ -45,6 +47,9 @@ public class MainController implements Constants {
 
     @Autowired
     ApplicationEventPublisher eventPublisher;
+    
+    @Autowired
+    private IPIIService ipiiservice;
 
     @RequestMapping(value = "/", method = RequestMethod.GET)
     public ModelAndView home(Principal principal) {
@@ -237,5 +242,34 @@ public class MainController implements Constants {
         } else {
             return "redirect:/merchant/myaccount";
         }
+    }
+    
+    @RequestMapping(value = "/pii", method = RequestMethod.GET)
+    public ModelAndView addPII(Principal principal) {
+        ModelAndView mv = new ModelAndView();
+        User loggedInUser = userService.getUserFromSession(principal);
+        PersonalIdentificationInfo pii = new PersonalIdentificationInfo();
+        mv.addObject("role", loggedInUser.getRole().getName());
+        mv.addObject("pii", pii);
+        mv.setViewName("pii");
+        return mv;
+    }
+
+    @RequestMapping(value = "/pii", method = RequestMethod.POST)
+    public ModelAndView savePII(@ModelAttribute("pii") @Valid PersonalIdentificationInfo pii, BindingResult result,
+            WebRequest request, Errors errors, Principal principal) {
+        ModelAndView mv = new ModelAndView();
+        User loggedInUser = userService.getUserFromSession(principal);
+        pii.setEmail(loggedInUser.getEmail());
+        pii.setStatus(S_PII_PENDING);
+        String message = ipiiservice.savePII(pii);
+        if(message.equals(SUCCESS)){
+            mv.addObject("message", "Pii added successfully");
+            mv.setViewName("success");
+        }else{
+            mv.addObject("message", "Error in adding the pii please try again");
+            mv.setViewName("error");
+        }            
+        return mv;
     }
 }

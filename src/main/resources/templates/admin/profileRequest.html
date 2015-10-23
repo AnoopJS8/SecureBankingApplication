@@ -18,13 +18,14 @@
 						<th>Phone Number</th>
 						<th>Date of Birth</th>
 						<th>Status</th>
-						<th>Options</th>
+						<th>Authorize</th>
+						<th>Decline</th>
 					</tr>
 				</thead>
 				<tbody>
-				    <tr th:if="${requests.size()} == 0">
-                        <td colspan="6">There are no requests</td>
-                    </tr>
+					<tr th:if="${requests.size()} == 0">
+						<td colspan="7">There are no requests</td>
+					</tr>
 					<tr style="cursor: pointer" th:each="request : ${requests}">
 						<td><span th:text="*{request.user.username}"></span></td>
 						<td><span th:text="*{request.address}"></span></td>
@@ -32,18 +33,19 @@
 						<td><span th:text="*{request.dateOfBirth}"></span></td>
 						<td><span th:text="*{request.status}"></span></td>
 						<td>
-							<span><form th:object="${request}"
+							<form th:object="${request}"
 								th:action="@{/approveProfileRequest}" method="POST">
 								<input type="hidden" name="rId" th:value="*{rId}" />
 								<button type="submit" class="btn btn-primary">Approve</button>
-							</form></span>
-							<span><form th:object="${request}"
+							</form>
+						</td>
+						<td>
+							<form th:object="${request}"
 								th:action="@{/declineProfileRequest}" method="POST">
 								<input type="hidden" name="rId" th:value="*{rId}" />
 								<button type="submit" class="btn btn-primary">Decline</button>
-							</form></span>
+							</form>
 						</td>
-						
 					</tr>
 				</tbody>
 			</table>
