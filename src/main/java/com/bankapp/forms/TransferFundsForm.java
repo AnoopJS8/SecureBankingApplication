@@ -2,7 +2,7 @@ package com.bankapp.forms;
 
 import javax.validation.constraints.NotNull;
 
-public class transferFundsForm {
+public class TransferFundsForm {
     @NotNull
     Long accountId;
 

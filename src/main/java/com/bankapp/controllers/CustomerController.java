@@ -14,7 +14,6 @@ import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.Errors;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -27,7 +26,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.bankapp.constants.Constants;
 import com.bankapp.constants.Message;
 import com.bankapp.forms.InitiateTransactionForm;
-import com.bankapp.forms.transferFundsForm;
+import com.bankapp.forms.TransferFundsForm;
 import com.bankapp.models.Account;
 import com.bankapp.models.Transaction;
 import com.bankapp.models.User;
@@ -77,7 +76,7 @@ public class CustomerController implements Constants {
     @RequestMapping(value = "/customer/transferfunds", method = RequestMethod.GET)
     public ModelAndView transferFunds() {
 
-        ModelAndView mv = new ModelAndView("customer/transferfunds", "form", new transferFundsForm());
+        ModelAndView mv = new ModelAndView("customer/transferfunds", "form", new TransferFundsForm());
 
         String logMessage = String.format("[Action=%s, Method=%s]", "transferfunds", "GET");
         LOGGER.info(logMessage);
@@ -86,7 +85,7 @@ public class CustomerController implements Constants {
     }
 
     @RequestMapping(value = "/customer/transferfunds", method = RequestMethod.POST)
-    public String saveTransaction(final ModelMap model, @ModelAttribute("form") @Valid transferFundsForm form,
+    public String saveTransaction(final ModelMap model, @ModelAttribute("form") @Valid TransferFundsForm form,
             BindingResult result, WebRequest request, Principal principal, RedirectAttributes attributes) {
 
         String status;
@@ -172,12 +171,16 @@ public class CustomerController implements Constants {
         transaction.setToAccount(toAccount);
         transaction.setComment(form.getComment());
         transaction.setTransferDate(form.getTransferDate());
-        String dbStatus = transactionService.initiateTransaction(transaction, user);
+        String serviceStatus = transactionService.initiateTransaction(transaction, user);
 
-        if (dbStatus.equalsIgnoreCase(SUCCESS)) {
+        if (serviceStatus.equalsIgnoreCase(SUCCESS)) {
             status = "success";
             message = "Your transaction is initiated and will be handled by our employees";
             redirectUrl = "redirect:/customer/myaccount";
+        } else if (serviceStatus.equalsIgnoreCase(ERR_ACCOUNT_NOT_EXISTS)) {
+            status = "error";
+            message = ERR_ACCOUNT_NOT_EXISTS;
+            redirectUrl = "redirect:/customer/initiatetransaction";
         } else {
             status = "error";
             message = "An unhandled error occurred. Please contact the administrator";
@@ -188,7 +191,7 @@ public class CustomerController implements Constants {
         attributes.addFlashAttribute("role", "customer");
 
         logMessage = String.format("[Action=%s, Method=%s][Status=%s][Message=%s]", "initiatetransaction", "POST",
-                dbStatus, message);
+                serviceStatus, message);
         LOGGER.info(logMessage);
 
         return redirectUrl;

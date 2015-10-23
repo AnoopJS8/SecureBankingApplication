@@ -11,15 +11,15 @@
 		<div >
 			<h3>Account</h3>
 		</div>
+		<div th:replace="fragment/common :: message"></div>
 		<div class="table-responsive">
 			<table class="table table-bordered table-hover">
 				<thead>
-					<tr>
+					<tr class="info">
 						<th>Account Number</th>
 						<th>Balance</th>
 						<th>Created Date</th>
 						<th>Critical Limit</th>
-						<th>Action</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -27,8 +27,24 @@
 						<td><span th:text="${account.accId}"></span></td>
 						<td><span th:text="${account.balance}"></span></td>
 						<td><span th:text="${account.created}"></span></td>
-						<td><span th:text="${account.criticalLimit}"></span></td>
-						<td><a th:href="@{/changelimit}">Change Limit</a></td>
+						<td>
+						  <div class="critical-limit">
+							  <span th:text="${account.criticalLimit}"></span>
+							  <a class="change-limit btn btn-xs btn-primary" href="#">
+							      <i class="fa fa-pencil"></i>
+							      Change critical limit
+							  </a>
+						  </div>
+						  <form class="hidden-form form-inline" th:action="@{/changelimit}" method="post">
+						      <div class="form-group">
+						          <input class="form-control" type="number" name="limit" id="limit" th:value="${account.criticalLimit}"/>
+						      </div>
+						      <button class="btn btn-xs btn-primary">
+						          <i class="fa fa-check"></i>
+						          Save
+						      </button>
+						  </form>
+						</td>
 					</tr>
 				</tbody>
 			</table>
@@ -39,7 +55,7 @@
 		<div class="table-responsive">
 			<table class="table table-bordered table-hover">
 				<thead>
-					<tr>
+					<tr class="info">
 						<th>Date</th>
 						<th>From</th>
 						<th>To</th>
@@ -49,6 +65,9 @@
 					</tr>
 				</thead>
 				<tbody>
+				    <tr th:if="${transactions.size()} == 0">
+				        <td colspan="5">No transactions to show</td>
+			        </tr>
 					<tr th:each="transaction : ${transactions}">
 						<td><span th:text="${transaction.transferDate}"></span></td>
 						<td><span th:text="${transaction.fromAccount.user.username}"></span></td>
@@ -65,6 +84,8 @@
 				</tbody>
 			</table>
 		</div>
+		<div th:replace="fragment/common :: footer"></div>
+		<script type="text/javascript" th:src="@{/js/myaccount.js}"></script>
 	</div>
 </body>
 

@@ -74,13 +74,11 @@ public class TransactionService implements ITransactionService, Constants {
     @Transactional
 	@Override
 	public String askCustomerPayment(Transaction transaction, User user) {
-		Long accId = transaction.getToAccount().getAccId();
-		if(accId==null){
-            return ERR_ACCOUNT_NOT_EXISTS;
-        }
 		try {
+	        if(transaction.getFromAccount() == null){
+	            return ERR_ACCOUNT_NOT_EXISTS;
+	        }
 			transaction.setToAccount(accountService.getAccountByUser(user));
-			transaction.setFromAccount(accountService.getAccountByAccountId(accId));
 			transaction.setStatus(S_PENDING_CUSTOMER_VERIFICATION);
 			Date date = new Date();
 			transaction.setTransferDate(date);
@@ -95,17 +93,19 @@ public class TransactionService implements ITransactionService, Constants {
 	@Transactional
 	@Override
 	public String initiateTransaction(Transaction transaction, User user) {
-		Long accId = transaction.getToAccount().getAccId();
-		if(accId==null){
-            return ERR_ACCOUNT_NOT_EXISTS;
+		try {
+    		if(transaction.getToAccount() == null){
+                return ERR_ACCOUNT_NOT_EXISTS;
+            }
+    		transaction.setFromAccount(accountService.getAccountByUser(user));
+    		transaction.setStatus(S_PENDING);
+    		transaction.setTransferDate(transaction.getTransferDate());
+    		transactionRepository.save(transaction);
+    		return SUCCESS;
+		} catch (Exception e) {
+            e.printStackTrace();
+            return ERROR;
         }
-		transaction.setToAccount(accountService.getAccountByAccountId(accId));
-		transaction.setFromAccount(accountService.getAccountByUser(user));
-		transaction.setStatus(S_PENDING);
-		System.out.println(transaction.getTransferDate());
-		transaction.setTransferDate(transaction.getTransferDate());
-		transactionRepository.save(transaction);
-		return SUCCESS;
 	}
 
     @Override
