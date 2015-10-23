@@ -13,76 +13,88 @@ import javax.validation.constraints.NotNull;
 @Table(name = "profilerequest")
 public class ProfileRequest {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long rId;
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	private Long rId;
 
-    @OneToOne
-    @JoinColumn(name = "userId", nullable = false)
-    private User user;
+	@OneToOne
+	@JoinColumn(name = "userId", nullable = false)
+	private User user;
 
-    private String address;
+	private String address;
 
-    private String phoneNumber;
+	@NotNull
+	private Long roleId;
 
-    private String dateOfBirth;
-    
-    @NotNull
-    private String status;
+	private String phoneNumber;
 
-    public Long getrId() {
-        return rId;
-    }
+	private String dateOfBirth;
 
-    public void setrId(Long rId) {
-        this.rId = rId;
-    }
+	@NotNull
+	private String status;
 
-    public User getUser() {
-        return user;
-    }
+	public Long getrId() {
+		return rId;
+	}
 
-    public void setUser(User user) {
-        this.user = user;
-    }
+	public void setrId(Long rId) {
+		this.rId = rId;
+	}
 
-    public String getAddress() {
-        return address;
-    }
+	public Long getRoleId() {
+		return roleId;
+	}
 
-    public void setAddress(String address) {
-        this.address = address;
-    }
+	public void setRoleId(Long roleId) {
+		this.roleId = roleId;
+	}
 
-    public String getPhoneNumber() {
-        return phoneNumber;
-    }
+	public User getUser() {
+		return user;
+	}
 
-    public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
-    }
+	public void setUser(User user) {
+		this.user = user;
+	}
 
-    public String getDateOfBirth() {
-        return dateOfBirth;
-    }
+	public String getAddress() {
+		return address;
+	}
 
-    public void setDateOfBirth(String dateOfBirth) {
-        this.dateOfBirth = dateOfBirth;
-    }
+	public void setAddress(String address) {
+		this.address = address;
+	}
 
-    public String getStatus() {
-        return status;
-    }
+	public String getPhoneNumber() {
+		return phoneNumber;
+	}
 
-    public void setStatus(String status) {
-        this.status = status;
-    }
-    
-    @Override
-    public String toString() {
-        final String value = String.format("Profile [address=%s, phonenumber=%s, dob=%s, status=%s]", user.getId(),
-                address, phoneNumber, status);
-        return value;
-    }
+	public void setPhoneNumber(String phoneNumber) {
+		this.phoneNumber = phoneNumber;
+	}
+
+	public String getDateOfBirth() {
+		return dateOfBirth;
+	}
+
+	public void setDateOfBirth(String dateOfBirth) {
+		this.dateOfBirth = dateOfBirth;
+	}
+
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
+
+	@Override
+	public String toString() {
+		final String value = String
+				.format("Profile [uid=%s, address=%s, phonenumber=%s, dob=%s, status=%s]",
+						user.getId(), address, phoneNumber, dateOfBirth, status);
+		return value;
+	}
 
 }

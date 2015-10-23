@@ -1,6 +1,11 @@
 package com.bankapp.repositories;
 
+import java.util.Collection;
 import java.util.List;
+
+
+
+
 
 
 import org.springframework.data.repository.CrudRepository;
@@ -15,6 +20,10 @@ public interface ProfileRequestRepository extends CrudRepository<ProfileRequest,
 	
 	
 	ProfileRequest findByRId(Long Id);
-	
-	
+
+
+	List<ProfileRequest> findByStatusAndRoleId(String status, Long merchant);
+
+
+
 }

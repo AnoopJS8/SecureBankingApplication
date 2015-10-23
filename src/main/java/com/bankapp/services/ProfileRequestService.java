@@ -33,28 +33,7 @@ public class ProfileRequestService implements IProfileRequestService, Constants{
         
     }
     
-//    
-//    Long manager = new Long(1);
-//    Long employee = new Long(6);
-//    List<ProfileRequest> profileRequest = profileRequestRepository.findByStatusAndRoleId(S_PROFILE_UPDATE_PENDING,
-//            manager);
-//    profileRequest.addAll(profileRequestRepository.findByStatusAndRoleId(S_PROFILE_UPDATE_PENDING, employee));
-//    return profileRequest;
-    
-//	@Override
-//	public List<ProfileRequest> getRequestsByStatus1(String status) {
-//		// TODO Auto-generated method stub
-//		
-//		Long merchant = new Long(3);
-//		Long customer = new Long(4);
-//		
-//		Long role;
-//		if(role==merchant||role==customer){
-//		List<ProfileRequest> list=profileRequestRepository.findByStatusAndRoleId(status,);
-//
-//		return list;
-//	}
-//	}
+
     
 	@Override
 	public List<ProfileRequest> getRequestsByStatus(String status) {
@@ -63,8 +42,9 @@ public class ProfileRequestService implements IProfileRequestService, Constants{
 		Long merchant = new Long(3);
 		Long customer = new Long(4);
 		
-		List<ProfileRequest> list=profileRequestRepository.findByStatus(status);
-
+		List<ProfileRequest> list=profileRequestRepository.findByStatusAndRoleId(status,merchant);
+		
+		list.addAll(profileRequestRepository.findByStatusAndRoleId(status, customer));
 		return list;
 	}
    
@@ -84,7 +64,7 @@ public class ProfileRequestService implements IProfileRequestService, Constants{
 
 	        try {
 	        	profileRequestRepository.save(requests);
-	            result = "Successull";
+	            result = "Profile modification has been approved";
 	            System.out.println("Transaction has been approved");
 	        } catch (Exception e) {
 	            result = "unsuccessull";
@@ -92,6 +72,23 @@ public class ProfileRequestService implements IProfileRequestService, Constants{
 
 	        return result;
 	    }
+
+		@Override
+		public String declineRequest(ProfileRequest requests) {
+			// TODO Auto-generated method stub
+			String result = "";
+			 requests.setStatus("PUD");
+
+		        try {
+		        	profileRequestRepository.save(requests);
+		            result = "Profile modification has been declined";
+		            System.out.println("Transaction has been Declined");
+		        } catch (Exception e) {
+		            result = "unsuccessull";
+		        }
+
+		        return result;
+		}
     
 	    
 	    

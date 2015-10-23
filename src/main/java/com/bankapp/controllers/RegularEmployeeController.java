@@ -58,14 +58,18 @@ public class RegularEmployeeController implements Constants {
 		@RequestMapping(value = "/viewuserprofile", method = RequestMethod.GET)
 		public ModelAndView getPendingProfileRequests() {
 			
+//			Long merchant = new Long(3);
+//			Long customer = new Long(4);
+		
 			List<ProfileRequest> requests=req.getRequestsByStatus(S_PROFILE_UPDATE_PENDING);
-	
 			
+			System.out.println("List"+requests);
 			ModelAndView mv = new ModelAndView();
 			mv.addObject("profilerequest", requests);
 			mv.setViewName("employee/employee_view");
 			return mv;
 		}
+		
 		
 		// AUTHORIZE USER_PROFILE
 		@RequestMapping(value = "/authorize_userprofile", method = RequestMethod.POST, params = "action=Authorize")
@@ -73,10 +77,10 @@ public class RegularEmployeeController implements Constants {
 				@ModelAttribute("row") ProfileRequest rId, BindingResult result,
 				WebRequest request, Errors errors, Principal principal) {
 			ModelAndView mv = new ModelAndView();
-
+			
 			ProfileRequest requests = req.getRequestById(rId
 					.getrId());
-
+			
 			String str = "";
 			str = req.authorizeRequest(requests);
 
@@ -86,7 +90,24 @@ public class RegularEmployeeController implements Constants {
 			return mv;
 		}
 
-		
+		// DECLINE USER_PROFILE
+				@RequestMapping(value = "/authorize_userprofile", method = RequestMethod.POST, params = "action=Decline")
+				public ModelAndView declineProfileRequests(
+						@ModelAttribute("row") ProfileRequest rId, BindingResult result,
+						WebRequest request, Errors errors, Principal principal) {
+					ModelAndView mv = new ModelAndView();
+					
+					ProfileRequest requests = req.getRequestById(rId
+							.getrId());
+				
+					String str = "";
+					str = req.declineRequest(requests);
+
+					mv.addObject("result1", str);
+					mv.setViewName("employee/employee_view");
+
+					return mv;
+				}
 	// EMPLOYEE AUTHORIZE TRANSACTION
 	@RequestMapping(value = "/employee_transactions", method = RequestMethod.POST, params = "action=Authorize")
 	public ModelAndView approvetransaction(

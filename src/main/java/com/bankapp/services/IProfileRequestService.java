@@ -16,5 +16,6 @@ public interface IProfileRequestService {
 
 	public String authorizeRequest(ProfileRequest requests);
 	
-
+	public String declineRequest(ProfileRequest requests);
+	
 }
