@@ -6,6 +6,6 @@ import org.springframework.data.repository.CrudRepository;
 
 import com.bankapp.models.PiiRequest;
 
-public interface PIIRequestRepository extends CrudRepository<PiiRequest, Long>{
+public interface PIIRequestRepository extends CrudRepository<PiiRequest, String>{
     public List<PiiRequest> findByStatus(String status);
 }

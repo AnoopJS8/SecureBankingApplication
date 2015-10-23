@@ -6,7 +6,7 @@ import org.springframework.data.repository.CrudRepository;
 
 import com.bankapp.models.PersonalIdentificationInfo;
 
-public interface PIIRepository extends CrudRepository<PersonalIdentificationInfo, Long>{
+public interface PIIRepository extends CrudRepository<PersonalIdentificationInfo, String>{
     PersonalIdentificationInfo findByEmail(String email); 
     List<PersonalIdentificationInfo> findByStatus(String status);
 }

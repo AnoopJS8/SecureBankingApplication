@@ -7,6 +7,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
+import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.NotFound;
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotEmpty;
@@ -16,8 +17,9 @@ import org.hibernate.validator.constraints.NotEmpty;
 public class PiiRequest {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long piiRId;
+    @GeneratedValue(generator = "uuid")
+    @GenericGenerator(name = "uuid", strategy = "uuid2")
+    private String piiRId;
 
     @NotEmpty
     @NotFound
@@ -27,11 +29,11 @@ public class PiiRequest {
     @NotNull
     private String status;
 
-    public Long getPiiRId() {
+    public String getPiiRId() {
         return piiRId;
     }
 
-    public void setPiiRId(Long piiRId) {
+    public void setPiiRId(String piiRId) {
         this.piiRId = piiRId;
     }
 
