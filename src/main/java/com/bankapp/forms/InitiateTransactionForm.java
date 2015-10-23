@@ -3,6 +3,7 @@ package com.bankapp.forms;
 import java.util.Date;
 
 import javax.validation.constraints.Future;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
 import org.springframework.format.annotation.DateTimeFormat;
@@ -13,6 +14,7 @@ public class InitiateTransactionForm {
     Long accountId;
 
     @NotNull
+    @Min(value = 0)
     Double amount;
 
     String comment;

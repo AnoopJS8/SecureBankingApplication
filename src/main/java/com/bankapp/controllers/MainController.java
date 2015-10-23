@@ -219,12 +219,17 @@ public class MainController implements Constants {
     @RequestMapping(value = "/changelimit", method = RequestMethod.POST)
     public String changeLimit(@ModelAttribute("limit") @Valid Double newLimit, BindingResult result, WebRequest request,
             Errors errors, Principal principal, RedirectAttributes attributes) {
-        User loggedInUser = userService.getUserFromSession(principal);
-        Account newAccount = accountService.getAccountByUser(loggedInUser);
-        newAccount.setCriticalLimit(newLimit);
-        accountService.saveAccount(newAccount);
 
-        attributes.addFlashAttribute("message", new Message("success", "Your critical limit has been updated"));
+        User loggedInUser = userService.getUserFromSession(principal);
+        if (newLimit < 0) {
+            attributes.addFlashAttribute("message", new Message("error", "Critical limit cannot be set below 0"));
+        } else {
+
+            Account newAccount = accountService.getAccountByUser(loggedInUser);
+            newAccount.setCriticalLimit(newLimit);
+            accountService.saveAccount(newAccount);
+            attributes.addFlashAttribute("message", new Message("success", "Your critical limit has been updated"));
+        }
 
         String roleName = loggedInUser.getRole().getName();
         if (roleName.equalsIgnoreCase("ROLE_CUSTOMER")) {
