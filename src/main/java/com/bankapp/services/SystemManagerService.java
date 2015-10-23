@@ -1,5 +1,9 @@
 package com.bankapp.services;
 
+import java.util.Date;
+
+
+
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -75,10 +79,11 @@ public class SystemManagerService implements ISystemManagerService {
         return result;
     }
     
-    public String modifyTransaction(Transaction transaction) {
+    public String modifyTransaction(Transaction transaction,Date new_Date) {
 
         String result = "";
-        	
+        	transaction.setStatus("Approved");
+        	transaction.setTransferDate(new_Date);
             TransRepo.save(transaction);
             result = "Transaction has been modified";
             System.out.println("Done modified");

@@ -14,6 +14,6 @@ public interface Constants {
 	public String S_CUSTOMER_VERIFIED = "CV"; //merchant request verified
 	public String S_PROFILE_UPDATE_PENDING = "PUP"; //Profile Changes pending
 	public String S_PROFILE_UPDATE_VERFIED = "PUV";//profile changes verified
-
+	
 	
 }

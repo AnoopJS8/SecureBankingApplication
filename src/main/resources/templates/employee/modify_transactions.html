@@ -11,33 +11,26 @@
 				<thead>
 					<tr>
 					
-						<th>To Account Number</th>
-						<th>Amount</th>
+						<th>Transfer Date</th>
+						
 						
 					</tr>
 				</thead>
 			
 				<tbody>
 					<tr th:each="row : ${modify_transaction}">
-					<td><span th:text="${row.toAccount}"></span></td>
-						<td><span th:text="${row.amount}"></span></td>
-					
-					
-						<td> <form  action="#" th:action="@{/modifyamount_transactions}" th:object="${row}" method="post">
-					
-					 <input type="text" name="amount"/> 
-						 <input type="hidden" name="transactionId" th:value="*{transactionId}" />  
-						  <button type = "Submit" name="action" value="Updateamount"> Update </button>
-                        </form> 
-						</td>
-						<td> <form  action="#" th:action="@{/modifytoAccount_transactions}" th:object="${row}" method="post">
-					
-					 <input type="text" name="to_Account"/> 
-						 <input type="hidden" name="transactionId" th:value="*{transactionId}" />  
-						  <button type = "Submit" name="action" value="Updateaccount"> Update </button>
-                        </form> 
-						</td>
+					<td><span th:text="${row.transferDate}"></span></td>
 						
+					
+					
+						<td> <form  action="#" th:action="@{/modifyDate_transactions}" th:object="${row}" method="post">
+					
+					 <input type="text" name="transferDate"/> 
+						 <input type="hidden" name="transactionId" th:value="*{transactionId}" />  
+						  <button type = "Submit" name="action" value="Updatedate"> Update </button>
+                        </form> 
+						</td>
+							
 					</tr>
 				</tbody>
 			</table>
