@@ -1,3 +1,4 @@
+
 package com.bankapp.repositories;
 
 import java.util.List;
@@ -13,3 +14,4 @@ public interface ProfileRequestRepository extends CrudRepository<ProfileRequest,
 	ProfileRequest findByRId(Long id);
 	
 }
+

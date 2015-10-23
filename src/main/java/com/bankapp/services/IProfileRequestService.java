@@ -1,3 +1,4 @@
+
 package com.bankapp.services;
 
 import java.util.List;
@@ -12,6 +13,15 @@ public interface IProfileRequestService {
 
     void setRequestToVerified(Long id);
     
-    void declineRequest(Long id);
+    
+    public List<ProfileRequest> getRequestsByStatus(String status);
+
+	public ProfileRequest getRequestById(Long Id);
+
+	public String authorizeRequest(ProfileRequest requests);
+
+	public String declineRequest(ProfileRequest requests);
+	
+
 
 }

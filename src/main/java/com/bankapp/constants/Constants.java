@@ -1,3 +1,4 @@
+
 package com.bankapp.constants;
 
 public interface Constants {
@@ -17,7 +18,6 @@ public interface Constants {
 	public String S_PROFILE_UPDATE_PENDING = "PUP"; //Profile Changes pending
 	public String S_PROFILE_UPDATE_VERFIED = "PUV";//profile changes verified
 	public String S_PROFILE_UPDATE_DECLINED = "PUD";//profile changes verified
-	
 	//OTP Resource Name
 	public String R_TRANSACTION  = "TXN";
 	public String R_ACCOUNT  = "ACC";

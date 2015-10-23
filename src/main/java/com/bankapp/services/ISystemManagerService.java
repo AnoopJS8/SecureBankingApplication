@@ -1,5 +1,7 @@
+
 package com.bankapp.services;
 
+import java.util.Date;
 import java.util.List;
 
 import com.bankapp.exceptions.EmailDoesNotExist;
@@ -30,6 +32,8 @@ public interface ISystemManagerService {
 	
 	public String reflectChangesToReceiver(Account account, Double balance, Double amount);
 
+	public String declineTransaction(Transaction transaction);
 	
+	public String modifyTransaction(Transaction transaction, Date new_date);
 
 }
