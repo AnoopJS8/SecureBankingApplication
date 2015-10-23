@@ -207,7 +207,7 @@ public class AdminController implements Constants {
         Message message;
         String msg = piiRequestService.saveRequest(piiRequest);
         if (msg.equals(SUCCESS)) {
-            message = new Message("succes", "Request has been declined");
+            message = new Message("succes", "Request has been forwarded to agency ");
         } else {
             message = new Message("error", "error please try again");
         }
