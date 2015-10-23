@@ -7,7 +7,7 @@
 	<div class="container">
 		<div th:replace="fragment/common :: top-nav(initiatetransaction)"></div>
 		<div th:replace="fragment/merchant :: merchant-header"></div>
-		<form class="form-horizontal" role="form"
+		<form id="init-form" class="form-horizontal" role="form"
 			th:action="@{/merchant/initiatetransaction}" th:object="${form}"
 			method="post">
 			<div class="form-group">
@@ -40,7 +40,7 @@
 				<label class="col-md-3 control-label">Transfer Date: </label>
 				<div class="col-md-5">
 					<input type="text" class="form-control" name="transferdate"
-						id="transferdate" placeholder="YYYY/MM/DD"
+						id="transferdate" placeholder="MM/dd/yyyy"
 						th:field="*{transferDate}" /><label
 						th:if="${#fields.hasErrors('transferDate')}"
 						th:errors="*{transferDate}"></label>
@@ -53,5 +53,7 @@
 			</div>
 		</form>
 	</div>
+	<script th:src="@{/webjars/jquery-validation/1.14.0/jquery.validate.min.js}"></script>
+	<script type="text/javascript" th:src="@{/js/initTrans.js}"></script>
 </body>
 </html>

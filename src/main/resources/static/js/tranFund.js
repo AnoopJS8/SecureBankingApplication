@@ -2,7 +2,7 @@ $(document).ready(function() {
 	$('#tF-form').validate({
 		errorClass : 'error',
 		rules : {
-			'toAccount.accId' : {
+			'accountId' : {
 				required : true,
 				digits : true
 			},

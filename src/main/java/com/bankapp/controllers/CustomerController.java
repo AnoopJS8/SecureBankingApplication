@@ -27,6 +27,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.bankapp.constants.Constants;
 import com.bankapp.constants.Message;
 import com.bankapp.forms.InitiateTransactionForm;
+import com.bankapp.forms.transferFundsForm;
 import com.bankapp.models.Account;
 import com.bankapp.models.Transaction;
 import com.bankapp.models.User;
@@ -75,10 +76,8 @@ public class CustomerController implements Constants {
 
     @RequestMapping(value = "/customer/transferfunds", method = RequestMethod.GET)
     public ModelAndView transferFunds() {
-        ModelAndView mv = new ModelAndView();
-        Transaction transaction = new Transaction();
-        mv.addObject("transaction", transaction);
-        mv.setViewName("customer/transferfunds");
+
+        ModelAndView mv = new ModelAndView("customer/transferfunds", "form", new transferFundsForm());
 
         String logMessage = String.format("[Action=%s, Method=%s]", "transferfunds", "GET");
         LOGGER.info(logMessage);
@@ -87,16 +86,27 @@ public class CustomerController implements Constants {
     }
 
     @RequestMapping(value = "/customer/transferfunds", method = RequestMethod.POST)
-    public String saveTransaction(@ModelAttribute("transaction") Transaction transaction, BindingResult result,
-            WebRequest request, Principal principal, Errors errors, RedirectAttributes attributes) {
+    public String saveTransaction(final ModelMap model, @ModelAttribute("form") @Valid transferFundsForm form,
+            BindingResult result, WebRequest request, Principal principal, RedirectAttributes attributes) {
 
         String status;
         String message;
         String redirectUrl;
         String logMessage;
 
+        if (result.hasErrors()) {
+            model.addAttribute("form", form);
+            return "customer/transferfunds";
+        }
+
         User user = userService.getUserFromSession(principal);
-        String dbStatus = transactionService.saveTransaction(transaction, user);
+        Transaction transactionF = new Transaction();
+        Account toAccount = accountService.getAccountByAccountId(form.getAccountId());
+        transactionF.setAmount(form.getAmount());
+        transactionF.setToAccount(toAccount);
+        transactionF.setComment(form.getComment());
+
+        String dbStatus = transactionService.saveTransaction(transactionF, user);
 
         if (dbStatus.equalsIgnoreCase(LESS_BALANCE)) {
             status = "error";
@@ -142,8 +152,8 @@ public class CustomerController implements Constants {
     }
 
     @RequestMapping(value = "/customer/initiatetransaction", method = RequestMethod.POST)
-    public String initiateTransaction(final ModelMap model, @ModelAttribute("form") @Valid InitiateTransactionForm form, BindingResult result,
-            WebRequest request, Principal principal, RedirectAttributes attributes) {
+    public String initiateTransaction(final ModelMap model, @ModelAttribute("form") @Valid InitiateTransactionForm form,
+            BindingResult result, WebRequest request, Principal principal, RedirectAttributes attributes) {
 
         String status;
         String message;
@@ -151,7 +161,7 @@ public class CustomerController implements Constants {
         String logMessage;
 
         if (result.hasErrors()) {
-            model.addAttribute("form", form); 
+            model.addAttribute("form", form);
             return "customer/initiatetransaction";
         }
 
