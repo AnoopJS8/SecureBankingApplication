@@ -242,7 +242,7 @@ public class MerchantController implements Constants {
         return redirectUrl;
     }
 
-    private Account getAccountByUserId(long id) {
+    private Account getAccountByUserId(String id) {
         User user = userService.getUserById(id);
         Account account = accountService.getAccountByUser(user);
         return account;

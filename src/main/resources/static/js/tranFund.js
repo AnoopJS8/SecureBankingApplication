@@ -3,8 +3,7 @@ $(document).ready(function() {
 		errorClass : 'error',
 		rules : {
 			'accountId' : {
-				required : true,
-				digits : true
+				required : true
 			},
 			'amount' : {
 				required : true,
@@ -18,8 +17,7 @@ $(document).ready(function() {
 		// Specify the validation error messages
 		messages : {
 			'accountId' : {
-				required : "Recipient account number cannot be empty",
-				digits : "Please enter valid recepient account number"
+				required : "Recipient account number cannot be empty"
 			},
 			'amount' : {
 				required : "Transfer amount cannot be empty",

@@ -1,4 +1,3 @@
-
 /**
  * 
  */
@@ -159,13 +158,13 @@ public class SystemManagerController implements Constants {
 	}
 
 	@RequestMapping(value = "/manager_viewuser_byid", method = RequestMethod.POST)
-	public ModelAndView getuser_byid(@ModelAttribute("userid") Long Id, BindingResult result, WebRequest request,
+	public ModelAndView getuser_byid(@ModelAttribute("userid") String Id, BindingResult result, WebRequest request,
 	        Errors errors, Principal principal) {
 
 		User user = null;
 
 		try {
-			user = manager.viewUserById((long) Id);
+			user = manager.viewUserById(Id);
 		} catch (UserIdDoesNotExist e) {
 			String message = String.format("Action: %s, Message: %s", "EmailDoesNotExist", e.getMessage());
 			LOGGER.error(message);

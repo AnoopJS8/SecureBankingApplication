@@ -149,7 +149,7 @@ public class MainController implements Constants {
         profile.setPhoneNumber(user.getPhoneNumber());
         profile.setStatus(S_PROFILE_UPDATE_PENDING);
         profile.setUser(userService.getUserFromSession(principal));
-        profile.setRoleId(userService.getUserFromSession(principal).getRole().getId());
+        profile.setRole(userService.getUserFromSession(principal).getRole());
         String message = profileRequestService.saveProfileRequest(profile);
         if (message.equalsIgnoreCase(ERROR)) {
             mv.addObject("message", "Error occured");

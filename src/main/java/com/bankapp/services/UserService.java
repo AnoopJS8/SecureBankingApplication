@@ -74,7 +74,7 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public User getUserById(Long id) {
+    public User getUserById(String id) {
         User user = userRepository.findById(id);
         return user;
     }
@@ -149,7 +149,7 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public void updateUser(Long existingUserId, User updatedUser) {
+    public void updateUser(String existingUserId, User updatedUser) {
         User existingUser = userRepository.findById(existingUserId);
         existingUser.setUsername(updatedUser.getUsername());
         existingUser.setAddress(updatedUser.getAddress());
@@ -195,7 +195,7 @@ public class UserService implements IUserService {
 
     // OTP Part
     @Override
-    public OneTimePassword generateOTP(Long resourceId, String resourceName) {
+    public OneTimePassword generateOTP(String resourceId, String resourceName) {
         OneTimePassword otp = oTPRepository.findByresourceIdAndResourceName(
                 resourceId, resourceName);
         if (otp != null) {
@@ -220,7 +220,7 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public boolean verifyOTP(String otp, Long id, String name) {
+    public boolean verifyOTP(String otp, String id, String name) {
         OneTimePassword otpFromDB = oTPRepository
                 .findByresourceIdAndResourceName(id, name);
         if (otp.equals(otpFromDB.getValue())) {

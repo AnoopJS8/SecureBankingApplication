@@ -8,12 +8,12 @@ import com.bankapp.models.Account;
 import com.bankapp.models.Transaction;
 
 
-public interface TransactionRepository extends CrudRepository<Transaction, Long> {
+public interface TransactionRepository extends CrudRepository<Transaction, String> {
 
 
     List<Transaction> findByFromAccountOrToAccountOrderByCreatedAsc(Account fromAccount, Account toAccount);
 
-    Transaction findByTransactionId(Long id);
+    Transaction findByTransactionId(String id);
 
     List<Transaction> findByStatus(String str);
 }

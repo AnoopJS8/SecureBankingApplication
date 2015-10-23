@@ -5,7 +5,7 @@ import javax.validation.constraints.NotNull;
 
 public class TransferFundsForm {
     @NotNull
-    Long accountId;
+    String accountId;
 
     @NotNull
     @Min(value = 0)
@@ -13,11 +13,11 @@ public class TransferFundsForm {
 
     String comment;
 
-    public Long getAccountId() {
+    public String getAccountId() {
         return accountId;
     }
 
-    public void setAccountId(Long accountId) {
+    public void setAccountId(String accountId) {
         this.accountId = accountId;
     }
 

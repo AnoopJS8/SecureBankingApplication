@@ -7,7 +7,7 @@ import com.bankapp.models.User;
 public interface IAccountService {
     public Account getAccountByUser(User user);
 
-    public Account getAccountByAccountId(Long id);
+    public Account getAccountByAccountId(String id);
 
     public Account saveAccount(Account account);
 

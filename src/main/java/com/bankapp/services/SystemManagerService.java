@@ -1,4 +1,3 @@
-
 package com.bankapp.services;
 
 import java.util.Date;
@@ -34,38 +33,19 @@ public class SystemManagerService implements ISystemManagerService {
         return list;
     }
 
-    public User viewUserById(Long id) {
+    @Override
+    public User viewUserById(String id) {
         User user = UserRepo.findById(id);
         return user;
     }
-    public String declineTransaction(Transaction transaction) {
 
-        String result = "";
-        	transaction.setStatus("Declined");
-            TransRepo.save(transaction);
-            result = "Transaction has been declined";
-            System.out.println("Not approved");
-
-        return result;
-    }
-    
-    public String modifyTransaction(Transaction transaction,Date new_Date) {
-
-        String result = "";
-        	transaction.setStatus("Approved");
-        	transaction.setTransferDate(new_Date);
-            TransRepo.save(transaction);
-            result = "Transaction has been modified";
-            System.out.println("Done modified");
-
-        return result;
-    }
-
+    @Override
     public User viewUserByEmail(String email) {
         User user = UserRepo.findByEmail(email);
         return user;
     }
 
+    @Override
     public User addUser(User user) {
         UserRepo.save(user);
         return user;
@@ -88,7 +68,7 @@ public class SystemManagerService implements ISystemManagerService {
     }
 
     @Override
-    public Transaction getTransactionbyid(Long id) {
+    public Transaction getTransactionbyid(String id) {
         Transaction transaction = TransRepo.findOne(id);
         return transaction;
     }
@@ -116,5 +96,26 @@ public class SystemManagerService implements ISystemManagerService {
         return "Success";
     }
 
-	
+    public String declineTransaction(Transaction transaction) {
+
+        String result = "";
+        transaction.setStatus("Declined");
+        TransRepo.save(transaction);
+        result = "Transaction has been declined";
+        System.out.println("Not approved");
+
+        return result;
+    }
+
+    public String modifyTransaction(Transaction transaction, Date new_Date) {
+
+        String result = "";
+        transaction.setStatus("Approved");
+        transaction.setTransferDate(new_Date);
+        TransRepo.save(transaction);
+        result = "Transaction has been modified";
+        System.out.println("Done modified");
+
+        return result;
+    }
 }
