@@ -11,26 +11,37 @@
             <h1>My Account</h1>
         </div>
         <div th:replace="fragment/common :: message"></div>
-		<div class="table-responsive">
+		<div>
 			<table class="table table-bordered table-hover">
 				<thead>
-					<tr>
-						<th>Account Number</th>
-						<th>Balance</th>
-						<th>Critical Limit</th>
-						<th>Created Date</th>
-						<th>Critical Limit</th>
-						<th>Action</th>
+					<tr class="info">
+						<th class="col-sm-3">Account Number</th>
+						<th class="col-sm-3">Balance</th>
+						<th class="col-sm-3">Created Date</th>
+						<th class="col-sm-3">Critical Limit</th>
 					</tr>
 				</thead>
 				<tbody>
 					<tr style="cursor: pointer" th:each="account : ${accounts}">
-						<td><span th:text="${account.accId}"></span></td>
-						<td><span th:text="${account.balance}"></span></td>
-						<td><span th:text="${account.criticalLimit}"></span></td>
-						<td><span th:text="${account.created}"></span></td>
-						<td><span th:text="${account.criticalLimit}"></span></td>
-						<td><a th:href="@{/changelimit}">Change Limit</a></td>
+						<td class="col-sm-3"><span th:text="${account.accId}"></span></td>
+						<td class="col-sm-3"><span th:text="${account.balance}"></span></td>
+						<td class="col-sm-3"><span th:text="${account.created}"></span></td>
+						<td class="col-sm-3">
+                          <div class="critical-limit">
+                              <span th:text="${account.criticalLimit}"></span>
+                              <a class="change-limit btn btn-sm btn-primary pull-right" href="#">
+                                  <i class="fa fa-pencil"></i>
+                              </a>
+                          </div>
+                          <form class="hidden-form form-inline" th:action="@{/changelimit}" method="post">
+                              <div class="form-group">
+                                  <input class="form-control" type="number" name="limit" id="limit" th:value="${account.criticalLimit}"/>
+                              </div>
+                              <button class="btn btn-sm btn-success pull-right">
+                                  <i class="fa fa-check"></i>
+                              </button>
+                          </form>
+                        </td>
 					</tr>
 				</tbody>
 			</table>
@@ -41,7 +52,7 @@
 		<div class="table-responsive">
 			<table class="table table-bordered table-hover">
 				<thead>
-					<tr>
+					<tr class="info">
 						<th>Date</th>
 						<th>From</th>
 						<th>To</th>
@@ -71,6 +82,7 @@
 			</table>
 		</div>
 		<div th:replace="fragment/common :: footer"></div>
+		<script type="text/javascript" th:src="@{/js/myaccount.js}"></script>
 	</div>
 </body>
 </html>

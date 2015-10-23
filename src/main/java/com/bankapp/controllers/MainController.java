@@ -1,7 +1,6 @@
 
 package com.bankapp.controllers;
 
-
 import java.security.Principal;
 
 import javax.validation.Valid;
@@ -17,8 +16,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.bankapp.constants.Constants;
+import com.bankapp.constants.Message;
 import com.bankapp.forms.OTPForm;
 import com.bankapp.listeners.OnOtpEvent;
 import com.bankapp.models.Account;
@@ -29,13 +30,13 @@ import com.bankapp.services.IProfileRequestService;
 import com.bankapp.services.IUserService;
 
 @Controller
-public class MainController implements Constants{
-    
+public class MainController implements Constants {
+
     private final Logger LOGGER = Logger.getLogger(MainController.class);
 
     @Autowired
     private IUserService userService;
-    
+
     @Autowired
     private IProfileRequestService profileRequestService;
 
@@ -105,7 +106,7 @@ public class MainController implements Constants{
             return mv;
         } else {
             String expectedAnswer = registeredUser.getSecurityAnswer();
-            if(expectedAnswer.equalsIgnoreCase(answer)) {
+            if (expectedAnswer.equalsIgnoreCase(answer)) {
                 String message = String.format(
                         "Thank you for answering your security question. We have sent an email with a temporary password to %s",
                         email);
@@ -114,14 +115,15 @@ public class MainController implements Constants{
                 userService.generateTemporaryPassword(registeredUser);
                 return mv;
             } else {
-                String message = String.format("Sorry, we could not verify the answer you specified. Please try again.");
+                String message = String
+                        .format("Sorry, we could not verify the answer you specified. Please try again.");
                 mv.setViewName("error");
                 mv.addObject("message", message);
                 return mv;
             }
         }
     }
-    
+
     @RequestMapping(value = "/profile", method = RequestMethod.GET)
     public ModelAndView profile(Principal principal) {
         ModelAndView mv = new ModelAndView();
@@ -131,7 +133,7 @@ public class MainController implements Constants{
         mv.setViewName("profile");
         return mv;
     }
-    
+
     @RequestMapping(value = "/profile", method = RequestMethod.POST)
     public ModelAndView updateProfile(@ModelAttribute("user") @Valid User user, BindingResult result,
             WebRequest request, Errors errors, Principal principal) {
@@ -144,7 +146,7 @@ public class MainController implements Constants{
         profile.setUser(userService.getUserFromSession(principal));
         profile.setRoleId(userService.getUserFromSession(principal).getRole().getId());
         String message = profileRequestService.saveProfileRequest(profile);
-        if(message.equalsIgnoreCase(ERROR)){
+        if (message.equalsIgnoreCase(ERROR)) {
             mv.addObject("message", "Error occured");
             mv.setViewName("error");
             return mv;
@@ -214,27 +216,26 @@ public class MainController implements Constants{
         return mv;
     }
 
-    @RequestMapping(value = "/changelimit", method = RequestMethod.GET)
-    public ModelAndView changeLimit(Principal principal) {
-        ModelAndView mv = new ModelAndView();
-        User loggedInUser = userService.getUserFromSession(principal);
-        mv.addObject("account", accountService.getAccountByUser(loggedInUser));
-        mv.addObject("role", loggedInUser.getRole().getName());
-        mv.setViewName("criticallimit");
-        return mv;
-    }
-
     @RequestMapping(value = "/changelimit", method = RequestMethod.POST)
-    public ModelAndView changeLimit(@ModelAttribute("account") @Valid Account account, BindingResult result,
-            WebRequest request, Errors errors, Principal principal) {
-        ModelAndView mv = new ModelAndView();
+    public String changeLimit(@ModelAttribute("limit") @Valid Double newLimit, BindingResult result, WebRequest request,
+            Errors errors, Principal principal, RedirectAttributes attributes) {
+
         User loggedInUser = userService.getUserFromSession(principal);
-        mv.addObject("role", loggedInUser.getRole().getName());
-        Account newAccount = accountService.getAccountByUser(loggedInUser);
-        newAccount.setCriticalLimit(account.getCriticalLimit());
-        accountService.saveAccount(newAccount);
-        mv.addObject("message", "Changes the critical limit");
-        mv.setViewName("success");
-        return mv;
+        if (newLimit < 0) {
+            attributes.addFlashAttribute("message", new Message("error", "Critical limit cannot be set below 0"));
+        } else {
+
+            Account newAccount = accountService.getAccountByUser(loggedInUser);
+            newAccount.setCriticalLimit(newLimit);
+            accountService.saveAccount(newAccount);
+            attributes.addFlashAttribute("message", new Message("success", "Your critical limit has been updated"));
+        }
+
+        String roleName = loggedInUser.getRole().getName();
+        if (roleName.equalsIgnoreCase("ROLE_CUSTOMER")) {
+            return "redirect:/customer/myaccount";
+        } else {
+            return "redirect:/merchant/myaccount";
+        }
     }
 }

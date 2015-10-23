@@ -11,7 +11,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
 import javax.persistence.Table;
-import javax.validation.constraints.Future;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
 @Entity
@@ -36,6 +36,7 @@ public class Transaction {
     private Account toAccount;
 
     @NotNull
+    @Min(value = 0)
     private Double amount;
 
     private Date transferDate;

@@ -3,7 +3,8 @@ package com.bankapp.forms;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
-public class TransferFundsForm {
+public class UserPaymentForm {
+
     @NotNull
     Long accountId;
 

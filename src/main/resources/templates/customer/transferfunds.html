@@ -18,7 +18,8 @@
 				<label class="col-md-3 control-label">Recipient Account
 					Number: </label>
 				<div class="col-md-5">
-					<input type="text" class="form-control" name="accountId"
+					<input type="number" class="form-control" name="accountId"
+
 						id="toAccount" th:field="*{accountId}"></input><label
 						th:if="${#fields.hasErrors('accountId')}" th:errors="*{accountId}"></label>
 				</div>
@@ -26,7 +27,7 @@
 			<div class="form-group">
 				<label class="col-md-3 control-label">Amount in dollars: </label>
 				<div class="col-md-5">
-					<input type="text" class="form-control" name="amount" id="amount"
+					<input type="number" class="form-control" name="amount" id="amount"
 						th:field="*{amount}"></input><label
 						th:if="${#fields.hasErrors('amount')}" th:errors="*{amount}"></label>
 				</div>
