@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+<head th:include="fragment/common :: headerFragment" />
+<body>
+	<div class="container">
+		<div th:replace="fragment/common :: top-nav(myaccount)"></div>	
+		<div th:replace="fragment/manager :: manager-header"></div>
+		<div >
+			<h3>Pending Transaction</h3>
+		</div>
+		<div class="table-responsive">
+			<table class="table table-bordered table-hover">
+				<thead>
+					<tr>
+						<th>Created Date</th>
+						
+						<th>From</th>
+						<th>To</th>
+						<th>Amount</th>
+						
+						<th>Status</th>
+						<th>Comment</th>
+						<th></th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr th:each="row : ${pending}">
+						<td><span th:text="${row.created}"></span></td>
+						<td><span th:text="${row.fromAccount.user.username}"></span></td>
+						<td><span th:text="${row.toAccount.user.username}"></span></td>
+						<td><span th:text="${row.amount}"></span></td>
+						<td><span th:text="${row.status}"></span></td>						
+						<td><span th:text="${row.comment}"></span></td>
+						
+					</tr>
+				</tbody>
+			</table>
+		</div>
+		
+	
+	</div>
+</body>
+</html>

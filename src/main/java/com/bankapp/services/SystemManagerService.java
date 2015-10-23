@@ -1,9 +1,7 @@
+
 package com.bankapp.services;
 
 import java.util.Date;
-
-
-
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,34 +38,6 @@ public class SystemManagerService implements ISystemManagerService {
         User user = UserRepo.findById(id);
         return user;
     }
-
-    public User viewUserByEmail(String email) {
-        User user = UserRepo.findByEmail(email);
-        return user;
-    }
-
-    public User addUser(User user) {
-        UserRepo.save(user);
-        return user;
-    }
-
-    public String approveTransaction(Transaction transaction) {
-
-        String result = "";
-        
-        transaction.setStatus("Approved");
-
-        try {
-            TransRepo.save(transaction);
-            result = "Successull";
-            System.out.println("Transaction has been approved");
-        } catch (Exception e) {
-            result = "unsuccessull";
-        }
-
-        return result;
-    }
-    
     public String declineTransaction(Transaction transaction) {
 
         String result = "";
@@ -87,6 +57,32 @@ public class SystemManagerService implements ISystemManagerService {
             TransRepo.save(transaction);
             result = "Transaction has been modified";
             System.out.println("Done modified");
+
+        return result;
+    }
+
+    public User viewUserByEmail(String email) {
+        User user = UserRepo.findByEmail(email);
+        return user;
+    }
+
+    public User addUser(User user) {
+        UserRepo.save(user);
+        return user;
+    }
+
+    public String approveTransaction(Transaction transaction) {
+
+        String result = "";
+        transaction.setStatus("Approved");
+
+        try {
+            TransRepo.save(transaction);
+            result = "Successull";
+            System.out.println("Done approve");
+        } catch (Exception e) {
+            result = "unsuccessull";
+        }
 
         return result;
     }
@@ -120,4 +116,5 @@ public class SystemManagerService implements ISystemManagerService {
         return "Success";
     }
 
+	
 }

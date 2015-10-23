@@ -1,6 +1,7 @@
 package com.bankapp.services;
 
 import java.security.Principal;
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,7 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.bankapp.exceptions.EmailExistsException;
 import com.bankapp.models.OneTimePassword;
-import com.bankapp.models.Transaction;
+import com.bankapp.models.Role;
 import com.bankapp.models.User;
 import com.bankapp.models.VerificationToken;
 import com.bankapp.repositories.OTPRepository;
@@ -20,7 +21,7 @@ import com.bankapp.repositories.VerificationTokenRepository;
 
 @Service
 public class UserService implements IUserService {
-    
+
     @Autowired
     private UserRepository userRepository;
 
@@ -41,9 +42,12 @@ public class UserService implements IUserService {
 
     @Transactional
     @Override
-    public User registerNewUserAccount(final User user, String roleName) throws EmailExistsException {
+    public User registerNewUserAccount(final User user, String roleName)
+            throws EmailExistsException {
         if (emailExist(user.getEmail())) {
-            throw new EmailExistsException("There is an account with that email adress: " + user.getEmail());
+            throw new EmailExistsException(
+                    "There is an account with that email adress: "
+                            + user.getEmail());
         }
         final User newUser = new User();
 
@@ -83,13 +87,16 @@ public class UserService implements IUserService {
 
     @Override
     public User getUserFromSession(Principal principal) {
-        if(principal != null) {
+        if (principal != null) {
             String email = principal.getName();
-            User user = userRepository.findByEmail(email);
-            return user;
+            if (email != null) {
+                User user = userRepository.findByEmail(email);
+                return user;
+            } else {
+                return null;
+            }
         }
-        else 
-            return null;
+        return null;
     }
 
     @Override
@@ -109,8 +116,10 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public VerificationToken generateNewVerificationToken(final String existingVerificationToken) {
-        VerificationToken vToken = tokenRepository.findByToken(existingVerificationToken);
+    public VerificationToken generateNewVerificationToken(
+            final String existingVerificationToken) {
+        VerificationToken vToken = tokenRepository
+                .findByToken(existingVerificationToken);
 
         vToken.setToken(UUID.randomUUID().toString());
         vToken = tokenRepository.save(vToken);
@@ -134,36 +143,122 @@ public class UserService implements IUserService {
         String subject = "My ASU Bank - Temporary Password";
         String textBody = String
                 .format("Dear %s, <br /><br />Here is your temporary password for your account: %s<br />"
-                        + "<br />Regards,<br />My ASU Bank", userName, temporaryPassword);
+                        + "<br />Regards,<br />My ASU Bank", userName,
+                        temporaryPassword);
         mailService.sendEmail(recipientAddress, subject, textBody);
+    }
+
+    @Override
+    public void updateUser(Long existingUserId, User updatedUser) {
+        User existingUser = userRepository.findById(existingUserId);
+        existingUser.setUsername(updatedUser.getUsername());
+        existingUser.setAddress(updatedUser.getAddress());
+        existingUser.setPhoneNumber(updatedUser.getPhoneNumber());
+        existingUser.setDateOfBirth(updatedUser.getDateOfBirth());
+        existingUser.setGender(updatedUser.getGender());
+        userRepository.save(existingUser);
+    }
+
+    @Override
+    public void deleteUser(User user) {
+        userRepository.delete(user);
+    }
+
+    @Override
+    public List<User> getManagers() {
+        Role managerRole = roleRepository.findByName("ROLE_MANAGER");
+        return userRepository.findByRole(managerRole);
+    }
+
+    @Override
+    public List<User> getEmployees() {
+        Role employeeRole = roleRepository.findByName("ROLE_EMPLOYEE");
+        return userRepository.findByRole(employeeRole);
+    }
+
+    @Override
+    public boolean verifyPassword(User user, String currentPassword) {
+        return passwordEncoder.matches(currentPassword, user.getPassword());
+    }
+
+    @Transactional
+    @Override
+    public boolean changePassword(User user) {
+        try {
+            user.setPassword(passwordEncoder.encode(user.getNewpassword()));
+            userRepository.save(user);
+        } catch (Exception e) {
+            return false;
+        }
+        return true;
     }
 
     // OTP Part
     @Override
-    public OneTimePassword generateOTP(Transaction transaction) {
-        OneTimePassword otp = new OneTimePassword(transaction);
+    public OneTimePassword generateOTP(Long resourceId, String resourceName) {
+        OneTimePassword otp = oTPRepository.findByresourceIdAndResourceName(
+                resourceId, resourceName);
+        if (otp != null) {
+            String newOtp = OneTimePassword.generateOTP();
+            otp.setValue(newOtp);
+        } else {
+            otp = new OneTimePassword(resourceId, resourceName);
+        }
         oTPRepository.save(otp);
         return otp;
     }
 
     @Override
     public OneTimePassword generateNewOTP(final String existingUsedOTP) {
-        OneTimePassword existingOTP = oTPRepository.findByValue(existingUsedOTP);
-
+        OneTimePassword existingOTP = oTPRepository
+                .findByValue(existingUsedOTP);
         String temp = OneTimePassword.generateOTP();
-
         existingOTP.setValue(temp);
         existingOTP = oTPRepository.save(existingOTP);
         return existingOTP;
 
     }
-    
-    public boolean verifyOTP(OneTimePassword otp) {
-        OneTimePassword otpFromDB = oTPRepository.findOne(otp.getId());
-        if (otp.getValue() == otpFromDB.getValue()) {
+
+    @Override
+    public boolean verifyOTP(String otp, Long id, String name) {
+        OneTimePassword otpFromDB = oTPRepository
+                .findByresourceIdAndResourceName(id, name);
+        if (otp.equals(otpFromDB.getValue())) {
+            oTPRepository.delete(otpFromDB.getId());
             return true;
         } else {
             return false;
         }
+    }
+
+    @Override
+    public User addEmployee(User user, String roleName)
+            throws EmailExistsException {
+
+        String temporaryPassword = OneTimePassword.generateOTP();
+        user.setPassword(passwordEncoder.encode(temporaryPassword));
+        user.setRole(roleRepository.findByName(roleName));
+        user.setEnabled(true);
+        userRepository.save(user);
+
+        String userName = user.getUsername();
+        String recipientAddress = user.getEmail();
+        String subject = "My ASU Bank - New Account Creation";
+        String role = user.getRole().getName();
+
+        if (role.equalsIgnoreCase("ROLE_MANAGER"))
+            role = "MANAGER";
+        else if (role.equalsIgnoreCase("ROLE_ADMIN"))
+            role = "ADMIN";
+        else
+            role = "EMPLOYEE";
+
+        String textBody = String
+                .format("Dear %s, <br /><br />You are now registered as %s. Here is your temporary password : %s<br />"
+                        + "<br />Regards,<br />My ASU Bank", userName, role,
+                        temporaryPassword);
+        mailService.sendEmail(recipientAddress, subject, textBody);
+
+        return user;
     }
 }

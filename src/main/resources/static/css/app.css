@@ -12,3 +12,7 @@ form .error {
 form label.error {
 	color: #a94442;
 }
+
+form.hidden-form {
+	display: none;
+}

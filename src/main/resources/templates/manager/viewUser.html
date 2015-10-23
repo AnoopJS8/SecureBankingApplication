@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+<head th:include="fragment/common :: headerFragment" />
+<body>
+	<div class="container">
+		<div th:replace="fragment/common :: top-nav(myaccount)"></div>	
+		<div th:replace="fragment/manager :: manager-header"></div>
+		<div >
+			<h3>Account</h3>
+		</div>
+		<div class="table-responsive">
+			<table class="table table-bordered table-hover">
+				<thead>
+					<tr class="info">
+						<th>Id</th>
+						<th>Username</th>
+						<th>Email</th>
+						<th>Address</th>
+						<th>PhoneNumber</th>
+						<th>DoB</th>
+						<th>Gender</th>
+						<th>Role</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td><span th:text="${viewuser.id}"></span></td>					
+						<td><span th:text="${viewuser.username}"></span></td>
+						<td><span th:text="${viewuser.email}"></span></td>
+						<td><span th:text="${viewuser.address}"></span></td>
+						<td><span th:text="${viewuser.phoneNumber}"></span></td>
+						<td><span th:text="${viewuser.dateOfBirth}"></span></td>						
+						<td><span th:text="${viewuser.gender}"></span></td>
+						<td><span th:text="${viewuser.role.name}"></span></td>
+						
+						
+						
+					</tr>
+				</tbody>
+			</table>
+		</div>
+		
+	
+	</div>
+</body>
+</html>

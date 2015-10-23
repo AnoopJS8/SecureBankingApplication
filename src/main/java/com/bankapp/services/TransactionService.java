@@ -1,3 +1,4 @@
+
 package com.bankapp.services;
 
 import java.util.Date;
@@ -16,48 +17,68 @@ import com.bankapp.repositories.TransactionRepository;
 @Service
 public class TransactionService implements ITransactionService, Constants {
 
-	@Autowired
-	private TransactionRepository transactionRepository;
+    @Autowired
+    private TransactionRepository transactionRepository;
 
-	@Autowired
-	private IAccountService accountService;
+    @Autowired
+    private IAccountService accountService;
 
-	@Transactional
-	@Override
-	public List<Transaction> getTransactionsByAccount(Account fromAccount, Account toAccount) {
-		List<Transaction> list = transactionRepository.findByFromAccountOrToAccountOrderByCreatedAsc(fromAccount,
-				toAccount);
-		return list;
-	}
+    @Transactional
+    @Override
+    public List<Transaction> getTransactionsByAccount(Account fromAccount, Account toAccount) {
+        List<Transaction> list = transactionRepository.findByFromAccountOrToAccountOrderByCreatedAsc(fromAccount,
+                toAccount);
+        return list;
+    }
 
-	@Transactional
-	@Override
-	public String saveTransaction(Transaction transaction, User user) {
+    @Transactional
+    @Override
+    public String saveTransaction(Transaction transaction, User user) {
 
-		Long accId = transaction.getToAccount().getAccId();
-		Account toAccount = accountService.getAccountByAccountId(accId);
-		Account fromAccount = accountService.getAccountsByUser(user);
-		transaction.setToAccount(toAccount);
-		transaction.setFromAccount(fromAccount);
-		Date date = new Date();
-		transaction.setTransferDate(date);
-		String message = accountService.updateBalance(transaction);
-		if (message.equalsIgnoreCase(LESS_BALANCE)) {
-			return LESS_BALANCE;
-		} else {
-			transaction.setStatus(S_VERIFIED);
-			transactionRepository.save(transaction);
-			return SUCCESS;
-		}
-	}
+        Long accId = transaction.getToAccount().getAccId();
+        Account toAccount = accountService.getAccountByAccountId(accId);
+        if (toAccount == null) {
+            return ERR_ACCOUNT_NOT_EXISTS;
+        }
+        Account fromAccount = accountService.getAccountByUser(user);
+        transaction.setToAccount(toAccount);
+        transaction.setFromAccount(fromAccount);
+        Date date = new Date();
+        transaction.setTransferDate(date);
 
-	@Transactional
+        if (fromAccount.getBalance() < transaction.getAmount()) {
+            return LESS_BALANCE;
+        } else {
+            boolean ifCritical = isBelowCriticalLimit(fromAccount, transaction);
+            if (ifCritical) {
+                transaction.setStatus(S_OTP_PENDING);
+                transactionRepository.save(transaction);
+                return CRITICAL;
+            }
+            String message = accountService.updateBalance(transaction);
+            transaction.setStatus(S_VERIFIED);
+            transactionRepository.save(transaction);
+            return message;
+        }
+
+    }
+
+    private boolean isBelowCriticalLimit(Account fromAccount, Transaction transaction) {
+        double criticalLimit = fromAccount.getCriticalLimit();
+        if (transaction.getAmount() >= criticalLimit) {
+            return true;
+        }
+        return false;
+    }
+
+    @Transactional
 	@Override
 	public String askCustomerPayment(Transaction transaction, User user) {
-		Long accId = transaction.getToAccount().getAccId();
 		try {
-			transaction.setToAccount(accountService.getAccountsByUser(user));
-			transaction.setFromAccount(accountService.getAccountByAccountId(accId));
+	        if(transaction.getFromAccount() == null){
+	            return ERR_ACCOUNT_NOT_EXISTS;
+	        }
+			transaction.setToAccount(accountService.getAccountByUser(user));
 			transaction.setStatus(S_PENDING_CUSTOMER_VERIFICATION);
 			Date date = new Date();
 			transaction.setTransferDate(date);
@@ -72,13 +93,23 @@ public class TransactionService implements ITransactionService, Constants {
 	@Transactional
 	@Override
 	public String initiateTransaction(Transaction transaction, User user) {
-		Long accId = transaction.getToAccount().getAccId();
-		transaction.setToAccount(accountService.getAccountByAccountId(accId));
-		transaction.setFromAccount(accountService.getAccountsByUser(user));
-		transaction.setStatus(S_PENDING);
-		System.out.println(transaction.getTransferDate());
-		transaction.setTransferDate(transaction.getTransferDate());
-		transactionRepository.save(transaction);
-		return SUCCESS;
+		try {
+    		if(transaction.getToAccount() == null){
+                return ERR_ACCOUNT_NOT_EXISTS;
+            }
+    		transaction.setFromAccount(accountService.getAccountByUser(user));
+    		transaction.setStatus(S_PENDING);
+    		transaction.setTransferDate(transaction.getTransferDate());
+    		transactionRepository.save(transaction);
+    		return SUCCESS;
+		} catch (Exception e) {
+            e.printStackTrace();
+            return ERROR;
+        }
 	}
+
+    @Override
+    public Transaction getTransactionsById(Long id) {
+        return transactionRepository.findOne(id);
+    }
 }

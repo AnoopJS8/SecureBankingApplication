@@ -18,60 +18,53 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @EnableGlobalMethodSecurity(securedEnabled = true, prePostEnabled = true)
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
-    @Autowired
-    private UserDetailsService userDetailsService;
+	@Autowired
+	private UserDetailsService userDetailsService;
 
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
-        http
-            .authorizeRequests()
-                .antMatchers(
-                        "/", 
-                        "/home", 
-                        "/login/identify",
-                        "/login/verifyIdentity",
-                        "/signup",
-                        "/registrationConfirm",
-                        "/resendRegistrationToken",
-                        "/badUser",
-                        // Resources
-                        "/webjars/**",
-                        "/css/**",
-                        "/js/**"
-                        ).permitAll()
-                .anyRequest().authenticated()
-                .and()
-            .formLogin()
-                .loginPage("/")
-                .usernameParameter("m_email")
-                .passwordParameter("m_password")
-                .successHandler(new AuthSuccessHandler())
-                .permitAll()
-                .and()
-            .logout()
-                .logoutUrl("/logout")
-                .logoutSuccessUrl("/")
-                .and()
-            .sessionManagement()
-                 .maximumSessions(1);
-    }
+	@Override
+	protected void configure(HttpSecurity http) throws Exception {
+		http.authorizeRequests().antMatchers(
+		        "/", 
+		        "/home", 
+		        "/login/identify", 
+		        "/login/verifyIdentity", 
+		        "/signup",
+		        "/registrationConfirm", 
+		        "/resendRegistrationToken",
+		        "/badUser",
+		        // Resources
+		        "/webjars/**",
+		        "/css/**", 
+		        "/js/**"
+		).permitAll().anyRequest().authenticated().and()
+		    .formLogin()
+		        .loginPage("/")
+		        .usernameParameter("m_email")
+		        .passwordParameter("m_password")
+		        .successHandler(new AuthSuccessHandler())
+		        .permitAll().and()
+	        .logout()
+		        .logoutUrl("/logout")
+		        .logoutSuccessUrl("/").and()
+	        .sessionManagement()
+	            .maximumSessions(1);
+	}
 
-    @Override
-    protected void configure(final AuthenticationManagerBuilder auth)
-            throws Exception {
-        auth.authenticationProvider(authProvider());
-    }
+	@Override
+	protected void configure(final AuthenticationManagerBuilder auth) throws Exception {
+		auth.authenticationProvider(authProvider());
+	}
 
-    @Bean
-    public DaoAuthenticationProvider authProvider() {
-        final DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-        authProvider.setUserDetailsService(userDetailsService);
-        authProvider.setPasswordEncoder(encoder());
-        return authProvider;
-    }
+	@Bean
+	public DaoAuthenticationProvider authProvider() {
+		final DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
+		authProvider.setUserDetailsService(userDetailsService);
+		authProvider.setPasswordEncoder(encoder());
+		return authProvider;
+	}
 
-    @Bean
-    public PasswordEncoder encoder() {
-        return new BCryptPasswordEncoder(12);
-    }
+	@Bean
+	public PasswordEncoder encoder() {
+		return new BCryptPasswordEncoder(12);
+	}
 }

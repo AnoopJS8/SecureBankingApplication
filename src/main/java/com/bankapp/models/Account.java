@@ -11,6 +11,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
 import javax.persistence.Table;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
 @Entity
@@ -29,6 +30,8 @@ public class Account {
     private Double balance;
     private Date created;
     private Date updated;
+
+    @Min(value = 0)
     private Double criticalLimit;
 
     @PrePersist

@@ -1,23 +1,31 @@
+
 package com.bankapp.controllers;
 
 import java.security.Principal;
 
 import javax.validation.Valid;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.Errors;
-import org.apache.log4j.Logger;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.bankapp.models.User;
 import com.bankapp.constants.Constants;
+import com.bankapp.constants.Message;
+import com.bankapp.forms.OTPForm;
+import com.bankapp.listeners.OnOtpEvent;
+import com.bankapp.models.Account;
 import com.bankapp.models.ProfileRequest;
+import com.bankapp.models.User;
+import com.bankapp.services.IAccountService;
 import com.bankapp.services.IProfileRequestService;
 import com.bankapp.services.IUserService;
 
@@ -31,6 +39,12 @@ public class MainController implements Constants {
 
     @Autowired
     private IProfileRequestService profileRequestService;
+
+    @Autowired
+    private IAccountService accountService;
+
+    @Autowired
+    ApplicationEventPublisher eventPublisher;
 
     @RequestMapping(value = "/", method = RequestMethod.GET)
     public ModelAndView home(Principal principal) {
@@ -130,6 +144,7 @@ public class MainController implements Constants {
         profile.setPhoneNumber(user.getPhoneNumber());
         profile.setStatus(S_PROFILE_UPDATE_PENDING);
         profile.setUser(userService.getUserFromSession(principal));
+        profile.setRoleId(userService.getUserFromSession(principal).getRole().getId());
         String message = profileRequestService.saveProfileRequest(profile);
         if (message.equalsIgnoreCase(ERROR)) {
             mv.addObject("message", "Error occured");
@@ -139,5 +154,88 @@ public class MainController implements Constants {
         mv.addObject("message", "Request for changes are sent to out employee");
         mv.setViewName("success");
         return mv;
+    }
+
+    @RequestMapping(value = "/changepassword", method = RequestMethod.GET)
+    public ModelAndView changePassword(Principal principal) {
+        ModelAndView mv = new ModelAndView();
+        User loggedInUser = userService.getUserFromSession(principal);
+        mv.addObject("user", loggedInUser);
+        mv.addObject("role", loggedInUser.getRole().getName());
+        mv.setViewName("changepassword");
+        return mv;
+    }
+
+    @RequestMapping(value = "/changepassword", method = RequestMethod.POST)
+    public ModelAndView otpVerification(@ModelAttribute("user") @Valid User user, BindingResult result,
+            WebRequest request, Errors errors, Principal principal) {
+        ModelAndView mv = new ModelAndView();
+        User loggedInUser = userService.getUserFromSession(principal);
+        mv.addObject("user", loggedInUser);
+        mv.addObject("role", loggedInUser.getRole().getName());
+        boolean checkPassword = userService.verifyPassword(loggedInUser, user.getPassword());
+        if (checkPassword) {
+            loggedInUser.setNewpassword(user.getNewpassword());
+            userService.saveRegisteredUser(loggedInUser);
+            try {
+                eventPublisher.publishEvent(new OnOtpEvent(loggedInUser.getId(), R_USER));
+            } catch (Exception e) {
+                String message = String.format("Action: %s, Message: %s", "change password", e.getMessage());
+                LOGGER.error(message);
+                e.printStackTrace();
+                mv.addObject("message", e.getMessage());
+                mv.setViewName("error");
+                return mv;
+            }
+            OTPForm enteredValue = new OTPForm();
+            mv.addObject("otp", enteredValue);
+            mv.setViewName("otp");
+        } else {
+            mv.addObject("message", "Wrong password");
+            mv.setViewName("changepassword");
+        }
+        return mv;
+    }
+
+    @RequestMapping(value = "/otp", method = RequestMethod.POST)
+    public ModelAndView otpVerification(@Valid @ModelAttribute("otp") OTPForm otp, BindingResult result,
+            WebRequest request, Errors errors, Principal principal) {
+        ModelAndView mv = new ModelAndView();
+        User loggedInUser = userService.getUserFromSession(principal);
+        mv.addObject("user", loggedInUser);
+        mv.addObject("role", loggedInUser.getRole().getName());
+        boolean checkOtp = userService.verifyOTP(otp.getOtp(), loggedInUser.getId(), R_USER);
+        if (checkOtp) {
+            userService.changePassword(loggedInUser);
+            mv.addObject("message", "Password changed successfully");
+            mv.setViewName("success");
+        } else {
+            mv.addObject("message", "Error in saving password");
+            mv.setViewName("error");
+        }
+        return mv;
+    }
+
+    @RequestMapping(value = "/changelimit", method = RequestMethod.POST)
+    public String changeLimit(@ModelAttribute("limit") @Valid Double newLimit, BindingResult result, WebRequest request,
+            Errors errors, Principal principal, RedirectAttributes attributes) {
+
+        User loggedInUser = userService.getUserFromSession(principal);
+        if (newLimit < 0) {
+            attributes.addFlashAttribute("message", new Message("error", "Critical limit cannot be set below 0"));
+        } else {
+
+            Account newAccount = accountService.getAccountByUser(loggedInUser);
+            newAccount.setCriticalLimit(newLimit);
+            accountService.saveAccount(newAccount);
+            attributes.addFlashAttribute("message", new Message("success", "Your critical limit has been updated"));
+        }
+
+        String roleName = loggedInUser.getRole().getName();
+        if (roleName.equalsIgnoreCase("ROLE_CUSTOMER")) {
+            return "redirect:/customer/myaccount";
+        } else {
+            return "redirect:/merchant/myaccount";
+        }
     }
 }

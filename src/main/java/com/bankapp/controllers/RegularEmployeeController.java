@@ -57,7 +57,7 @@ public class RegularEmployeeController implements Constants {
 		List<ProfileRequest> requests = req
 				.getRequestsByStatus(S_PROFILE_UPDATE_PENDING);
 
-		System.out.println("List" + requests);
+	
 		ModelAndView mv = new ModelAndView();
 		mv.addObject("profilerequest", requests);
 		mv.setViewName("employee/employee_view");

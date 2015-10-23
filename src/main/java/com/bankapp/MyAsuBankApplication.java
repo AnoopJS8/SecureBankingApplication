@@ -1,9 +1,11 @@
+
 package com.bankapp;
 
 import org.apache.catalina.Context;
 import org.apache.catalina.connector.Connector;
 import org.apache.tomcat.util.descriptor.web.SecurityCollection;
 import org.apache.tomcat.util.descriptor.web.SecurityConstraint;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory;
@@ -18,6 +20,12 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 @EnableJpaRepositories(basePackages = "com.bankapp.repositories")
 @EntityScan(basePackages = "com.bankapp.models")
 public class MyAsuBankApplication {
+
+    @Value("${com.bankapp.server.http.port}")
+    private int httpPort;
+
+    @Value("${server.port}")
+    private int httpsPort;
 
     @Bean
     public EmbeddedServletContainerFactory servletContainer() {
@@ -41,8 +49,8 @@ public class MyAsuBankApplication {
         final Connector connector = new Connector(protocol);
 
         connector.setScheme("http");
-        connector.setPort(8181);
-        connector.setRedirectPort(8443);
+        connector.setPort(httpPort);
+        connector.setRedirectPort(httpsPort);
         return connector;
     }
 
