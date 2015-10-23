@@ -1,3 +1,4 @@
+
 package com.bankapp.services;
 
 import java.util.List;
@@ -27,6 +28,44 @@ public class ProfileRequestService implements IProfileRequestService, Constants 
             return ERROR;
         }
     }
+	@Override
+	public List<ProfileRequest> getRequestsByStatus(String status) {
+		// TODO Auto-generated method stub
+
+		Long merchant = new Long(3);
+		Long customer = new Long(4);
+
+		List<ProfileRequest> list = profileRequestRepository
+				.findByStatusAndRoleId(status, merchant);
+
+		list.addAll(profileRequestRepository.findByStatusAndRoleId(status,
+				customer));
+		return list;
+	}
+
+	@Override
+	public ProfileRequest getRequestById(Long id) {
+
+		ProfileRequest request = profileRequestRepository.findOne(id);
+		return request;
+	}
+
+	public String authorizeRequest(ProfileRequest requests) {
+
+		String result = "";
+
+		requests.setStatus(S_PROFILE_UPDATE_VERFIED);
+
+		try {
+			profileRequestRepository.save(requests);
+			result = "Profile modification has been approved";
+			
+		} catch (Exception e) {
+			result = "unsuccessull";
+		}
+
+		return result;
+	}
 
     @Override
     public List<ProfileRequest> getPendingRequests() {
@@ -54,12 +93,22 @@ public class ProfileRequestService implements IProfileRequestService, Constants 
         user.setDateOfBirth(profile.getDateOfBirth());
     }
 
+    
     @Override
-    public void declineRequest(Long id) {
-        ProfileRequest profile = profileRequestRepository.findOne(id);
-        profile.setStatus(S_PROFILE_UPDATE_DECLINED);
-        profileRequestRepository.save(profile);
-        
-    }
+	public String declineRequest(ProfileRequest requests) {
+		// TODO Auto-generated method stub
+		String result = "";
+		requests.setStatus(S_PROFILE_UPDATE_DECLINED);
+
+		try {
+			profileRequestRepository.save(requests);
+			result = "Profile modification has been declined";
+		
+		} catch (Exception e) {
+			result = "unsuccessull";
+		}
+
+		return result;
+	}
 
 }

@@ -1,15 +1,9 @@
 package com.bankapp.forms;
 
-import java.util.Date;
-
-import javax.validation.constraints.Future;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
-import org.springframework.format.annotation.DateTimeFormat;
-
-public class InitiateTransactionForm {
-
+public class TransferFundsForm {
     @NotNull
     Long accountId;
 
@@ -18,11 +12,6 @@ public class InitiateTransactionForm {
     Double amount;
 
     String comment;
-
-    @NotNull
-    @DateTimeFormat(pattern = "MM/dd/yyyy")
-    @Future
-    Date transferDate;
 
     public Long getAccountId() {
         return accountId;
@@ -48,11 +37,4 @@ public class InitiateTransactionForm {
         this.comment = comment;
     }
 
-    public Date getTransferDate() {
-        return transferDate;
-    }
-
-    public void setTransferDate(Date transferDate) {
-        this.transferDate = transferDate;
-    }
 }

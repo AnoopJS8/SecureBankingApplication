@@ -1,3 +1,4 @@
+
 package com.bankapp.constants;
 
 public interface Constants {
@@ -5,7 +6,7 @@ public interface Constants {
 	public String SUCCESS = "success";
 	public String LESS_BALANCE = "lessbal";
 	public String ERROR = "error";
-	public String ERR_ACCOUNT_NOT_EXISTS = "Account does not Exists";
+	public String ERR_ACCOUNT_NOT_EXISTS = "Account does not exist!";
 	public String CRITICAL = "Critical transaction";
 	public String PII_EXISTS = "Pii already added";
 	//Status
@@ -24,7 +25,6 @@ public interface Constants {
 	public String S_PII_DECLINED = "PIID";//pii request pending
 	public String S_PII_REQUEST_PENDING = "PIIRP";//pii request pending
 	public String S_PII_REQUEST_DONE = "PIIRD";//pii request pending
-	
 	
 	//OTP Resource Name
 	public String R_TRANSACTION  = "TXN";

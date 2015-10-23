@@ -1,5 +1,7 @@
+
 package com.bankapp.services;
 
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +37,28 @@ public class SystemManagerService implements ISystemManagerService {
     public User viewUserById(Long id) {
         User user = UserRepo.findById(id);
         return user;
+    }
+    public String declineTransaction(Transaction transaction) {
+
+        String result = "";
+        	transaction.setStatus("Declined");
+            TransRepo.save(transaction);
+            result = "Transaction has been declined";
+            System.out.println("Not approved");
+
+        return result;
+    }
+    
+    public String modifyTransaction(Transaction transaction,Date new_Date) {
+
+        String result = "";
+        	transaction.setStatus("Approved");
+        	transaction.setTransferDate(new_Date);
+            TransRepo.save(transaction);
+            result = "Transaction has been modified";
+            System.out.println("Done modified");
+
+        return result;
     }
 
     public User viewUserByEmail(String email) {

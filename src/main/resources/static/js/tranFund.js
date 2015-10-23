@@ -2,7 +2,7 @@ $(document).ready(function() {
 	$('#tF-form').validate({
 		errorClass : 'error',
 		rules : {
-			'toAccount.accId' : {
+			'accountId' : {
 				required : true,
 				digits : true
 			},
@@ -17,12 +17,12 @@ $(document).ready(function() {
 		},
 		// Specify the validation error messages
 		messages : {
-			'toAccount.accId' : {
-				required : "Recepient Account number cannot be NULL",
+			'accountId' : {
+				required : "Recipient account number cannot be empty",
 				digits : "Please enter valid recepient account number"
 			},
 			'amount' : {
-				required : "Transfer amount cannot be NULL",
+				required : "Transfer amount cannot be empty",
 				digits : "Please enter valid amount"
 			}
 		},
