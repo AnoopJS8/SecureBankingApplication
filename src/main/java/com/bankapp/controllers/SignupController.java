@@ -1,6 +1,8 @@
 package com.bankapp.controllers;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
@@ -8,6 +10,7 @@ import javax.validation.Valid;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -71,6 +74,8 @@ public class SignupController {
 	@InitBinder("form")
 	public void initBinder(WebDataBinder binder) {
 		binder.addValidators(recaptchaFormValidator);
+		CustomDateEditor editor = new CustomDateEditor(new SimpleDateFormat("MM/dd/yyyy"), true);
+        binder.registerCustomEditor(Date.class, editor);
 	}
 
 	@RequestMapping(value = "/signup", method = RequestMethod.GET)
@@ -91,7 +96,15 @@ public class SignupController {
 			return mv;
 		}
 		
-		User newUser = form.getUser();
+		User newUser = new User();
+		newUser.setUsername(form.getUsername());
+		newUser.setEmail(form.getEmail());
+		newUser.setPassword(form.getPassword());
+		newUser.setAddress(form.getAddress());
+		newUser.setDateOfBirth(form.getDateOfBirth());
+		newUser.setPhoneNumber(form.getPhoneNumber());
+		newUser.setGender(form.getGender());
+		
 		Role role = form.getRole();
 		String logMessage = String.format("Registering user account with information: {%s, %s}", newUser, role);
 		LOGGER.info(logMessage);
