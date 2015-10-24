@@ -11,8 +11,6 @@ public interface IProfileRequestService {
 
     List<ProfileRequest> getPendingRequests();
 
-    void setRequestToVerified(String id);
-
     void declineRequest(String id);
 
     public List<ProfileRequest> getRequestsByStatus(String status);

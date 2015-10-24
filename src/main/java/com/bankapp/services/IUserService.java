@@ -23,6 +23,8 @@ public interface IUserService {
 
     User getUserFromSession(Principal principal);
 
+    public boolean hasMissingFields(Principal principal);
+
     void saveRegisteredUser(User user);
 
     void createVerificationToken(User user, String token);

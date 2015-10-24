@@ -60,6 +60,24 @@
 				</div>
 			</div>
 			<div class="form-group">
+				<label class="col-md-3 control-label">Security Question: </label>
+				<div class="col-md-5">
+					<input type="text" th:field="*{securityQuestion}" class="form-control"
+						placeholder="This will be used to recover your account" /> <label
+						th:if="${#fields.hasErrors('securityQuestion')}"
+						th:errors="*{securityQuestion}"></label>
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="col-md-3 control-label">Security Answer: </label>
+				<div class="col-md-5">
+					<input type="text" th:field="*{securityAnswer}" class="form-control"
+						placeholder="Answer for your question" /> <label
+						th:if="${#fields.hasErrors('securityAnswer')}"
+						th:errors="*{securityAnswer}"></label>
+				</div>
+			</div>
+			<div class="form-group">
 				<div class="col-md-offset-3 col-md-9">
 					<button type="submit" class="btn btn-primary">Submit</button>
 				</div>

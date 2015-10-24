@@ -13,32 +13,31 @@
 		<div class="table-responsive">
 			<table class="table table-bordered table-hover">
 				<thead>
-					<tr>
+					<tr class="info">
 						<th>Request ID</th>
 						<th>Address</th>
 						<th>D.O.B</th>
 						<th>Phone</th>
 						<th>Status</th>
-						<th>Role ID</th>
 						<th>Actions</th>
 					</tr>
 				</thead>
 				<tbody>
+					<tr th:if="${requests.size()} == 0">
+						<td colspan="6">No requests to show</td>
+					</tr>
 					<tr th:each="request : ${requests}">
-						<form action="#" th:action="@{/authorize_userprofile}" th:object="${request}"
-							method="post">
+						<form action="#" th:action="@{/employee/requests}"
+							th:object="${request}" method="post">
 							<input type="hidden" name="rId" th:value="*{rId}" />
 							<td><span th:text="${request.rId}"></span></td>
 							<td><span th:text="${request.address}"></span></td>
 							<td><span th:text="*{#dates.format(dateOfBirth,'MM/dd/yyyy')}"></span></td>
 							<td><span th:text="${request.phoneNumber}"></span></td>
 							<td><span th:text="${request.status}"></span></td>
-							<td><span th:text="${request.roleId}"></span></td>
 							<td>
 								<button class="btn btn-sm btn-success" type="Submit" name="action"
 									value="Authorize">Authorize</button>
-							</td>
-							<td><
 								<button class="btn btn-sm btn-danger" type="Submit" name="action"
 									value="Decline">Decline</button>
 							</td>

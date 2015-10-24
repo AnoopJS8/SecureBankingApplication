@@ -53,7 +53,7 @@ public class SystemManagerController implements Constants {
     private ISystemManagerService manager;
 
     @Autowired
-    private IUserService user_service;
+    private IUserService userService;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -66,7 +66,7 @@ public class SystemManagerController implements Constants {
 
         ModelAndView mv = new ModelAndView();
         mv.setViewName("/manager/deleteUser");
-        List<User> users = user_service.displayDeleteUsers();
+        List<User> users = userService.displayDeleteUsers();
         mv.addObject("viewuser", users);
         return mv;
     }
@@ -75,7 +75,7 @@ public class SystemManagerController implements Constants {
     public String deleteManager(@ModelAttribute("user") User user, BindingResult result,
             RedirectAttributes attributes) {
         Message message;
-        user_service.deleteExternalUser(user);
+        userService.deleteExternalUser(user);
         String msg = String.format("Manager '%s' has been deleted", user.getUsername());
         message = new Message("succes", msg);
         attributes.addFlashAttribute("message", message);
@@ -111,9 +111,10 @@ public class SystemManagerController implements Constants {
     @RequestMapping(value = "/manager/myaccount", method = RequestMethod.GET)
     public ModelAndView getmanagerhome(Principal principal) {
         ModelAndView mv = new ModelAndView();
-        User loggedInUser = user_service.getUserFromSession(principal);
-        String Username = loggedInUser.getUsername();
-        mv.addObject("username", Username);
+        if(userService.hasMissingFields(principal)) {
+            mv.addObject("message",
+                    new Message("error", "You are missing important details. Please update your profile urgently"));
+        }
         mv.setViewName("manager/myaccount");
         return mv;
     }
@@ -183,7 +184,7 @@ public class SystemManagerController implements Constants {
         user.setPassword(passwordEncoder.encode(temporaryPassword));
         String message = "Success";
         try {
-            registered = user_service.registerNewUserAccount(user, role.getName());
+            registered = userService.registerNewUserAccount(user, role.getName());
         } catch (EmailExistsException e1) {
             status = "error";
             message = String.format("Action: %s, Message: %s", "signup", e1.getMessage());
@@ -205,7 +206,7 @@ public class SystemManagerController implements Constants {
 
             }
 
-            user_service.generateTemporaryPassword(registered);
+            userService.generateTemporaryPassword(registered);
         }
 
         System.out.println("message out" + message);
@@ -233,7 +234,7 @@ public class SystemManagerController implements Constants {
             return model;
         }
 
-        if (user_service.emailExist(form.getEmail())) {
+        if (userService.emailExist(form.getEmail())) {
             try {
                 user = manager.viewUserByEmail(form.getEmail());
             } catch (Exception e) {

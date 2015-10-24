@@ -116,6 +116,23 @@ public class UserService implements IUserService {
     }
 
     @Override
+    public boolean hasMissingFields(Principal principal) {
+        if (principal != null) {
+            String email = principal.getName();
+            if (email != null) {
+                User user = userRepository.findByEmail(email);
+                if (user.getSecurityAnswer() == null || user.getSecurityQuestion() == null) {
+                    return true;
+                }
+                return false;
+            } else {
+                return false;
+            }
+        }
+        return false;
+    }
+
+    @Override
     public VerificationToken getVerificationToken(String VerificationToken) {
         return tokenRepository.findByToken(VerificationToken);
     }
