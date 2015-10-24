@@ -9,9 +9,9 @@ import org.hibernate.validator.constraints.Email;
 import org.springframework.format.annotation.DateTimeFormat;
 
 public class ProfileForm {
-    
+
     String username;
-    
+
     @Email
     String email;
 
@@ -65,7 +65,5 @@ public class ProfileForm {
     public void setEmail(String email) {
         this.email = email;
     }
-    
-    
-    
+
 }

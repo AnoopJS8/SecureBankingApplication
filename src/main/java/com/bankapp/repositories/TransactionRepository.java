@@ -13,5 +13,14 @@ public interface TransactionRepository extends CrudRepository<Transaction, Strin
 
     Transaction findByTransactionId(String id);
 
+
+    
+    List<Transaction> findByFromAccount(Account fromAccount);
+    
+    List<Transaction> findByToAccount(Account toAccount);
+    
+    
+
     List<Transaction> findByStatus(String status);
+
 }

@@ -12,13 +12,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.bankapp.constants.Constants;
-import com.bankapp.constants.Message;
-import com.bankapp.forms.TransferFundsForm;
 import com.bankapp.models.Account;
-import com.bankapp.models.PersonalIdentificationInfo;
 import com.bankapp.models.ProfileRequest;
 import com.bankapp.models.Transaction;
 import com.bankapp.services.IProfileRequestService;

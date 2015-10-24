@@ -60,6 +60,8 @@ public class User {
     private String gender;
 
     private boolean enabled;
+    
+    private boolean isDeleted;
 
     private boolean tokenExpired;
 
@@ -80,6 +82,7 @@ public class User {
         super();
         this.enabled = false;
         this.tokenExpired = false;
+        this.isDeleted = false;
     }
 
     public String getId() {
@@ -157,6 +160,8 @@ public class User {
     public boolean isEnabled() {
         return enabled;
     }
+    
+    
 
     public void setEnabled(final boolean enabled) {
         this.enabled = enabled;
@@ -260,5 +265,13 @@ public class User {
                 id, username, email, address, phoneNumber, dateOfBirth, gender, securityQuestion, securityAnswer);
         return value;
     }
+
+	public boolean isDeleted() {
+		return isDeleted;
+	}
+
+	public void setDeleted(boolean isDeleted) {
+		this.isDeleted = isDeleted;
+	}
 
 }
