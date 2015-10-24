@@ -74,3 +74,4 @@ public class CustomerController implements Constants {
         return "redirect:/customer/authorizemerchant";
     }
 }
+

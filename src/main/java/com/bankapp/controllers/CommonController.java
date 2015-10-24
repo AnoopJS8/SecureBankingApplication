@@ -133,7 +133,7 @@ public class CommonController implements Constants {
         transaction.setAmount(form.getAmount());
         transaction.setComment(form.getComment());
 
-        String serviceStatus = transactionService.saveTransaction(fromEmail, toEmail, transaction);
+		String serviceStatus = transactionService.saveTransaction(fromEmail, toEmail, transaction);
 
         if (serviceStatus.equalsIgnoreCase(LESS_BALANCE)) {
             status = "error";

@@ -1,4 +1,3 @@
-
 package com.bankapp.services;
 
 import java.util.List;
@@ -18,9 +17,11 @@ public interface ITransactionService {
     public Transaction getTransactionsById(String id);
 
     public String askCustomerPayment(Transaction transaction, User user);
-    
+
     public List<Transaction> getMerchantRequests(String status);
-    
+
     public String actionOnRequest(String id, String status);
+
+    public List<Transaction> getPendingTransactions();
 
 }

@@ -1,9 +1,9 @@
-
 package com.bankapp.models;
 
 import java.util.Date;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -25,13 +25,15 @@ public class User {
     @GenericGenerator(name = "uuid", strategy = "uuid2")
     private String id;
 
-    @NotEmpty
+    @NotEmpty    
     private String username;
 
     @NotEmpty
     @NotFound
     @Email
+    @Column(unique = true)
     private String email;
+
 
     @ManyToOne(cascade = CascadeType.ALL)
     private Role role;
@@ -66,6 +68,7 @@ public class User {
     private String lastLoginIP;
 
     private Date lastLoginDate;
+
 
     public User() {
         super();
@@ -210,6 +213,7 @@ public class User {
     public void setSecurityAnswer(String securtiyAnswer) {
         this.securityAnswer = securtiyAnswer;
     }
+
 
     public String getCurrentLoginIP() {
         return currentLoginIP;
