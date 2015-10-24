@@ -162,7 +162,7 @@ public class MainController implements Constants {
         profile.setPhoneNumber(form.getPhoneNumber());
         profile.setStatus(S_PROFILE_UPDATE_PENDING);
         profile.setUser(userService.getUserFromSession(principal));
-        profile.setRoleId(userService.getUserFromSession(principal).getRole().getId());
+        profile.setRole(userService.getUserFromSession(principal).getRole());
 
         String serviceStatus = profileRequestService.saveProfileRequest(profile);
 
