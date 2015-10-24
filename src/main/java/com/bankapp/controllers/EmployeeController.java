@@ -34,7 +34,7 @@ import com.bankapp.services.ISystemManagerService;
 import com.bankapp.services.ITransactionService;
 
 @Controller
-public class RegularEmployeeController implements Constants {
+public class EmployeeController implements Constants {
     @Autowired
     private ISystemManagerService manager;
 
@@ -43,14 +43,6 @@ public class RegularEmployeeController implements Constants {
 
     @Autowired
     private ITransactionService transactionService;
-
-    private final Logger LOGGER = Logger.getLogger(RegularEmployeeController.class);
-    
-    @RequestMapping(value = "/employee/myaccount", method = RequestMethod.GET)
-    public ModelAndView AdminDetails() {
-        ModelAndView mv = new ModelAndView("/employee/myaccount");
-        return mv;
-    }
 
     // VIEW TRANSACTIONS
     @RequestMapping(value = "/employee/viewtransactions", method = RequestMethod.GET)
