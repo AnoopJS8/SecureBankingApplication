@@ -112,7 +112,7 @@ public class SystemManagerService implements ISystemManagerService {
         transaction.setStatus("Declined");
         TransRepo.save(transaction);
         result = "Transaction has been declined";
-        System.out.println("Not approved");
+      //  System.out.println("Not approved");
 
         return result;
     }
@@ -124,7 +124,7 @@ public class SystemManagerService implements ISystemManagerService {
         transaction.setTransferDate(new_Date);
         TransRepo.save(transaction);
         result = "Transaction has been modified";
-        System.out.println("Done modified");
+    //    System.out.println("Done modified");
 
         return result;
     }

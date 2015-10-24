@@ -219,7 +219,7 @@ public class SystemManagerController implements Constants {
 		String redirectUrl = "redirect:/manager/addUserForm";
 		String status = "success";
 
-		System.out.println(form.getUsername());
+		//System.out.println(form.getUsername());
 		if (result.hasErrors()) {
 			status = "error";
 			model.addAttribute("form", form);
@@ -265,8 +265,8 @@ public class SystemManagerController implements Constants {
 			user_service.generateTemporaryPassword(registered);
 		}
 		
-		System.out.println("message out" + message) ;
-//		attributes.addFlashAttribute("message", new Message(status, message));
+	//	System.out.println("message out" + message) ;
+		attributes.addFlashAttribute("message", new Message(status, message));
 		return redirectUrl;
 
 	}
