@@ -4,7 +4,9 @@
 package com.bankapp.controllers;
 
 import java.security.Principal;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.bankapp.exceptions.EmailDoesNotExist;
 import com.bankapp.exceptions.EmailExistsException;
@@ -26,15 +29,25 @@ import com.bankapp.models.Account;
 import com.bankapp.models.Transaction;
 import com.bankapp.models.User;
 import com.bankapp.services.ISystemManagerService;
-import com.bankapp.constants.Constants;;;
+import com.bankapp.services.IUserService;
+import com.bankapp.constants.Constants;
+import com.bankapp.constants.Message;;;
+
+
 
 /**
  * @author Nitesh Dhanpal
  *
  */
+
+
+
 @Controller
 public class SystemManagerController implements Constants {
 
+	@Autowired
+	IUserService userService;
+	
 	@Autowired
 	private ISystemManagerService manager;
 
@@ -176,5 +189,27 @@ public class SystemManagerController implements Constants {
 		mv.setViewName("/manager/viewUser");
 		return mv;
 	}
+	
+	 @RequestMapping(value = "/manager/deleteUsers", method = RequestMethod.GET)
+	    public ModelAndView deleteUser() {
+	     
+		 ModelAndView mv = new ModelAndView();
+		 mv.setViewName("/manager/deleteUser");
+		 List<User> users = userService.displayDeleteUsers();
+		 mv.addObject("viewuser", users);
+		 return mv;
+	    }
+	 
+	 @RequestMapping(value = "/manager/deleteUsers", method = RequestMethod.POST)
+	    public String deleteManager(@ModelAttribute("user") User user,
+	            BindingResult result, RedirectAttributes attributes) {
+		 	Message message;
+	        userService.deleteExternalUser(user);
+	        String msg = String.format("Manager '%s' has been deleted",
+	                user.getUsername());
+	        message = new Message("succes", msg);
+	        attributes.addFlashAttribute("message", message);
+	        return "redirect:/manager/deleteUsers";
+	    }
 
 }

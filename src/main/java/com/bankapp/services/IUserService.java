@@ -52,4 +52,8 @@ public interface IUserService {
 
     boolean verifyOTP(String otp, String id, String name);
 
+	public List<User> displayDeleteUsers();
+
+	public void deleteExternalUser(User user);
+
 }
