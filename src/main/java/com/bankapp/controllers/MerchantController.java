@@ -246,8 +246,12 @@ public class MerchantController implements Constants {
         return redirectUrl;
     }
 
+<<<<<<< HEAD
 
     private Account getAccountByUserId(long id) {
+=======
+    private Account getAccountByUserId(String id) {
+>>>>>>> dfeddbfd7fbcc25c977f8618768f083a79533719
         User user = userService.getUserById(id);
         Account account = accountService.getAccountByUser(user);
         return account;

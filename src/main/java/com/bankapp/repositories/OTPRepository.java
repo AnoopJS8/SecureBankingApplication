@@ -4,8 +4,8 @@ import org.springframework.data.repository.CrudRepository;
 
 import com.bankapp.models.OneTimePassword;
 
-public interface OTPRepository extends CrudRepository<OneTimePassword, Long> {
+public interface OTPRepository extends CrudRepository<OneTimePassword, String> {
     OneTimePassword findByValue(String value);
-    OneTimePassword findByresourceIdAndResourceName(Long resourceId, String resourceName);
+    OneTimePassword findByresourceIdAndResourceName(String resourceId, String resourceName);
 
 }

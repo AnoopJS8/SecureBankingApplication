@@ -2,20 +2,23 @@ package com.bankapp.models;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
+
+import org.hibernate.annotations.GenericGenerator;
 
 @Entity
 @Table(name = "profilerequest")
 public class ProfileRequest {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long rId;
+    @GeneratedValue(generator = "uuid")
+    @GenericGenerator(name = "uuid", strategy = "uuid2")
+    private String rId;
 
     @OneToOne
     @JoinColumn(name = "userId", nullable = false)
@@ -26,17 +29,19 @@ public class ProfileRequest {
     private String phoneNumber;
 
     private String dateOfBirth;
-    
-    private Long roleId;
-    
+
+    @ManyToOne
+    @JoinColumn(name = "roleId", nullable = false)
+    private Role role;
+
     @NotNull
     private String status;
 
-    public Long getrId() {
+    public String getrId() {
         return rId;
     }
 
-    public void setrId(Long rId) {
+    public void setrId(String rId) {
         this.rId = rId;
     }
 
@@ -79,7 +84,7 @@ public class ProfileRequest {
     public void setStatus(String status) {
         this.status = status;
     }
-    
+
     @Override
     public String toString() {
         final String value = String.format("Profile [address=%s, phonenumber=%s, dob=%s, status=%s]", user.getId(),
@@ -87,12 +92,12 @@ public class ProfileRequest {
         return value;
     }
 
-    public Long getRoleId() {
-        return roleId;
+    public Role getRole() {
+        return role;
     }
 
-    public void setRoleId(Long long1) {
-        this.roleId = long1;
+    public void setRole(Role role) {
+        this.role = role;
     }
 
 }

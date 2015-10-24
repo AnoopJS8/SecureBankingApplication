@@ -2,29 +2,27 @@ $(document).ready(function() {
 	$('#init-form').validate({
 		errorClass : 'error',
 		rules : {
-			'accountId' : {
-				required : true,
-				digits : true
-			},
-			'amount' : {
-				required : true,
-				digits : true
-			},
-			'comment' : {
-				required : false
-			},
-			'transferDate' : {
-				required : true,
-				minDate : true,
-				dateFA : true
 
-			}
+		'accountId' : {
+			required : true
 		},
-		// Specify the validation error messages
-		messages : {
-			'accountId' : {
-				required : "Recepient Account number cannot be NULL",
-				digits : "Please enter valid recepient account number"
+		'amount' : {
+			required : true,
+			digits : true
+		},
+		'comment' : {
+			required : false
+		},
+		'transferDate' : {
+			required : true,
+			dateFA: true,
+			minDate: true
+		}
+	},
+	// Specify the validation error messages
+	messages : {
+		'accountId' : {
+			required: "Recepient Account number cannot be NULL"
 			},
 			'amount' : {
 				required : "Transfer amount cannot be NULL",
