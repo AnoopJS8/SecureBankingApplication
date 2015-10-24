@@ -5,16 +5,9 @@
 <body>
 	<div class="container">
 		<div th:replace="fragment/common :: top-nav(signup)"></div>
-		<h4 th:text="${message}"></h4>
-		<br />
-		<div class="jumbotron">
-			<p>Sorry, it seems that your registration token has expired!</p>
-			<p>
-				To generate another verification token, click <a th:href="${url}">here</a>.
-			</p>
-			<p>
-				Go back to the <a th:href="@{/signup}">Sign Up</a>.
-			</p>
+		<div th:replace="fragment/common :: message"></div>
+		<div th:if="${url}">
+		  <div class="jumbotron">Please use <a th:href="${url}">this link</a> to resend a verification token</div>
 		</div>
 		<div th:replace="fragment/common :: [//footer]"></div>
 	</div>
