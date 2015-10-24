@@ -2,18 +2,14 @@ package com.bankapp.forms;
 
 import java.util.Date;
 
-import javax.persistence.Column;
-import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Past;
 
 import org.hibernate.annotations.NotFound;
-import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotEmpty;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import com.bankapp.models.Role;
-import com.bankapp.models.User;
 import com.bankapp.validators.ValidEmail;
 
 public class AddEmployeeForm {

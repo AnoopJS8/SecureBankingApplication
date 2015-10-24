@@ -135,7 +135,7 @@ public class CommonController implements Constants {
         transaction.setAmount(form.getAmount());
         transaction.setComment(form.getComment());
 
-		String serviceStatus = transactionService.saveTransaction(fromEmail, toEmail, transaction);
+        String serviceStatus = transactionService.saveTransaction(fromEmail, toEmail, transaction);
 
         if (serviceStatus.equalsIgnoreCase(LESS_BALANCE)) {
             status = "error";
@@ -149,11 +149,11 @@ public class CommonController implements Constants {
             status = "error";
             message = ERR_ACCOUNT_NOT_EXISTS;
             redirectUrl = "redirect:/" + role + "/transferfunds";
-        } else if(serviceStatus.equalsIgnoreCase("Same User")){
-            status="error";
-            message= "Can't send funds to the same user";
+        } else if (serviceStatus.equalsIgnoreCase(ERR_SAME_USER)) {
+            status = "error";
+            message = ERR_SAME_USER;
             redirectUrl = "redirect:/" + role + "/transferfunds";
-        }else if (serviceStatus.equalsIgnoreCase(CRITICAL)) {
+        } else if (serviceStatus.equalsIgnoreCase(CRITICAL)) {
             status = "success";
             message = "Its a critical transaction, so it will be handled by our employees shortly";
             redirectUrl = "redirect:/" + role + "/myaccount";
@@ -233,12 +233,11 @@ public class CommonController implements Constants {
             status = "error";
             message = ERR_ACCOUNT_NOT_EXISTS;
             redirectUrl = "redirect:/" + role + "/initiatetransaction";
-        }else if(serviceStatus.equalsIgnoreCase("Same User")){
-            status="error";
-            message= "Can't send funds to the same user";
+        } else if (serviceStatus.equalsIgnoreCase(ERR_SAME_USER)) {
+            status = "error";
+            message = ERR_SAME_USER;
             redirectUrl = "redirect:/" + role + "/initiatetransaction";
-        }
-        else {
+        } else {
             status = "error";
             message = "An unhandled error occurred. Please contact the administrator";
             redirectUrl = "redirect:/" + role + "/initiatetransaction";

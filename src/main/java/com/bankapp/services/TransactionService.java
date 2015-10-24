@@ -43,7 +43,7 @@ public class TransactionService implements ITransactionService, Constants {
             return ERR_ACCOUNT_NOT_EXISTS;
         }
         if(fromUser.equals(toUser)){
-            return "Same User";
+            return ERR_SAME_USER;
         }
         Account fromAccount = accountService.getAccountByUser(fromUser);
         Account toAccount = accountService.getAccountByUser(toUser);
@@ -97,14 +97,6 @@ public class TransactionService implements ITransactionService, Constants {
         }
     }
     
-    private boolean isAboveMaxLimit(Transaction transaction) {
-        double MaxLimit = 100000;
-        if (transaction.getAmount() >= MaxLimit) {
-            return true;
-        }
-        return false;
-    }
-
     @Transactional
     @Override
     public String initiateTransaction(String fromEmail, String toEmail, Transaction transaction) {
@@ -116,7 +108,7 @@ public class TransactionService implements ITransactionService, Constants {
                 return ERR_ACCOUNT_NOT_EXISTS;
             }
             if(fromUser.equals(toUser)){
-                return "Same User";
+                return ERR_SAME_USER;
             }
             Account fromAccount = accountService.getAccountByUser(fromUser);
             Account toAccount = accountService.getAccountByUser(toUser);
