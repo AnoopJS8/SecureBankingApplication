@@ -4,7 +4,11 @@
 package com.bankapp.controllers;
 
 import java.security.Principal;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
@@ -35,13 +39,17 @@ import com.bankapp.exceptions.UserNameExistsException;
 import com.bankapp.forms.ManagerCreateUser;
 import com.bankapp.forms.ManagerViewByEmail;
 import com.bankapp.forms.ManagerViewById;
+import com.bankapp.forms.UpdateUsersForm;
 import com.bankapp.listeners.OnRegistrationCompleteEvent;
 import com.bankapp.models.Account;
 import com.bankapp.models.OneTimePassword;
+import com.bankapp.models.ProfileRequest;
 import com.bankapp.models.Role;
 import com.bankapp.models.Transaction;
 import com.bankapp.models.User;
 import com.bankapp.repositories.RoleRepository;
+import com.bankapp.repositories.UserRepository;
+import com.bankapp.services.IProfileRequestService;
 import com.bankapp.services.ISystemManagerService;
 import com.bankapp.services.IUserService;
 
@@ -67,6 +75,10 @@ public class SystemManagerController implements Constants {
 
 	@Autowired
 	ApplicationEventPublisher eventPublisher;
+	
+	
+	@Autowired
+	private IProfileRequestService profileReq;
 
 	private final Logger LOGGER = Logger
 			.getLogger(SystemManagerController.class);
@@ -88,6 +100,56 @@ public class SystemManagerController implements Constants {
 		ModelAndView mv = new ModelAndView();
 		mv.addObject("pending", transactions);
 		mv.setViewName("/manager/viewPending");
+		return mv;
+	}
+	
+	
+	@RequestMapping(value = "/manager/profilerequests", method = RequestMethod.GET)
+	public ModelAndView getProfileRequests() {
+		List<ProfileRequest> list = profileReq.getRequestsByStatus(S_PENDING);
+		List<ProfileRequest> list1 = new ArrayList<>();;
+		int k=0;
+		for(int i=0;i<list.size();i++)
+		{
+			ProfileRequest Req = list.get(i);
+			String role = Req.getRole().getName();
+			if(role.equals("ROLE_CUSTOMER") || role.equals("ROLE_MERCHANT"))
+			{				
+				list1.add(k, Req);				
+				k++;
+			}
+		}
+		ModelAndView mv = new ModelAndView();
+		mv.addObject("profileRequests", list1);
+		mv.setViewName("/manager/profileRequests");
+		return mv;
+	}
+	
+	
+	@RequestMapping(value = "/manager/approveprofilerequest", method = RequestMethod.POST)
+	public ModelAndView approveprofilerequest(
+			@ModelAttribute("row") ProfileRequest Id, BindingResult result,
+			WebRequest request, Errors errors, Principal principal) {
+		ModelAndView mv = new ModelAndView();
+				
+		ProfileRequest profile = manager.getProfilebRequestByRId(Id.getrId());
+		String Address = profile.getAddress();
+		Date DoB = profile.getDateOfBirth();
+		String Ph = profile.getPhoneNumber();
+		
+		
+		User user = profile.getUser();
+		user.setAddress(Address);
+		user.setDateOfBirth(DoB);
+		user.setPhoneNumber(Ph);
+		manager.saveUser(user);
+		
+		String status = manager.approveProfileRequest(profile);
+		
+		mv.addObject("message", new Message(status, "Action Completed"));
+		// System.out.println("Done");
+		mv.setViewName("/manager/profileRequests");
+
 		return mv;
 	}
 
@@ -126,7 +188,7 @@ public class SystemManagerController implements Constants {
 		// //System.out.println("Entered Approve");
 		// //System.out.println("Transaction" + Id.getTransactionId());
 
-		Transaction transaction = manager.getTransactionbyid(Id.getTransactionId());
+		Transaction transaction = manager.getTransactionById(Id.getTransactionId());
 
 		Account FromAccount = transaction.getFromAccount();
 		Account ToAccount = transaction.getToAccount();
@@ -176,7 +238,7 @@ public class SystemManagerController implements Constants {
 		System.out.println(form.getUsername());
 		if (result.hasErrors()) {
 			model.addAttribute("form", form);
-			System.out.println("asd");
+//			System.out.println("asd");
 			return "/manager/addUserForm";
 		}
 
@@ -279,6 +341,49 @@ public class SystemManagerController implements Constants {
 		
 	}
 
+	@RequestMapping(value = "/manager/update", method = RequestMethod.GET)
+	public ModelAndView customerAndMerchantDetails() {
+        ModelAndView mv = new ModelAndView("/manager/update");
+        List<User> customers = user_service.getCustomers();
+        List<User> merchants = user_service.getMerchants();
+        List<User> newList = new ArrayList<User>(customers);
+        newList.addAll(merchants);
+        UpdateUsersForm form = new UpdateUsersForm();
+        form.setUsers(newList);
+        mv.addObject("form", form);
+        return mv;
+    }
+	
+	@RequestMapping(value = "/manager/delete", method = RequestMethod.POST)
+    public String deleteUser(@ModelAttribute("user") User user,
+            BindingResult result, RedirectAttributes attributes) {
+        user_service.deleteUser(user);
+        Map<String, String> message = new HashMap<String, String>();
+        message.put("status", "success");
+        String msg = String.format("User '%s' has been deleted",
+                user.getUsername());
+        message.put("msg", msg);
+        attributes.addFlashAttribute("message", message);
+        return "redirect:/manager/update";
+    }
+	
+	
+	
+	@RequestMapping(value = "/manager/update", method = RequestMethod.POST)
+    public String updateustomerAndMerchantDetails(
+            @ModelAttribute("user") User updatedUser, BindingResult result,
+            RedirectAttributes attributes) {
+        user_service.updateUser(updatedUser.getId(), updatedUser);
+        Map<String, String> message = new HashMap<String, String>();
+        message.put("status", "success");
+        message.put("msg", "Details have been updated");
+        attributes.addFlashAttribute("message", message);
+        return "redirect:/manager/update";
+    }
+
+	
+	
+	
 	@RequestMapping(value = "/manager/viewUserByIdForm", method = RequestMethod.POST)
 	public ModelAndView getuser_byid(final ModelAndView model,@ModelAttribute("form") @Valid ManagerViewById form,
 			BindingResult result, Errors errors, Principal principal,

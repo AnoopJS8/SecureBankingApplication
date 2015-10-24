@@ -27,7 +27,7 @@
 				</thead>
 				<tbody>
 					<tr th:each="row : ${critical}">
-						<form  th:action="@{/approvetransaction}" th:object="${row}" method="post">
+						<form  th:action="@{/manager/approvetransaction}" th:object="${row}" method="post">
 						<td><span th:text="*{created}"></span></td>
 						<td><span th:text="*{fromAccount.user.username}"></span></td>
 						<td><span th:text="*{toAccount.user.username}"></span></td>

@@ -100,7 +100,7 @@ public class RegularEmployeeController implements Constants {
             WebRequest request, Errors errors, Principal principal) {
         ModelAndView mv = new ModelAndView();
 
-        Transaction transaction = manager.getTransactionbyid(Id.getTransactionId());
+        Transaction transaction = manager.getTransactionById(Id.getTransactionId());
 
         Account FromAccount = transaction.getFromAccount();
         Account ToAccount = transaction.getToAccount();
@@ -131,7 +131,7 @@ public class RegularEmployeeController implements Constants {
             WebRequest request, Errors errors, Principal principal) {
         ModelAndView mv = new ModelAndView();
 
-        Transaction transaction = manager.getTransactionbyid(Id.getTransactionId());
+        Transaction transaction = manager.getTransactionById(Id.getTransactionId());
 
         String str = "";
         str = manager.declineTransaction(transaction);
@@ -148,7 +148,7 @@ public class RegularEmployeeController implements Constants {
             WebRequest request, Errors errors, Principal principal) {
         ModelAndView mv = new ModelAndView();
 
-        Transaction transaction = manager.getTransactionbyid(Id.getTransactionId());
+        Transaction transaction = manager.getTransactionById(Id.getTransactionId());
 
         Account ToAccount = transaction.getToAccount();
         String to_acct = ToAccount.getAccId();
@@ -169,7 +169,7 @@ public class RegularEmployeeController implements Constants {
                     throws ParseException {
         ModelAndView mv = new ModelAndView();
 
-        Transaction transaction = manager.getTransactionbyid(Id.getTransactionId());
+        Transaction transaction = manager.getTransactionById(Id.getTransactionId());
 
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss");
 

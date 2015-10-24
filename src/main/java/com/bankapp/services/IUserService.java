@@ -37,6 +37,10 @@ public interface IUserService {
     List<User> getManagers();
 
     List<User> getEmployees();
+    
+    List<User> getCustomers();
+    
+    List<User> getMerchants();
 
     void generateTemporaryPassword(User user);
 
@@ -54,5 +58,7 @@ public interface IUserService {
     OneTimePassword generateNewOTP(String value);
 
     boolean verifyOTP(String otp, String id, String name);
+
+	
 
 }
