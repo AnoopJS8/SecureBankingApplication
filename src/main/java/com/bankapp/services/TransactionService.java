@@ -134,16 +134,17 @@ public class TransactionService implements ITransactionService, Constants {
     @Transactional
     @Override
     public String actionOnRequest(String id, String status) {
-        try{
+        try {
             Transaction transaction = transactionRepository.findOne(id);
             transaction.setStatus(status);
-            if(status.equals(S_CUSTOMER_VERIFIED)){
-            }else{
-                
-            }
-            transactionRepository.save(transaction); 
+            if (status.equals(S_CUSTOMER_VERIFIED)) {
+                String msg = saveTransaction(transaction.getFromAccount().getUser().getEmail(),
+                        transaction.getToAccount().getUser().getEmail(), transaction);
+                return msg;
+            } 
+            transactionRepository.save(transaction);
             return SUCCESS;
-        }catch(Exception e){
+        } catch (Exception e) {
             return ERROR;
         }
     }
