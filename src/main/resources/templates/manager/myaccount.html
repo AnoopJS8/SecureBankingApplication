@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
 	xmlns:th="http://www.thymeleaf.org"
@@ -7,21 +9,9 @@
 	<div class="container">
 		<div th:replace="fragment/common :: top-nav(myaccount)"></div>	
 		<div th:replace="fragment/manager :: manager-header"></div>
-		<div >
-			<h3>View User By Id Form</h3>
-			
-		</div>
-		<div class="table-responsive">
-			
-					
-						<form action="#" th:action="@{/manager_viewuser_byid}" method="POST">
-						<input type="text" name="userid" />
-						<button type="submit">Submit</button>
-						</form>
-					
-		</div>
 		
-	
+		<p>Hello  <b> <span th:text="${username}"></span> ! </b></p>
 	</div>
 </body>
+
 </html>

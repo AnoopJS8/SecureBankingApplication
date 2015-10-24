@@ -43,7 +43,15 @@ public interface IUserService {
 
     boolean changePassword(User user);
 
+    boolean emailExist(String email);
+
+    boolean idExist(String id);
+
     public boolean verifyPassword(User user, String currentPassword);
+
+    public List<User> displayDeleteUsers();
+
+    public void deleteExternalUser(User user);
 
     // OTP Section
     OneTimePassword generateOTP(String resourceId, String resourceName);

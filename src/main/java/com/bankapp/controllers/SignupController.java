@@ -1,6 +1,8 @@
 package com.bankapp.controllers;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
@@ -8,6 +10,7 @@ import javax.validation.Valid;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -20,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.bankapp.constants.Message;
 import com.bankapp.exceptions.EmailExistsException;
 import com.bankapp.forms.SignupForm;
 import com.bankapp.listeners.OnRegistrationCompleteEvent;
@@ -71,6 +75,8 @@ public class SignupController {
 	@InitBinder("form")
 	public void initBinder(WebDataBinder binder) {
 		binder.addValidators(recaptchaFormValidator);
+		CustomDateEditor editor = new CustomDateEditor(new SimpleDateFormat("MM/dd/yyyy"), true);
+        binder.registerCustomEditor(Date.class, editor);
 	}
 
 	@RequestMapping(value = "/signup", method = RequestMethod.GET)
@@ -91,7 +97,15 @@ public class SignupController {
 			return mv;
 		}
 		
-		User newUser = form.getUser();
+		User newUser = new User();
+		newUser.setUsername(form.getUsername());
+		newUser.setEmail(form.getEmail());
+		newUser.setPassword(form.getPassword());
+		newUser.setAddress(form.getAddress());
+		newUser.setDateOfBirth(form.getDateOfBirth());
+		newUser.setPhoneNumber(form.getPhoneNumber());
+		newUser.setGender(form.getGender());
+		
 		Role role = form.getRole();
 		String logMessage = String.format("Registering user account with information: {%s, %s}", newUser, role);
 		LOGGER.info(logMessage);
@@ -130,7 +144,7 @@ public class SignupController {
 		VerificationToken verificationToken = userService.getVerificationToken(token);
 		if (verificationToken == null) {
 			String message = String.format("The token is invalid, please register again!");
-			return new ModelAndView("registration/activationFailed", "message", message);
+			return new ModelAndView("registration/activationFailed", "message", new Message("error", message));
 		}
 
 		User user = verificationToken.getUser();
@@ -139,7 +153,7 @@ public class SignupController {
 			String message = String.format("The verification token has expired. Please register again!");
 			String url = getAppUrl(request) + "/resendRegistrationToken?token=" + token;
 			ModelAndView mv = new ModelAndView("registration/activationFailed");
-			mv.addObject("message", message);
+			mv.addObject("message", new Message("error", message));
 			mv.addObject("url", url);
 			return mv;
 		}

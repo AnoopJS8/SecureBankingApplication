@@ -1,20 +1,23 @@
-
 package com.bankapp.models;
 
 import java.util.Date;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Past;
 import javax.validation.constraints.Size;
 
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.NotFound;
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotEmpty;
+import org.springframework.format.annotation.DateTimeFormat;
 
 @Entity
 @Table(name = "users")
@@ -25,13 +28,15 @@ public class User {
     @GenericGenerator(name = "uuid", strategy = "uuid2")
     private String id;
 
-    @NotEmpty
+    @NotEmpty    
     private String username;
 
     @NotEmpty
     @NotFound
     @Email
+    @Column(unique = true)
     private String email;
+
 
     @ManyToOne(cascade = CascadeType.ALL)
     private Role role;
@@ -47,11 +52,16 @@ public class User {
 
     private String phoneNumber;
 
+    @DateTimeFormat(pattern = "MM/dd/yyyy")
+    @NotNull(message = "Please provide a date of birth.")
+    @Past
     private Date dateOfBirth;
 
     private String gender;
 
     private boolean enabled;
+    
+    private boolean isDeleted;
 
     private boolean tokenExpired;
 
@@ -67,10 +77,12 @@ public class User {
 
     private Date lastLoginDate;
 
+
     public User() {
         super();
         this.enabled = false;
         this.tokenExpired = false;
+        this.isDeleted = false;
     }
 
     public String getId() {
@@ -148,6 +160,8 @@ public class User {
     public boolean isEnabled() {
         return enabled;
     }
+    
+    
 
     public void setEnabled(final boolean enabled) {
         this.enabled = enabled;
@@ -211,6 +225,7 @@ public class User {
         this.securityAnswer = securtiyAnswer;
     }
 
+
     public String getCurrentLoginIP() {
         return currentLoginIP;
     }
@@ -250,5 +265,13 @@ public class User {
                 id, username, email, address, phoneNumber, dateOfBirth, gender, securityQuestion, securityAnswer);
         return value;
     }
+
+	public boolean isDeleted() {
+		return isDeleted;
+	}
+
+	public void setDeleted(boolean isDeleted) {
+		this.isDeleted = isDeleted;
+	}
 
 }

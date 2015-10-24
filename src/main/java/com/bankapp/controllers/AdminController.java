@@ -1,6 +1,5 @@
 package com.bankapp.controllers;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
 import com.bankapp.constants.Constants;
 import com.bankapp.constants.Message;
 import com.bankapp.exceptions.EmailExistsException;

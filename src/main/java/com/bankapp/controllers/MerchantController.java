@@ -1,3 +1,4 @@
+
 package com.bankapp.controllers;
 
 import java.security.Principal;
@@ -68,7 +69,7 @@ public class MerchantController implements Constants {
 
         User user = userService.getUserFromSession(principal);
         Transaction transaction = new Transaction();
-        Account fromAccount = accountService.getAccountByAccountId(form.getAccountId());
+        Account fromAccount = accountService.getAccountByUser(userService.getUserByEmail(form.getEmail()));
         transaction.setAmount(form.getAmount());
         transaction.setFromAccount(fromAccount);
         transaction.setComment(form.getComment());

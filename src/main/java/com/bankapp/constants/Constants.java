@@ -1,4 +1,3 @@
-
 package com.bankapp.constants;
 
 public interface Constants {
@@ -16,7 +15,7 @@ public interface Constants {
 	public String S_OTP_VERIFIED = "OV"; //critical transaction verified
 	public String S_PENDING_CUSTOMER_VERIFICATION = "PCV"; //merchant request for customer money pending 
 	public String S_CUSTOMER_VERIFIED = "CV"; //merchant request verified
-	public String S_CUSTOMER_DECLINED = "CD"; //merchant request verified
+	public String S_CUSTOMER_DECLINED = "CD"; //merchant request Declined
 	public String S_PROFILE_UPDATE_PENDING = "PUP"; //Profile Changes pending
 	public String S_PROFILE_UPDATE_VERFIED = "PUV";//profile changes verified
 	public String S_PROFILE_UPDATE_DECLINED = "PUD";//profile changes decline

@@ -1,4 +1,3 @@
-
 package com.bankapp.controllers;
 
 import java.security.Principal;
@@ -173,11 +172,11 @@ public class MainController implements Constants {
         } else {
             status = "success";
             message = "Request for changes are sent to out employee";
-            redirectUrl = "redirect:/success";
+            redirectUrl = "redirect:/profile";
         }
 
         attributes.addFlashAttribute("message", new Message(status, message));
-        attributes.addFlashAttribute("role", userService.getUserFromSession(principal).getRole());
+        attributes.addFlashAttribute("role", userService.getUserFromSession(principal).getRole().getName());
 
         logMessage = String.format("[Action=%s, Method=%s][Status=%s][Message=%s]", "transferfunds", "POST",
                 serviceStatus, message);
@@ -229,8 +228,8 @@ public class MainController implements Constants {
     }
 
     @RequestMapping(value = "/otp", method = RequestMethod.POST)
-    public ModelAndView otpVerification(@Valid @ModelAttribute("otp") OTPForm otp, BindingResult result,
-            WebRequest request, Errors errors, Principal principal) {
+    public String otpVerification(@Valid @ModelAttribute("otp") OTPForm otp, BindingResult result,
+            WebRequest request, Errors errors, Principal principal,RedirectAttributes attributes) {
         ModelAndView mv = new ModelAndView();
         User loggedInUser = userService.getUserFromSession(principal);
         mv.addObject("user", loggedInUser);
@@ -238,13 +237,13 @@ public class MainController implements Constants {
         boolean checkOtp = userService.verifyOTP(otp.getOtp(), loggedInUser.getId(), R_USER);
         if (checkOtp) {
             userService.changePassword(loggedInUser);
-            mv.addObject("message", "Password changed successfully");
-            mv.setViewName("success");
+            attributes.addFlashAttribute("message", new Message("success", "Password updated successfully"));
+            attributes.addFlashAttribute("role", userService.getUserFromSession(principal).getRole().getName());
         } else {
-            mv.addObject("message", "Error in saving password");
-            mv.setViewName("error");
+            attributes.addFlashAttribute("message", new Message("error", "error in updating password"));
+            attributes.addFlashAttribute("role", userService.getUserFromSession(principal).getRole().getName());
         }
-        return mv;
+        return "redirect:/profile";
     }
 
     @RequestMapping(value = "/changelimit", method = RequestMethod.POST)
