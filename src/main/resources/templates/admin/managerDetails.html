@@ -37,7 +37,7 @@
                               <input type="text" name="phoneNumber" th:value="*{phoneNumber}" class="form-control"/>
                             </td>
                             <td>
-                              <input type="text" name="dateOfBirth" th:value="*{dateOfBirth}" class="form-control"/>
+                              <input type="text" name="dateOfBirth" th:value="*{#dates.format(dateOfBirth,'MM/dd/yyyy')}" class="form-control"/>
                             </td>
                             <td>
                               <label><input type="radio" name="gender" th:value="Male" th:checked="*{gender} == 'Male'"/> M</label>
