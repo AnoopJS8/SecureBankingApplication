@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 $(document).ready(function() {
 	$('#init-form').validate({
 		errorClass : 'error',
@@ -63,4 +62,3 @@ $.validator.addMethod("maxDate", function(value, element) {
 
 
 });
-
