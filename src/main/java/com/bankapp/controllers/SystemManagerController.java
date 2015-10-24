@@ -34,7 +34,6 @@ import com.bankapp.constants.Message;
 import com.bankapp.exceptions.EmailExistsException;
 import com.bankapp.exceptions.UserNameExistsException;
 import com.bankapp.forms.AddEmployeeForm;
-import com.bankapp.forms.ManagerCreateUser;
 import com.bankapp.forms.UpdateUsersForm;
 import com.bankapp.forms.ViewByEmailForm;
 import com.bankapp.listeners.OnRegistrationCompleteEvent;
@@ -222,7 +221,10 @@ public class SystemManagerController implements Constants {
 
 		System.out.println(form.getUsername());
 		if (result.hasErrors()) {
+			status = "error";
 			model.addAttribute("form", form);
+			String message = "Invalid Details";
+			model.addAttribute("message", new Message(status, message));
 			return "/manager/addUserForm";
 		}
 
@@ -233,7 +235,7 @@ public class SystemManagerController implements Constants {
 
 		String temporaryPassword = OneTimePassword.generateOTP();
 		user.setPassword(passwordEncoder.encode(temporaryPassword));
-		String message = "Success";
+		String message = "success";
 		try {
 			registered = user_service.registerNewUserAccount(user,
 					role.getName());
@@ -244,7 +246,6 @@ public class SystemManagerController implements Constants {
 			LOGGER.error(message);
 			redirectUrl = "redirect:/manager/addUserForm";
 
-			System.out.println("message" + message);
 		}
 
 
@@ -265,7 +266,7 @@ public class SystemManagerController implements Constants {
 		}
 		
 		System.out.println("message out" + message) ;
-		attributes.addFlashAttribute("message", new Message(status, message));
+//		attributes.addFlashAttribute("message", new Message(status, message));
 		return redirectUrl;
 
 	}
@@ -394,18 +395,10 @@ public class SystemManagerController implements Constants {
     }
 
 
-    
-
-   
-
-   
-
-    
-
     @RequestMapping(value = "/manager/addUserForm", method = RequestMethod.GET)
 	public ModelAndView getUserAddage() {
 		ModelAndView modelAndView = new ModelAndView("/manager/addUserForm",
-				"form", new ManagerCreateUser());
+				"form", new AddEmployeeForm());
 		return modelAndView;
 	}
     
