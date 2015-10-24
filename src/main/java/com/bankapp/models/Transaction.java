@@ -10,6 +10,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
 import javax.persistence.Table;
+import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
@@ -39,6 +40,7 @@ public class Transaction {
 
     @NotNull
     @Min(value = 0)
+    @Max(value = 100000,message="Maximum Limit is $100000")
     private Double amount;
 
     private Date transferDate;
