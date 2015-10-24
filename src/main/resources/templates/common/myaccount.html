@@ -72,13 +72,13 @@
 						<td colspan="5">There are no transactions</td>
 					</tr>
 					<tr th:each="transaction : ${transactions}">
-						<td><span th:text="*{#dates.format(transferDate,'MM/dd/yyyy')}"></span></td>
+						<td><span th:text="*{#dates.format(transaction.transferDate,'MM/dd/yyyy')}"></span></td>
 						<td><span th:text="${transaction.fromAccount.user.username}"></span></td>
 						<td><span th:text="${transaction.toAccount.user.username}"></span></td>
 						<td><span th:text="${transaction.amount}"></span></td>
 						<td><span th:text="${transaction.comment}"></span></td>
 						<td
-							th:if="${transaction.status.equalsIgnoreCase('V') || transaction.status.equalsIgnoreCase('OV') || transaction.status.equalsIgnoreCase('CV')}">
+							th:if="${transaction.status.equalsIgnoreCase('V') || transaction.status.equalsIgnoreCase('OV')}">
 							<span th:text="Completed"></span>
 						</td>
 						<td

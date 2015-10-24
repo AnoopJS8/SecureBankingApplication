@@ -53,8 +53,8 @@ public class User {
     private String phoneNumber;
 
     @DateTimeFormat(pattern = "MM/dd/yyyy")
-    @NotNull(message = "Please provide a date of birth.")
     @Past
+    @NotNull
     private Date dateOfBirth;
 
     private String gender;
