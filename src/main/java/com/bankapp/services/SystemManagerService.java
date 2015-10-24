@@ -4,12 +4,15 @@ import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.bankapp.models.Account;
+import com.bankapp.models.OneTimePassword;
 import com.bankapp.models.Transaction;
 import com.bankapp.models.User;
 import com.bankapp.repositories.AccountRepository;
+import com.bankapp.repositories.OTPRepository;
 import com.bankapp.repositories.TransactionRepository;
 import com.bankapp.repositories.UserRepository;
 
@@ -24,12 +27,14 @@ public class SystemManagerService implements ISystemManagerService {
 
     @Autowired
     private AccountRepository AccountRepo;
+    
+
 
     @Override
     public List<Transaction> getTransactionsByStatus(String status) {
 
         List<Transaction> list = TransRepo.findByStatus(status);
-        System.out.println(list);
+        //System.out.println(list);
         return list;
     }
 
@@ -59,7 +64,7 @@ public class SystemManagerService implements ISystemManagerService {
         try {
             TransRepo.save(transaction);
             result = "Successull";
-            System.out.println("Done approve");
+            //System.out.println("Done approve");
         } catch (Exception e) {
             result = "unsuccessull";
         }
@@ -95,6 +100,9 @@ public class SystemManagerService implements ISystemManagerService {
 
         return "Success";
     }
+    
+    
+   
 
     public String declineTransaction(Transaction transaction) {
 

@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.bankapp.exceptions.EmailExistsException;
 import com.bankapp.models.OneTimePassword;
+
 import com.bankapp.models.Role;
 import com.bankapp.models.User;
 import com.bankapp.models.VerificationToken;
@@ -62,8 +63,16 @@ public class UserService implements IUserService {
         return userRepository.save(newUser);
     }
 
-    private boolean emailExist(String email) {
+    public boolean emailExist(String email) {
         User user = userRepository.findByEmail(email);
+        if (user != null) {
+            return true;
+        }
+        return false;
+    }
+    
+    public boolean idExist(String id) {
+        User user = userRepository.findById(id);
         if (user != null) {
             return true;
         }
@@ -142,6 +151,7 @@ public class UserService implements IUserService {
         mailService.sendEmail(recipientAddress, subject, textBody);
     }
 
+
     @Override
     public void updateUser(String existingUserId, User updatedUser) {
         User existingUser = userRepository.findById(existingUserId);
@@ -210,6 +220,7 @@ public class UserService implements IUserService {
         return existingOTP;
 
     }
+
 
     @Override
     public boolean verifyOTP(String otp, String id, String name) {
