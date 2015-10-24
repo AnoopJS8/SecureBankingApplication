@@ -29,14 +29,14 @@ import com.bankapp.services.IProfileRequestService;
 import com.bankapp.services.ISystemManagerService;
 
 @Controller
-public class RegularEmployeeController implements Constants {
+public class EmployeeController implements Constants {
     @Autowired
     private ISystemManagerService manager;
 
     @Autowired
     private IProfileRequestService req;
 
-    private final Logger LOGGER = Logger.getLogger(RegularEmployeeController.class);
+    private final Logger LOGGER = Logger.getLogger(EmployeeController.class);
 
     // VIEW TRANSACTIONS
     @RequestMapping(value = "/viewtransactions", method = RequestMethod.GET)
