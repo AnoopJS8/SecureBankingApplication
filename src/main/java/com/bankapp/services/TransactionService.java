@@ -55,6 +55,8 @@ public class TransactionService implements ITransactionService, Constants {
         transaction.setTransferDate(new Date());
 
         if (fromAccount.getBalance() < transaction.getAmount()) {
+            transaction.setStatus(S_PENDING_CUSTOMER_VERIFICATION);
+            transactionRepository.save(transaction);
             return LESS_BALANCE;
         } else {
             boolean ifCritical = isBelowCriticalLimit(fromAccount, transaction);

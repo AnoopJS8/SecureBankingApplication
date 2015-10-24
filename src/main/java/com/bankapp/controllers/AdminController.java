@@ -199,7 +199,6 @@ public class AdminController implements Constants {
     @RequestMapping(value = "/declineProfileRequest", method = RequestMethod.POST)
     public String declineRequest(@ModelAttribute("request") ProfileRequest profileRequest, BindingResult result,
             RedirectAttributes attributes) {
-
         Message message;
         profileService.declineRequest(profileRequest);
         message = new Message("success", "Request has been declined");
@@ -224,8 +223,10 @@ public class AdminController implements Constants {
         Message message;
         String msg = piiRequestService.saveRequest(piiRequest);
         if (msg.equals(SUCCESS)) {
-            message = new Message("succes", "Request has been forwarded to agency ");
-        } else {
+            message = new Message("success", "Request has been forwarded to agency ");
+        } else if(msg.equals(ERR_EMAIL_NOT_EXISTS)){
+            message = new Message("error", "Email does not exist");
+        }else {
             message = new Message("error", "error please try again");
         }
         attributes.addFlashAttribute("message", message);
