@@ -1,6 +1,9 @@
 package com.bankapp.forms;
 
+import java.util.Date;
+
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Past;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -34,7 +37,8 @@ public class ProfileForm {
 
     @NotNull
     @DateTimeFormat(pattern = "MM/dd/yyyy")
-    String dateOfBirth;
+    @Past
+    Date dateOfBirth;
 
     public String getAddress() {
         return address;
@@ -52,11 +56,11 @@ public class ProfileForm {
         this.phoneNumber = phoneNumber;
     }
 
-    public String getDateOfBirth() {
+    public Date getDateOfBirth() {
         return dateOfBirth;
     }
 
-    public void setDateOfBirth(String dateOfBirth) {
+    public void setDateOfBirth(Date dateOfBirth) {
         this.dateOfBirth = dateOfBirth;
     }
 }

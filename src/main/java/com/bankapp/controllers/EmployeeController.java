@@ -1,17 +1,9 @@
-/**
-
- * 
- */
 package com.bankapp.controllers;
 
-import java.security.Principal;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 
-import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.Errors;
@@ -27,52 +19,63 @@ import com.bankapp.models.ProfileRequest;
 import com.bankapp.models.Transaction;
 import com.bankapp.services.IProfileRequestService;
 import com.bankapp.services.ISystemManagerService;
+import com.bankapp.services.ITransactionService;
 
 @Controller
+@Secured("ROLE_EMPLOYEE")
+
 public class EmployeeController implements Constants {
     @Autowired
-    private ISystemManagerService manager;
+    private ISystemManagerService managerService;
+    
+    @Autowired ITransactionService transactionService;
 
     @Autowired
-    private IProfileRequestService req;
 
-    private final Logger LOGGER = Logger.getLogger(EmployeeController.class);
+    private IProfileRequestService profileRequestService;
+    
+ // VIEW TRANSACTIONS
+    @RequestMapping(value = "/employee/myaccount", method = RequestMethod.GET)
+    public ModelAndView getMyAccount() {
+        ModelAndView mv = new ModelAndView();
+        mv.setViewName("employee/myaccount");
+        return mv;
+    }
 
     // VIEW TRANSACTIONS
-    @RequestMapping(value = "/viewtransactions", method = RequestMethod.GET)
+    @RequestMapping(value = "/employee/transactions", method = RequestMethod.GET)
     public ModelAndView getPendingTransaction() {
-        List<Transaction> transactions = manager.getTransactionsByStatus(S_PENDING);
+        List<Transaction> transactions = transactionService.getPendingTransactions();
         ModelAndView mv = new ModelAndView();
         mv.addObject("transactions", transactions);
-        mv.setViewName("employee/employee_transactions");
+        mv.setViewName("employee/viewTransactions");
         return mv;
     }
 
     // VIEW USER_PROFILE
-    @RequestMapping(value = "/viewuserprofile", method = RequestMethod.GET)
+    @RequestMapping(value = "/employee/requests", method = RequestMethod.GET)
     public ModelAndView getPendingProfileRequests() {
 
-        List<ProfileRequest> requests = req.getRequestsByStatus(S_PROFILE_UPDATE_PENDING);
+        List<ProfileRequest> requests = profileRequestService.getRequestsByStatus(S_PROFILE_UPDATE_PENDING);
 
         ModelAndView mv = new ModelAndView();
-        mv.addObject("profilerequest", requests);
-        mv.setViewName("employee/employee_view");
+        mv.addObject("requests", requests);
+        mv.setViewName("employee/viewRequests");
         return mv;
     }
 
     // AUTHORIZE USER_PROFILE
     @RequestMapping(value = "/authorize_userprofile", method = RequestMethod.POST, params = "action=Authorize")
-    public ModelAndView authorizeProfileRequests(@ModelAttribute("row") ProfileRequest rId, BindingResult result,
-            WebRequest request, Errors errors, Principal principal) {
+    public ModelAndView authorizeProfileRequests(@ModelAttribute("row") ProfileRequest profileRequest,
+            BindingResult result, WebRequest request, Errors errors) {
         ModelAndView mv = new ModelAndView();
 
-        ProfileRequest requests = req.getRequestById(rId.getrId());
+        ProfileRequest requests = profileRequestService.getRequestById(profileRequest.getrId());
 
-        String str = "";
-        str = req.authorizeRequest(requests);
+        String str = profileRequestService.authorizeRequest(requests);
 
         mv.addObject("result1", str);
-        mv.setViewName("employee/employee_view");
+        mv.setViewName("employee/viewRequests");
 
         return mv;
     }
@@ -80,27 +83,26 @@ public class EmployeeController implements Constants {
     // DECLINE USER_PROFILE
     @RequestMapping(value = "/authorize_userprofile", method = RequestMethod.POST, params = "action=Decline")
     public ModelAndView declineProfileRequests(@ModelAttribute("row") ProfileRequest rId, BindingResult result,
-            WebRequest request, Errors errors, Principal principal) {
+            WebRequest request, Errors errors) {
         ModelAndView mv = new ModelAndView();
 
-        ProfileRequest requests = req.getRequestById(rId.getrId());
+        ProfileRequest requests = profileRequestService.getRequestById(rId.getrId());
 
-        String str = "";
-        str = req.declineRequest(requests);
+        String str = profileRequestService.declineRequest(requests);
 
         mv.addObject("result1", str);
-        mv.setViewName("employee/employee_view");
+        mv.setViewName("employee/viewRequests");
 
         return mv;
     }
 
     // EMPLOYEE AUTHORIZE TRANSACTION
-    @RequestMapping(value = "/employee_transactions", method = RequestMethod.POST, params = "action=Authorize")
+    @RequestMapping(value = "/employee/transactions", method = RequestMethod.POST, params = "action=Authorize")
     public ModelAndView approvetransaction(@ModelAttribute("row") Transaction Id, BindingResult result,
-            WebRequest request, Errors errors, Principal principal) {
+            WebRequest request, Errors errors) {
         ModelAndView mv = new ModelAndView();
 
-        Transaction transaction = manager.getTransactionbyid(Id.getTransactionId());
+        Transaction transaction = managerService.getTransactionbyid(Id.getTransactionId());
 
         Account FromAccount = transaction.getFromAccount();
         Account ToAccount = transaction.getToAccount();
@@ -111,92 +113,53 @@ public class EmployeeController implements Constants {
         String str = "";
 
         if (FromAccountBalance > AmountToBeSent) {
-            manager.reflectChangesToSender(FromAccount, FromAccountBalance, AmountToBeSent);
+            managerService.reflectChangesToSender(FromAccount, FromAccountBalance, AmountToBeSent);
             Double ToAccountBalance = ToAccount.getBalance();
-            manager.reflectChangesToReceiver(ToAccount, ToAccountBalance, AmountToBeSent);
-            str = manager.approveTransaction(transaction);
+            managerService.reflectChangesToReceiver(ToAccount, ToAccountBalance, AmountToBeSent);
+            str = managerService.approveTransaction(transaction);
         } else {
-            str = manager.declineTransaction(transaction);
+            str = managerService.declineTransaction(transaction);
         }
 
         mv.addObject("result1", str);
-        mv.setViewName("employee/employee_transactions");
+        mv.setViewName("employee/viewTransactions");
 
         return mv;
     }
 
     // EMPLOYEE DECLINE TRANSACTION
-    @RequestMapping(value = "/employee_transactions", method = RequestMethod.POST, params = "action=Decline")
+    @RequestMapping(value = "/employee/transactions", method = RequestMethod.POST, params = "action=Decline")
     public ModelAndView declinetransaction(@ModelAttribute("row") Transaction Id, BindingResult result,
-            WebRequest request, Errors errors, Principal principal) {
+            WebRequest request, Errors errors) {
         ModelAndView mv = new ModelAndView();
 
-        Transaction transaction = manager.getTransactionbyid(Id.getTransactionId());
+        Transaction transaction = managerService.getTransactionbyid(Id.getTransactionId());
 
-        String str = "";
-        str = manager.declineTransaction(transaction);
+        String str = managerService.declineTransaction(transaction);
 
         mv.addObject("result1", str);
-        mv.setViewName("employee/employee_transactions");
+        mv.setViewName("employee/viewTransactions");
 
         return mv;
     }
 
     // EMPLOYEE MODIFY TRANSACTION
-    @RequestMapping(value = "/employee_transactions", method = RequestMethod.POST, params = "action=Modify")
+    @RequestMapping(value = "/employee/transactions", method = RequestMethod.POST, params = "action=Modify")
     public ModelAndView modifytransaction(@ModelAttribute("row") Transaction Id, BindingResult result,
-            WebRequest request, Errors errors, Principal principal) {
+            WebRequest request, Errors errors) {
         ModelAndView mv = new ModelAndView();
 
-        Transaction transaction = manager.getTransactionbyid(Id.getTransactionId());
+        Transaction transaction = managerService.getTransactionbyid(Id.getTransactionId());
 
-        Account ToAccount = transaction.getToAccount();
-        String to_acct = ToAccount.getAccId();
-        String a = to_acct.toString();
-        Double AmountToBeSent = transaction.getAmount();
-        Date transferDate = transaction.getTransferDate();
-
-        mv.addObject("modify_transaction", transaction);
-        mv.setViewName("employee/modify_transactions");
+        /*
+         * Account ToAccount = transaction.getToAccount(); String to_acct =
+         * ToAccount.getAccId(); String a = to_acct.toString(); Double
+         * AmountToBeSent = transaction.getAmount(); Date transferDate =
+         * transaction.getTransferDate();
+         */
+        mv.addObject("transaction", transaction);
+        mv.setViewName("employee/editTransactions");
 
         return mv;
     }
-
-    // // EMPLOYEE MODIFY DATE
-    @RequestMapping(value = "/modifyDate_transactions", method = RequestMethod.POST, params = "action=Updatedate")
-    public ModelAndView updateDateTransaction(@ModelAttribute("row") Transaction Id, BindingResult result,
-            @ModelAttribute("transferDate") String transferDate, WebRequest request, Errors errors, Principal principal)
-                    throws ParseException {
-        ModelAndView mv = new ModelAndView();
-
-        Transaction transaction = manager.getTransactionbyid(Id.getTransactionId());
-
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss");
-
-        Date TransferDate = transaction.getTransferDate();
-        // throw new InvalidDateFormat(transferDate);
-
-        Date date = new Date();
-        date = sdf.parse(sdf.format(date));
-        Date new_date = sdf.parse(transferDate);
-        String str = "";
-
-        if (new_date.compareTo(date) == 0 || new_date.compareTo(date) > 0) {
-
-            str = manager.modifyTransaction(transaction, new_date);
-
-        }
-
-        else {
-            str = manager.declineTransaction(transaction);
-
-        }
-
-        mv.addObject("result1", str);
-        mv.setViewName("employee/modify_transactions");
-
-        return mv;
-
-    }
-
 }

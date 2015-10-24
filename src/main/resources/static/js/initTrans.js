@@ -2,56 +2,55 @@ $(document).ready(function() {
 	$('#init-form').validate({
 		errorClass : 'error',
 		rules : {
-		'accountId' : {
-			required : true
+
+			'accountId' : {
+				required : true
+			},
+			'amount' : {
+				required : true,
+				digits : true
+			},
+			'comment' : {
+				required : false
+			},
+			'transferDate' : {
+				required : true,
+				minDate : true,
+				dateFA : true
+			}
 		},
-		'amount' : {
-			required : true,
-			digits : true
+		// Specify the validation error messages
+		messages : {
+			'accountId' : {
+				required : "Recepient Account number cannot be NULL"
+			},
+			'amount' : {
+				required : "Transfer amount cannot be NULL",
+				digits : "Please enter valid amount"
+			},
+			'transferDate' : {
+				required : "Transfer date cannot be NULL",
+				dateFA : "Please enter Data in MM/dd/yyyy format",
+				minDate : "Please enter future date"
+			}
 		},
-		'comment' : {
-			required : false
-		},
-		'transferDate' : {
-			required : true,
-			dateFA: true,
-			minDate: true
+
+		submitHandler : function(form) {
+			form.submit();
 		}
-	},
-	// Specify the validation error messages
-	messages : {
-		'accountId' : {
-			required: "Recepient Account number cannot be NULL"
-		},
-		'amount' : {
-			required: "Transfer amount cannot be NULL", 
-			digits:	"Please enter valid amount"
-		},
-		'transferDate' : {
-			required: "Transfer date cannot be NULL" , 
-			dateFA:	"Please enter Data in MM/dd/yyyy format",
-			minDate: "Please enter future date"
-		}},
+	});
+	
+	$.validator.addMethod("dateFA", function(value, element) {
+		return this.optional(element)
+				|| /^(0[1-9]|1[0-2])\/(0[1-9]|1\d|2\d|3[01])\/(19|20)\d{2}$/
+						.test(value);
+	}, $.validator.messages.date);
 
-	submitHandler : function(form) {
-		form.submit();
-	}
+	$.validator.addMethod("minDate", function(value, element) {
+		var now = new Date();
+		var myDate = new Date(value);
+		return this.optional(element) || myDate > now;
+
+	});
 });
-});	
-	
-$.validator.addMethod( "dateFA", function( value, element ) {
-    return this.optional( element ) || /^(0[1-9]|1[0-2])\/(0[1-9]|1\d|2\d|3[01])\/(19|20)\d{2}$/.test( value );
-}, $.validator.messages.date );
 
-
-$.validator.addMethod("minDate", function (value, element) {
-   var now = new Date();
-   var myDate = new Date(value);
-   return this.optional(element) || myDate > now;
-
-   
-});
-	
-	
-	
-	

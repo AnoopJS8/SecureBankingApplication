@@ -1,4 +1,3 @@
-
 package com.bankapp.services;
 
 import java.util.Date;
@@ -123,5 +122,11 @@ public class TransactionService implements ITransactionService, Constants {
     @Override
     public Transaction getTransactionsById(String id) {
         return transactionRepository.findOne(id);
+    }
+
+    @Transactional
+    @Override
+    public List<Transaction> getPendingTransactions() {
+        return transactionRepository.findByStatus("P");
     }
 }

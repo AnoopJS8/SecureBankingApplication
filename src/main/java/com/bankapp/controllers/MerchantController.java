@@ -1,3 +1,4 @@
+
 package com.bankapp.controllers;
 
 import java.security.Principal;
@@ -42,7 +43,6 @@ public class MerchantController implements Constants {
 
     @Autowired
     private IUserService userService;
-
     @RequestMapping(value = "/merchant/userpayment", method = RequestMethod.GET)
     public ModelAndView askUserPayment() {
         ModelAndView mv = new ModelAndView();
