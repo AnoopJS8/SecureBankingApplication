@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.bankapp.constants.Message;
 import com.bankapp.exceptions.EmailExistsException;
 import com.bankapp.forms.SignupForm;
 import com.bankapp.listeners.OnRegistrationCompleteEvent;
@@ -144,7 +145,7 @@ public class SignupController {
 		VerificationToken verificationToken = userService.getVerificationToken(token);
 		if (verificationToken == null) {
 			String message = String.format("The token is invalid, please register again!");
-			return new ModelAndView("registration/activationFailed", "message", message);
+			return new ModelAndView("registration/activationFailed", "message", new Message("error", message));
 		}
 
 		User user = verificationToken.getUser();
@@ -153,7 +154,7 @@ public class SignupController {
 			String message = String.format("The verification token has expired. Please register again!");
 			String url = getAppUrl(request) + "/resendRegistrationToken?token=" + token;
 			ModelAndView mv = new ModelAndView("registration/activationFailed");
-			mv.addObject("message", message);
+			mv.addObject("message", new Message("error", message));
 			mv.addObject("url", url);
 			return mv;
 		}

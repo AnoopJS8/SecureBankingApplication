@@ -1,6 +1,5 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml"
-	xmlns:th="http://www.thymeleaf.org"
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
 	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
 <head th:include="fragment/common :: headerFragment" />
 <body>
@@ -9,12 +8,12 @@
 		<div th:replace="fragment/roleheader :: role-header(${role})"></div>
 		<div th:replace="fragment/common :: message"></div>
 		<form class="form-horizontal" role="form" th:action="@{/profile}"
-			th:object="${user}" method="post">
+			th:object="${form}" method="post">
 			<div class="form-group">
 				<label class="col-md-3 control-label">Username: </label>
 				<div class="col-md-5">
-					<input type="text" class="form-control" name="username"
-						id="username" th:field="*{username}" th:readonly="readonly"></input>
+					<input type="text" class="form-control" name="username" id="username"
+						th:field="*{username}" th:readonly="readonly"></input>
 				</div>
 			</div>
 			<div class="form-group">
@@ -28,26 +27,39 @@
 				<label class="col-md-3 control-label">Address: </label>
 				<div class="col-md-5">
 					<input type="text" th:field="*{address}" class="form-control"
-						placeholder="Address" />
+						placeholder="Address" /> <label th:if="${#fields.hasErrors('address')}"
+						th:errors="*{address}"></label>
 				</div>
 			</div>
 			<div class="form-group">
 				<label class="col-md-3 control-label">Phone Number: </label>
 				<div class="col-md-5">
-					<input type="text"  th:field="*{phoneNumber}" class="form-control"
-						placeholder="Phone Number" />
+
+					<input type="text" th:field="*{phoneNumber}" class="form-control"
+						placeholder="Phone Number" /> <label
+						th:if="${#fields.hasErrors('phoneNumber')}" th:errors="*{phoneNumber}"></label>
 				</div>
 			</div>
 			<div class="form-group">
 				<label class="col-md-3 control-label">Date of Birth: </label>
 				<div class="col-md-5">
-					<input type="text" th:name="dateOfBirth" th:field="${user.dateOfBirth)}" class="form-control"
-						placeholder="Date of Birth (mm/dd/yyyy)" />
+
+					<div th:if="*{dateOfBirth} != null">
+						<input type="text" th:field="*{dateOfBirth}"
+							th:value="*{#dates.format(dateOfBirth, 'MM/dd/yyyy')}"
+							class="form-control" placeholder="Date of Birth (mm/dd/yyyy)" />
+					</div>
+					<div th:if="*{dateOfBirth} == null">
+						<input type="text" th:field="*{dateOfBirth}" class="form-control"
+							placeholder="Date of Birth (mm/dd/yyyy)" />
+					</div>
+					<label th:if="${#fields.hasErrors('dateOfBirth')}"
+						th:errors="*{dateOfBirth}"></label>
 				</div>
 			</div>
 			<div class="form-group">
 				<div class="col-md-offset-3 col-md-9">
-					<button type="submit" class="btn btn-default">Submit</button>
+					<button type="submit" class="btn btn-primary">Submit</button>
 				</div>
 			</div>
 		</form>

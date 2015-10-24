@@ -21,5 +21,7 @@ public interface UserRepository extends CrudRepository<User, String> {
     public User findByUsername(String name);
 
     public List<User> findByRole(Role role);
+    
+    public List<User> findByIsDeleted(boolean value);
 
 }

@@ -1,16 +1,21 @@
 package com.bankapp.controllers;
 
 import java.security.Principal;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import javax.validation.Valid;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.Errors;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -48,9 +53,17 @@ public class MainController implements Constants {
 
     @Autowired
     ApplicationEventPublisher eventPublisher;
-    
+
     @Autowired
     private IPIIService ipiiservice;
+    
+    @InitBinder("form")
+    public void initBinder(WebDataBinder binder) {
+        SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
+        sdf.setLenient(false);
+        CustomDateEditor editor = new CustomDateEditor(sdf, false);
+        binder.registerCustomEditor(Date.class, editor);
+    }
 
     @RequestMapping(value = "/", method = RequestMethod.GET)
     public ModelAndView home(Principal principal) {
@@ -132,18 +145,26 @@ public class MainController implements Constants {
 
     @RequestMapping(value = "/profile", method = RequestMethod.GET)
     public ModelAndView profile(Principal principal) {
-        ModelAndView mv = new ModelAndView("profile", "form", new ProfileForm());
+
+        ModelAndView mv = new ModelAndView("profile");
+        ProfileForm form = new ProfileForm();
+
         User loggedInUser = userService.getUserFromSession(principal);
-        mv.addObject("user", loggedInUser);
-        mv.addObject("role", loggedInUser.getRole().getName());
-        mv.setViewName("profile");
+        String role = loggedInUser.getRole().getName();
+        form.setUsername(loggedInUser.getUsername());
+        form.setEmail(loggedInUser.getEmail());
+        form.setAddress(loggedInUser.getAddress());
+        form.setDateOfBirth(loggedInUser.getDateOfBirth());
+
+        mv.addObject("form", form);
+        mv.addObject("role", role);
+
         return mv;
     }
 
     @RequestMapping(value = "/profile", method = RequestMethod.POST)
-    public String updateProfile(final ModelMap model, @ModelAttribute("user") @Valid ProfileForm form,
-            BindingResult result, WebRequest request, Errors errors, Principal principal,
-            RedirectAttributes attributes) {
+    public String updateProfile(final ModelMap model, @ModelAttribute("form") @Valid ProfileForm form,
+            BindingResult result, Principal principal, RedirectAttributes attributes) {
 
         String status;
         String message;
@@ -211,7 +232,7 @@ public class MainController implements Constants {
                 eventPublisher.publishEvent(new OnOtpEvent(loggedInUser.getId(), R_USER));
             } catch (Exception e) {
                 String message = String.format("Action: %s, Message: %s", "change password", e.getMessage());
-                LOGGER.error(message);
+                LOGGER.info(message);
                 e.printStackTrace();
                 mv.addObject("message", e.getMessage());
                 mv.setViewName("error");
@@ -228,8 +249,8 @@ public class MainController implements Constants {
     }
 
     @RequestMapping(value = "/otp", method = RequestMethod.POST)
-    public String otpVerification(@Valid @ModelAttribute("otp") OTPForm otp, BindingResult result,
-            WebRequest request, Errors errors, Principal principal,RedirectAttributes attributes) {
+    public String otpVerification(@Valid @ModelAttribute("otp") OTPForm otp, BindingResult result, WebRequest request,
+            Errors errors, Principal principal, RedirectAttributes attributes) {
         ModelAndView mv = new ModelAndView();
         User loggedInUser = userService.getUserFromSession(principal);
         mv.addObject("user", loggedInUser);
@@ -268,7 +289,7 @@ public class MainController implements Constants {
             return "redirect:/merchant/myaccount";
         }
     }
-    
+
     @RequestMapping(value = "/pii", method = RequestMethod.GET)
     public ModelAndView addPII(Principal principal) {
         ModelAndView mv = new ModelAndView();
@@ -288,13 +309,13 @@ public class MainController implements Constants {
         pii.setEmail(loggedInUser.getEmail());
         pii.setStatus(S_PII_PENDING);
         String message = ipiiservice.savePII(pii);
-        if(message.equals(SUCCESS)){
+        if (message.equals(SUCCESS)) {
             mv.addObject("message", "Pii added successfully");
             mv.setViewName("success");
-        }else{
+        } else {
             mv.addObject("message", "Error in adding the pii please try again");
             mv.setViewName("error");
-        }            
+        }
         return mv;
     }
 }
