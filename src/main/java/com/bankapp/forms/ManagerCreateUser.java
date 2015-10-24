@@ -1,16 +1,20 @@
 package com.bankapp.forms;
 
-import com.bankapp.models.Role;
-import com.bankapp.models.User;
+import org.hibernate.validator.constraints.NotBlank;
+import org.hibernate.validator.constraints.NotEmpty;
 
-public class ManagerCreateUser extends RecaptchaForm {
-   // User user;
+import com.bankapp.models.Role;
+
+public class ManagerCreateUser {
+	@NotBlank
     String email;
+	
+	@NotBlank
     String username;
-    Role role;
+
+	Role role;
 
     public ManagerCreateUser() {
-     //   this.user = new User();
         this.role = new Role();
     }
 
@@ -38,4 +42,8 @@ public class ManagerCreateUser extends RecaptchaForm {
         this.role = role;
     }
 
+    @Override
+    public String toString() {
+    	return this.email;
+    }
 }

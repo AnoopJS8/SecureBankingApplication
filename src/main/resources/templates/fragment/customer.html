@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
 	xmlns:th="http://www.thymeleaf.org">
@@ -6,14 +5,13 @@
 	<div th:fragment="customer-header">
 		<nav class="navbar navbar-default">
 			<div class="container-fluid">
+
 				<!-- Collect the nav links, forms, and other content for toggling -->
 				<div class="collapse navbar-collapse"
 					id="bs-example-navbar-collapse-1">
 					<ul class="nav navbar-nav">
-						<li><a th:href="@{/customer/myaccount}">Accounts</a></li>
 						<li><a th:href="@{/customer/transferfunds}">Transfer
 								Funds</a></li>
-						<li><a th:href="@{/profile}">Profile</a></li>
 						<li><a th:href="@{/customer/initiatetransaction}">Initiate
 								Transaction</a></li>
 					</ul>
@@ -24,32 +22,4 @@
 		</nav>
 	</div>
 </body>
-=======
-
-<!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml"
-	xmlns:th="http://www.thymeleaf.org">
-<body>
-	<div th:fragment="customer-header">
-		<nav class="navbar navbar-default">
-			<div class="container-fluid">
-				<!-- Collect the nav links, forms, and other content for toggling -->
-				<div class="collapse navbar-collapse"
-					id="bs-example-navbar-collapse-1">
-					<ul class="nav navbar-nav">
-						<li><a th:href="@{/customer/transferfunds}">Transfer
-								Funds</a></li>
-						<li><a th:href="@{/profile}">Profile</a></li>
-						<li><a th:href="@{/customer/initiatetransaction}">Initiate
-								Transaction</a></li>
-					</ul>
-				</div>
-				<!-- /.navbar-collapse -->
-			</div>
-			<!-- /.container-fluid -->
-		</nav>
-	</div>
-</body>
-
->>>>>>> 24dfe601d163073c3d1ee1cf480ca179899c7c46
 </html>

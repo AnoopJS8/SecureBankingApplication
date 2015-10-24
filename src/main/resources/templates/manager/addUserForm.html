@@ -5,26 +5,33 @@
 <head th:include="fragment/common :: headerFragment" />
 <body>
 	<div class="container">
-		<div th:replace="fragment/common :: top-nav(myaccount)"></div>	
+		<div th:replace="fragment/common :: top-nav(addUserForm)"></div>	
 		<div th:replace="fragment/manager :: manager-header"></div>
 		<div >
 			<h3>Add User Form</h3>
 		</div>
+		<div th:replace="fragment/common :: message"></div>
 		<div class="table-responsive">
 			
 					
-			<form id="addUser-form" action="#" th:action="@{/manager_adduser}" th:object="${form}" method="post" class="form-horizontal">
-            	<div th:text="${message}"></div>
+			<form id="addUser-form" action="#" th:action="@{/manager/addUserForm}" th:object="${form}" method="post" class="form-horizontal">
+            	
 						<div class="form-group">
                 <label class="col-sm-2 control-label">Name</label>
                 <div class="col-sm-10">
                     <input type="text" th:field="*{username}" th:errorclass="fieldError" class="form-control" placeholder="User name" />
+                	<label th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></label>
                 </div>
+                
+                
+                
             </div>
             <div class="form-group">
                 <label class="col-sm-2 control-label">Email</label>
                 <div class="col-sm-10">
-                    <input type="text" th:field="*{email}" th:errorclass="fieldError" class="form-control" placeholder="Email address" />
+                    <input type="email" th:field="*{email}" th:errorclass="fieldError" class="form-control" placeholder="Email address" />
+                    <label th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></label>
+                    
                 </div>
             </div>
             

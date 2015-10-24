@@ -1,25 +1,34 @@
 package com.bankapp.controllers;
 
 import java.security.Principal;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 import javax.validation.Valid;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ObjectError;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.bankapp.constants.Constants;
+import com.bankapp.constants.Message;
 import com.bankapp.forms.InitiateTransactionForm;
+import com.bankapp.forms.transferFundsForm;
 import com.bankapp.models.Account;
 import com.bankapp.models.Transaction;
 import com.bankapp.models.User;
@@ -42,6 +51,12 @@ public class MerchantController implements Constants {
     @Autowired
     private IUserService userService;
 
+    @InitBinder("form")
+    public void initBinder(WebDataBinder binder) {
+        CustomDateEditor editor = new CustomDateEditor(new SimpleDateFormat("MM/dd/yyyy"), true);
+        binder.registerCustomEditor(Date.class, editor);
+    }
+
     @RequestMapping(value = "/merchant/myaccount", method = RequestMethod.GET)
     public ModelAndView getTransactions(Principal principal) {
         ModelAndView mv = new ModelAndView();
@@ -57,46 +72,65 @@ public class MerchantController implements Constants {
 
     @RequestMapping(value = "/merchant/transferfunds", method = RequestMethod.GET)
     public ModelAndView transferFunds() {
-        ModelAndView mv = new ModelAndView();
-        Transaction transaction = new Transaction();
-        mv.addObject("transaction", transaction);
-        mv.addObject("role", "merchant");
-        mv.setViewName("merchant/transferfunds");
+        ModelAndView mv = new ModelAndView("merchant/transferfunds", "form", new transferFundsForm());
         return mv;
     }
 
     @RequestMapping(value = "/merchant/transferfunds", method = RequestMethod.POST)
-    public ModelAndView saveTransaction(@ModelAttribute("transaction") @Valid Transaction transaction, BindingResult result,
-            WebRequest request, Errors errors, Principal principal) {
-        ModelAndView mv = new ModelAndView();
-        mv.addObject("role", "merchant");
+    public String saveTransaction(final ModelMap model, @ModelAttribute("form") @Valid transferFundsForm form,
+            BindingResult result, WebRequest request, Errors errors, Principal principal, RedirectAttributes attributes) {
+                
+        String status;
+        String message;
+        String redirectUrl;
+        String logMessage;
+        
+        if (result.hasErrors()) {
+            model.addAttribute("form", form);
+            return "merchant/transferfunds";
+        }
+        
         User user = userService.getUserFromSession(principal);
-        String message = transactionService.saveTransaction(transaction, user);
-        if (message.equalsIgnoreCase(LESS_BALANCE)) {
-            String msg = "You are low on balance, the transaction cannot go through.";
-            mv.addObject("message", msg);
-            String errorMsg = String.format("Action: %s, Message: %s", "save transaction", msg);
-            LOGGER.error(errorMsg);
-            mv.setViewName("error");
-        } else if (message.equalsIgnoreCase(SUCCESS)) {
-            mv.addObject("message", "Money transfered successfully");
-            mv.setViewName("success");
-        } else if (message.equalsIgnoreCase(ERR_ACCOUNT_NOT_EXISTS)) {
-            mv.addObject("message", ERR_ACCOUNT_NOT_EXISTS);
-            mv.setViewName("error");
-        } else if (message.equalsIgnoreCase(CRITICAL)) {
-            mv.addObject("message", "Its a critical transaction so it will be handled by our employees shortly");
-            mv.setViewName("success");
-        }else {
-            mv.addObject("message", "Error");
-            String errorMsg = String.format("Action: %s, Message: %s", "Error", message);
-            LOGGER.error(errorMsg);
-            mv.setViewName("error");
+        Transaction transactionF = new Transaction();
+        Account toAccount = accountService.getAccountByAccountId(form.getAccountId());
+        transactionF.setAmount(form.getAmount());
+        transactionF.setToAccount(toAccount);
+        transactionF.setComment(form.getComment());
+        
+        String dbStatus = transactionService.saveTransaction(transactionF, user);
+
+        if (dbStatus.equalsIgnoreCase(LESS_BALANCE)) {
+            status = "error";
+            message = "You are low on balance, the transaction cannot go through.";
+            redirectUrl = "redirect:/merchant/transferfunds";
+        } else if (dbStatus.equalsIgnoreCase(SUCCESS)) {
+            status = "success";
+            message = "Money transfered successfully";
+            redirectUrl = "redirect:/merchant/myaccount";
+        } else if (dbStatus.equalsIgnoreCase(ERR_ACCOUNT_NOT_EXISTS)) {
+            status = "error";
+            message = ERR_ACCOUNT_NOT_EXISTS;
+            redirectUrl = "redirect:/merchant/transferfunds";
+        } else if (dbStatus.equalsIgnoreCase(CRITICAL)) {
+            status = "success";
+            message = "Its a critical transaction, so it will be handled by our employees shortly";
+            redirectUrl = "redirect:/merchant/myaccount";
+        } else {
+            status = "error";
+            message = "An unhandled error occurred. Please contact the administrator";
+            redirectUrl = "redirect:/merchant/transferfunds";
         }
 
-        return mv;
+        attributes.addFlashAttribute("message", new Message(status, message));
+        attributes.addFlashAttribute("role", "merchant");
 
+        logMessage = String.format("[Action=%s, Method=%s][Status=%s][Message=%s]", "transferfunds", "POST", dbStatus,
+                message);
+        LOGGER.info(logMessage);
+
+        return redirectUrl;
     }
+
 
     @RequestMapping(value = "/merchant/userpayment", method = RequestMethod.GET)
     public ModelAndView askUserPayment() {
@@ -109,8 +143,8 @@ public class MerchantController implements Constants {
     }
 
     @RequestMapping(value = "/merchant/userpayment", method = RequestMethod.POST)
-    public ModelAndView askUserPayment(@ModelAttribute("transaction") @Valid Transaction transaction, BindingResult result,
-            WebRequest request, Errors errors, Principal principal) {
+    public ModelAndView askUserPayment(@ModelAttribute("transaction") @Valid Transaction transaction,
+            BindingResult result, WebRequest request, Errors errors, Principal principal) {
         ModelAndView mv = new ModelAndView();
         mv.addObject("role", "merchant");
         User user = userService.getUserFromSession(principal);
@@ -122,6 +156,9 @@ public class MerchantController implements Constants {
                     "Notified the user for approval and transaction is in pending state till customers approval");
             LOGGER.error(Msg);
             mv.setViewName("success");
+        } else if (message.equalsIgnoreCase(ERR_ACCOUNT_NOT_EXISTS)) {
+            mv.addObject("message", ERR_ACCOUNT_NOT_EXISTS);
+            mv.setViewName("error");
         } else {
             mv.addObject("message", "Some error occured");
             String errorMsg = String.format("Action: %s, Message: %s", "Error", message);
@@ -140,45 +177,49 @@ public class MerchantController implements Constants {
     }
 
     @RequestMapping(value = "/merchant/initiatetransaction", method = RequestMethod.POST)
-    public ModelAndView initiateTransaction(@ModelAttribute("form") @Valid InitiateTransactionForm form,
-            BindingResult result, WebRequest request, Errors errors, Principal principal) {
+    public String initiateTransaction(final ModelMap model, @ModelAttribute("form") @Valid InitiateTransactionForm form,
+            BindingResult result, WebRequest request, Errors errors, Principal principal, RedirectAttributes attributes) {
         ModelAndView mv = new ModelAndView();
+        
+        String status;
+        String message;
+        String redirectUrl;
+        String logMessage;
+        
         if (result.hasErrors()) {
-            System.out.println();
-            for (ObjectError error : result.getAllErrors()) {
-                System.out.println(error);
-            }
-            mv.setViewName("/merchant/initiatetransaction");
-            mv.addObject("errors", result.getAllErrors());
-            return mv;
+            model.addAttribute("form", form);
+            return "merchant/initiatetransaction";
         }
 
         User user = userService.getUserFromSession(principal);
-
         Transaction transaction = new Transaction();
         Account toAccount = accountService.getAccountByAccountId(form.getAccountId());
         transaction.setAmount(form.getAmount());
         transaction.setToAccount(toAccount);
         transaction.setComment(form.getComment());
         transaction.setTransferDate(form.getTransferDate());
-        mv.addObject("role", "merchant");
-        String message = transactionService.initiateTransaction(transaction, user);
-        if (message.equalsIgnoreCase(SUCCESS)) {
-            String m = "Your transaction is initiated and will be handled by our employees";
-            mv.addObject("message", m);
-            String Msg = String.format("Action: %s, Message: %s", "Success", m);
-            LOGGER.error(Msg);
-            mv.setViewName("success");
+        String dbStatus = transactionService.initiateTransaction(transaction, user);
+
+        if (dbStatus.equalsIgnoreCase(SUCCESS)) {
+            status = "success";
+            message = "Your transaction is initiated and will be handled by our employees";
+            redirectUrl = "redirect:/merchant/myaccount";
         } else {
-            mv.addObject("message", "Some error occured");
-            String errorMsg = String.format("Action: %s, Message: %s", "Error", message);
-            LOGGER.error(errorMsg);
-            mv.setViewName("error");
+            status = "error";
+            message = "An unhandled error occurred. Please contact the administrator";
+            redirectUrl = "redirect:/merchant/initiatetransaction";
         }
 
-        return mv;
+        attributes.addFlashAttribute("message", new Message(status, message));
+        attributes.addFlashAttribute("role", "merchant");
 
+        logMessage = String.format("[Action=%s, Method=%s][Status=%s][Message=%s]", "initiatetransaction", "POST",
+                dbStatus, message);
+        LOGGER.info(logMessage);
+
+        return redirectUrl;
     }
+
 
     private Account getAccountByUserId(long id) {
         User user = userService.getUserById(id);

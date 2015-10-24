@@ -15,6 +15,7 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -22,14 +23,18 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.bankapp.constants.Constants;
+import com.bankapp.constants.Message;
 import com.bankapp.exceptions.EmailDoesNotExist;
 import com.bankapp.exceptions.EmailExistsException;
 import com.bankapp.exceptions.UserAlreadyExistException;
 import com.bankapp.exceptions.UserIdDoesNotExist;
 import com.bankapp.exceptions.UserNameExistsException;
 import com.bankapp.forms.ManagerCreateUser;
-import com.bankapp.forms.SignupForm;
+import com.bankapp.forms.ManagerViewByEmail;
+import com.bankapp.forms.ManagerViewById;
 import com.bankapp.listeners.OnRegistrationCompleteEvent;
 import com.bankapp.models.Account;
 import com.bankapp.models.OneTimePassword;
@@ -39,7 +44,6 @@ import com.bankapp.models.User;
 import com.bankapp.repositories.RoleRepository;
 import com.bankapp.services.ISystemManagerService;
 import com.bankapp.services.IUserService;
-import com.bankapp.constants.Constants;;;
 
 /**
  * @author Nitesh Dhanpal
@@ -49,198 +53,278 @@ import com.bankapp.constants.Constants;;;
 @Secured("ROLE_MANAGER")
 public class SystemManagerController implements Constants {
 
-    @Autowired
-    private ISystemManagerService manager;
-    
-    @Autowired
-    private RoleRepository roleRepository;
+	@Autowired
+	private ISystemManagerService manager;
 
-    
-    @Autowired
-    private IUserService user_service;
-    
-    
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-    
-    @Autowired
-    ApplicationEventPublisher eventPublisher;
+	@Autowired
+	private RoleRepository roleRepository;
 
-    private final Logger LOGGER = Logger.getLogger(SystemManagerController.class);
+	@Autowired
+	private IUserService user_service;
 
-    @RequestMapping(value = "/criticaltransaction", method = RequestMethod.GET)
-    public ModelAndView getCriticalTransaction() {
-        List<Transaction> transactions = manager.getTransactionsByStatus(S_OTP_VERIFIED);
-        ModelAndView mv = new ModelAndView();
-        mv.addObject("critical", transactions);
-        mv.setViewName("/manager/viewTransaction");
-        return mv;
-    }
-    
-    @RequestMapping(value = "/pendingtransaction", method = RequestMethod.GET)
-    public ModelAndView getInitiatedTransaction() {
-        List<Transaction> transactions = manager.getTransactionsByStatus(S_PENDING);
-        ModelAndView mv = new ModelAndView();
-        mv.addObject("pending", transactions);
-        mv.setViewName("/manager/viewPending");
-        return mv;
-    }
-    
-    @RequestMapping(value = "/getUserById", method = RequestMethod.GET)
-    public ModelAndView getuserId(){
-        ModelAndView mv = new ModelAndView();
+	@Autowired
+	private PasswordEncoder passwordEncoder;
 
-    	mv.setViewName("/manager/viewUserByIdForm");
-    	return mv;
-    }
-    @RequestMapping(value = "/getUserByEmail", method = RequestMethod.GET)
-    public ModelAndView getuserEmail(){
-        ModelAndView mv = new ModelAndView();
+	@Autowired
+	ApplicationEventPublisher eventPublisher;
 
-    	mv.setViewName("/manager/viewUserByEmailForm");
-    	return mv;
-    }
-    
-    
-    @RequestMapping(value = "/manager/myaccount", method = RequestMethod.GET)
-    public ModelAndView getmanagerhome(Principal principal) {
-        ModelAndView mv = new ModelAndView();
-        User loggedInUser = user_service.getUserFromSession(principal);
-        String Username = loggedInUser.getUsername(); 
-        //System.out.println("username" + Username);
-        mv.addObject("username", Username);       
-        mv.setViewName("manager/myaccount");
-        return mv;
-    }
-    
-    
-    @RequestMapping(value = "/approvetransaction", method = RequestMethod.POST)
-    public ModelAndView approvetransaction(@ModelAttribute("row") Transaction Id, BindingResult result,
-            WebRequest request, Errors errors, Principal principal) {
-        ModelAndView mv = new ModelAndView();
-     //   //System.out.println("Entered Approve");
-       // //System.out.println("Transaction" + Id.getTransactionId());
+	private final Logger LOGGER = Logger
+			.getLogger(SystemManagerController.class);
 
-        Transaction transaction = manager.getTransactionbyid(Id.getTransactionId());
+	@RequestMapping(value = "/manager/criticaltransaction", method = RequestMethod.GET)
+	public ModelAndView getCriticalTransaction() {
+		List<Transaction> transactions = manager
+				.getTransactionsByStatus(S_OTP_VERIFIED);
+		ModelAndView mv = new ModelAndView();
+		mv.addObject("critical", transactions);
+		mv.setViewName("/manager/viewTransaction");
+		return mv;
+	}
 
-        Account FromAccount = transaction.getFromAccount();
-        Account ToAccount = transaction.getToAccount();
-        Double AmountToBeSent = transaction.getAmount();
-        //System.out.println(AmountToBeSent);
+	@RequestMapping(value = "/manager/pendingtransaction", method = RequestMethod.GET)
+	public ModelAndView getInitiatedTransaction() {
+		List<Transaction> transactions = manager
+				.getTransactionsByStatus(S_PENDING);
+		ModelAndView mv = new ModelAndView();
+		mv.addObject("pending", transactions);
+		mv.setViewName("/manager/viewPending");
+		return mv;
+	}
 
-        Double FromAccountBalance = FromAccount.getBalance();
-        //System.out.println(FromAccountBalance);
+	@RequestMapping(value = "/manager/getUserById", method = RequestMethod.GET)
+	public ModelAndView getuserId() {
+		ModelAndView mv = new ModelAndView();
+		ModelAndView modelAndView = new ModelAndView("/manager/viewUserByIdForm",
+				"form", new ManagerViewById());
+		mv.setViewName("/manager/viewUserByIdForm");
+		return modelAndView;
+	}
 
-        String str = "";
+	@RequestMapping(value = "/manager/getUserByEmail", method = RequestMethod.GET)
+	public ModelAndView getuserEmail() {
+		ModelAndView mv = new ModelAndView();
+		ModelAndView modelAndView = new ModelAndView("/manager/viewUserByEmailForm",
+				"form", new ManagerViewByEmail());
+		return modelAndView;
+	}
 
-        if (FromAccountBalance > AmountToBeSent) {
-            manager.reflectChangesToSender(FromAccount, FromAccountBalance, AmountToBeSent);
-            Double ToAccountBalance = ToAccount.getBalance();
-            manager.reflectChangesToReceiver(ToAccount, ToAccountBalance, AmountToBeSent);
-            str = manager.approveTransaction(transaction);
-        } else {
-            str = "Unsuccessfull";
-        }
-        //System.out.println(str);
-        mv.addObject("result1", str);
-        //System.out.println("Done");
-        mv.setViewName("/manager/viewTransaction");
+	@RequestMapping(value = "/manager/myaccount", method = RequestMethod.GET)
+	public ModelAndView getmanagerhome(Principal principal) {
+		ModelAndView mv = new ModelAndView();
+		User loggedInUser = user_service.getUserFromSession(principal);
+		String Username = loggedInUser.getUsername();
+		mv.addObject("username", Username);
+		mv.setViewName("manager/myaccount");
+		return mv;
+	}
 
-        return mv;
-    }
-    
-    @RequestMapping(value = "/addUserForm", method = RequestMethod.GET)
-    public ModelAndView getUserAddage() {
-        ModelAndView modelAndView = new ModelAndView("manager/addUserForm", "form", new ManagerCreateUser());
-        return modelAndView;
-    }
+	@RequestMapping(value = "/manager/approvetransaction", method = RequestMethod.POST)
+	public ModelAndView approvetransaction(
+			@ModelAttribute("row") Transaction Id, BindingResult result,
+			WebRequest request, Errors errors, Principal principal) {
+		ModelAndView mv = new ModelAndView();
+		// //System.out.println("Entered Approve");
+		// //System.out.println("Transaction" + Id.getTransactionId());
 
-    @RequestMapping(value = "/manager_adduser", method = RequestMethod.POST)
-    public ModelAndView addUser(@ModelAttribute("form") ManagerCreateUser form, BindingResult resultForm,
-            HttpServletRequest request) {
-        	 	User user=new User();   
-        	 	Role role = form.getRole();
-        	 	
-	        	User registered = null;
-	
-	            user.setEmail(form.getEmail());
-	            user.setUsername(form.getUsername());
-	             
-	            String temporaryPassword = OneTimePassword.generateOTP();
-	            user.setPassword(passwordEncoder.encode(temporaryPassword));
-	            String message= "Success";
-	            try {
-					registered = user_service.registerNewUserAccount(user, role.getName());
-				} catch (EmailExistsException e1) {
-	                message = String.format("Action: %s, Message: %s", "signup", e1.getMessage());
-					
+		Transaction transaction = manager.getTransactionbyid(Id
+				.getTransactionId());
+
+		Account FromAccount = transaction.getFromAccount();
+		Account ToAccount = transaction.getToAccount();
+		Double AmountToBeSent = transaction.getAmount();
+		// System.out.println(AmountToBeSent);
+
+		Double FromAccountBalance = FromAccount.getBalance();
+		// System.out.println(FromAccountBalance);
+
+		String str = "";
+
+		if (FromAccountBalance > AmountToBeSent) {
+			manager.reflectChangesToSender(FromAccount, FromAccountBalance,
+					AmountToBeSent);
+			Double ToAccountBalance = ToAccount.getBalance();
+			manager.reflectChangesToReceiver(ToAccount, ToAccountBalance,
+					AmountToBeSent);
+			str = manager.approveTransaction(transaction);
+		} else {
+			str = "Unsuccessfull";
+		}
+		// System.out.println(str);
+		mv.addObject("result1", str);
+		// System.out.println("Done");
+		mv.setViewName("/manager/viewTransaction");
+
+		return mv;
+	}
+
+	@RequestMapping(value = "/manager/addUserForm", method = RequestMethod.GET)
+	public ModelAndView getUserAddage() {
+		ModelAndView modelAndView = new ModelAndView("/manager/addUserForm",
+				"form", new ManagerCreateUser());
+		return modelAndView;
+	}
+
+	@RequestMapping(value = "/manager/addUserForm", method = RequestMethod.POST)
+	public String addUser(final ModelMap model,
+			@ModelAttribute("form") @Valid ManagerCreateUser form,
+			BindingResult result, Errors errors, Principal principal,
+			HttpServletRequest request, RedirectAttributes attributes) throws UserNameExistsException {
+		User user = new User();
+		Role role = form.getRole();
+		String redirectUrl = "redirect:/manager/addUserForm";
+		String status = "success";
+
+		System.out.println(form.getUsername());
+		if (result.hasErrors()) {
+			model.addAttribute("form", form);
+			System.out.println("asd");
+			return "/manager/addUserForm";
+		}
+
+		User registered = null;
+
+		user.setEmail(form.getEmail());
+		user.setUsername(form.getUsername());
+
+		String temporaryPassword = OneTimePassword.generateOTP();
+		user.setPassword(passwordEncoder.encode(temporaryPassword));
+		String message = "Success";
+		try {
+			registered = user_service.registerNewUserAccount(user,
+					role.getName());
+		} catch (EmailExistsException e1) {
+			status = "error";
+			message = String.format("Action: %s, Message: %s", "signup",
+					e1.getMessage());
+			LOGGER.error(message);
+			redirectUrl = "redirect:/manager/addUserForm";
+
+			System.out.println("message" + message);
+		}
+
+
+		if (registered != null) {
+			try {
+
+				eventPublisher.publishEvent(new OnRegistrationCompleteEvent(
+						registered, request.getLocale(), getAppUrl(request)));
+			} catch (Exception e) {
+				status = "error";
+				message = String.format("Action: %s, Message: %s", "signup",
+						e.getMessage());
+				LOGGER.error(message);
+
+			}
+
+			user_service.generateTemporaryPassword(registered);
+		}
+		
+		System.out.println("message out" + message) ;
+		attributes.addFlashAttribute("message", new Message(status, message));
+		return redirectUrl;
+
+	}
+
+	private String getAppUrl(HttpServletRequest request) {
+		return request.getScheme() + "://" + request.getServerName() + ":"
+				+ request.getServerPort();
+	}
+
+	@RequestMapping(value = "/manager/viewUserByEmailForm", method = RequestMethod.POST)
+	public ModelAndView getuser_byemail(final ModelAndView model,@ModelAttribute("form") @Valid ManagerViewByEmail form,
+			BindingResult result, Errors errors, Principal principal,
+			 RedirectAttributes attributes) {
+
+		User user = null;
+		String status = "success";
+		String message = "";
+		
+		if(result.hasErrors())
+		{
+			model.addObject("form", form);
+			model.setViewName("/manager/viewUserByEmailForm");
+			
+			return model;
+		}
+
+		
+			
+			if(user_service.emailExist(form.getEmail()))
+			{
+				try {
+					user = manager.viewUserByEmail(form.getEmail());
+				} catch (Exception e) {
+					status = "error";
+					 message = String.format("Message: %s",
+							 e.getMessage());
+					LOGGER.error(message);
 				}
-	             
-	            if(registered != null)
-	            {
-	            	try {
+				
+			}else
+			{
+				status = "error";
+				message = String.format("Action: EmailDoesNotExist");
+//				System.out.println(message);
+				model.addObject("message",new Message(status, message));
+				model.setViewName("/manager/viewUserByEmailForm");
+				return model;
+
+			}
+			
 	
-	                    eventPublisher.publishEvent(new OnRegistrationCompleteEvent(registered, request.getLocale(), getAppUrl(request)));
-	                } catch (Exception e) {
-	                    message = String.format("Action: %s, Message: %s", "signup", e.getMessage());
-	                    LOGGER.error(message);
-	
-	                   
-	                }
-	            	
-	            	user_service.generateTemporaryPassword(registered);
-	            }
-	
-	            ModelAndView mv = new ModelAndView();
-	            mv.addObject("message", message);
-	            mv.setViewName("/manager/addUserForm");
-	
-	            return mv;
+		model.addObject("viewuser", user);
+		model.setViewName("/manager/viewUser");
+		
+		return model;
+		
+	}
 
-    }
-    
-    private String getAppUrl(HttpServletRequest request) {
-        return request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort();
-    }
+	@RequestMapping(value = "/manager/viewUserByIdForm", method = RequestMethod.POST)
+	public ModelAndView getuser_byid(final ModelAndView model,@ModelAttribute("form") @Valid ManagerViewById form,
+			BindingResult result, Errors errors, Principal principal,
+			 RedirectAttributes attributes) {
+		
+		User user = null;
+		String status = "success";
+		String message = "";
+		
+		if(result.hasErrors())
+		{
+			model.addObject("form", form);
+			model.setViewName("/manager/viewUserByIdForm");
+			status = "error";
+			message = String.format("Action: Invalid Id");
+//			System.out.println(message);
+			model.addObject("message",new Message(status, message));
+			return model;
+		}
+		
+		if(user_service.idExist(form.getId()))
+		{
+			try {
+				user = manager.viewUserById(form.getId());
+			} catch (Exception e) {
+				status = "error";
+				 message = String.format("Message: %s",
+						 e.getMessage());
+				LOGGER.error(message);
+			}
+			
+		}else
+		{
+			status = "error";
+			message = String.format("Action: IdDoesNotExist");
+//			System.out.println(message);
+			model.addObject("message",new Message(status, message));
+			model.setViewName("/manager/viewUserByIdForm");
+			return model;
 
-    @RequestMapping(value = "/manager_viewuser_byemail", method = RequestMethod.POST)
-    public ModelAndView getuser_byemail(@ModelAttribute("email") String email, BindingResult result,
-            WebRequest request, Errors errors, Principal principal) {
+		}
+		
+		model.addObject("viewuser", user);
+		model.setViewName("/manager/viewUser");
+		
+		return model;
+	}
 
-        User user = null;
-
-        try {
-            user = manager.viewUserByEmail(email);
-        } catch (EmailDoesNotExist e) {
-            String message = String.format("Action: %s, Message: %s", "EmailDoesNotExist", e.getMessage());
-            LOGGER.error(message);
-            return null;
-        }
-
-        ModelAndView mv = new ModelAndView();
-        mv.addObject("viewuser", user);
-        mv.setViewName("/manager/viewUser");
-        return mv;
-    }
-
-    @RequestMapping(value = "/manager_viewuser_byid", method = RequestMethod.POST)
-    public ModelAndView getuser_byid(@ModelAttribute("userid") Long Id, BindingResult result,
-            WebRequest request, Errors errors, Principal principal) {
-
-        User user = null;
-
-        try {
-            user = manager.viewUserById((long)Id);
-        } catch (UserIdDoesNotExist e) {
-            String message = String.format("Action: %s, Message: %s", "EmailDoesNotExist", e.getMessage());
-            LOGGER.error(message);
-            return null;
-        }
-
-        ModelAndView mv = new ModelAndView();
-        mv.addObject("viewuser", user);
-        mv.setViewName("/manager/viewUser");
-        return mv;
-    }
-	
 }

@@ -16,39 +16,40 @@ import com.bankapp.repositories.TransactionRepository;
 @Service
 public class TransactionService implements ITransactionService, Constants {
 
-	@Autowired
-	private TransactionRepository transactionRepository;
+    @Autowired
+    private TransactionRepository transactionRepository;
 
-	@Autowired
-	private IAccountService accountService;
+    @Autowired
+    private IAccountService accountService;
 
-	@Transactional
-	@Override
-	public List<Transaction> getTransactionsByAccount(Account fromAccount, Account toAccount) {
-		List<Transaction> list = transactionRepository.findByFromAccountOrToAccountOrderByCreatedAsc(fromAccount,
-				toAccount);
-		return list;
-	}
+    @Transactional
+    @Override
+    public List<Transaction> getTransactionsByAccount(Account fromAccount, Account toAccount) {
+        List<Transaction> list = transactionRepository.findByFromAccountOrToAccountOrderByCreatedAsc(fromAccount,
+                toAccount);
+        return list;
+    }
 
-	@Transactional
-	@Override
-	public String saveTransaction(Transaction transaction, User user) {
+    @Transactional
+    @Override
+    public String saveTransaction(Transaction transaction, User user) {
 
-		Long accId = transaction.getToAccount().getAccId();
-		Account toAccount = accountService.getAccountByAccountId(accId);
-		if(toAccount==null){
-		    return ERR_ACCOUNT_NOT_EXISTS;
-		}
-		Account fromAccount = accountService.getAccountByUser(user);
-		transaction.setToAccount(toAccount);
-		transaction.setFromAccount(fromAccount);
-		Date date = new Date();
-		transaction.setTransferDate(date);
-		if (fromAccount.getBalance() < transaction.getAmount()) {
+        Long accId = transaction.getToAccount().getAccId();
+        Account toAccount = accountService.getAccountByAccountId(accId);
+        if (toAccount == null) {
+            return ERR_ACCOUNT_NOT_EXISTS;
+        }
+        Account fromAccount = accountService.getAccountByUser(user);
+        transaction.setToAccount(toAccount);
+        transaction.setFromAccount(fromAccount);
+        Date date = new Date();
+        transaction.setTransferDate(date);
+
+        if (fromAccount.getBalance() < transaction.getAmount()) {
             return LESS_BALANCE;
-        }else{
+        } else {
             boolean ifCritical = isBelowCriticalLimit(fromAccount, transaction);
-            if(ifCritical){
+            if (ifCritical) {
                 transaction.setStatus(S_OTP_PENDING);
                 transactionRepository.save(transaction);
                 return CRITICAL;
@@ -58,12 +59,12 @@ public class TransactionService implements ITransactionService, Constants {
             transactionRepository.save(transaction);
             return message;
         }
-		
-	}
 
-	private boolean isBelowCriticalLimit(Account fromAccount, Transaction transaction) {
+    }
+
+    private boolean isBelowCriticalLimit(Account fromAccount, Transaction transaction) {
         double criticalLimit = fromAccount.getCriticalLimit();
-        if(transaction.getAmount()>=criticalLimit){
+        if (transaction.getAmount() >= criticalLimit) {
             return true;
         }
         return false;
@@ -73,6 +74,9 @@ public class TransactionService implements ITransactionService, Constants {
 	@Override
 	public String askCustomerPayment(Transaction transaction, User user) {
 		Long accId = transaction.getToAccount().getAccId();
+		if(accId==null){
+            return ERR_ACCOUNT_NOT_EXISTS;
+        }
 		try {
 			transaction.setToAccount(accountService.getAccountByUser(user));
 			transaction.setFromAccount(accountService.getAccountByAccountId(accId));
@@ -91,6 +95,9 @@ public class TransactionService implements ITransactionService, Constants {
 	@Override
 	public String initiateTransaction(Transaction transaction, User user) {
 		Long accId = transaction.getToAccount().getAccId();
+		if(accId==null){
+            return ERR_ACCOUNT_NOT_EXISTS;
+        }
 		transaction.setToAccount(accountService.getAccountByAccountId(accId));
 		transaction.setFromAccount(accountService.getAccountByUser(user));
 		transaction.setStatus(S_PENDING);
@@ -105,4 +112,3 @@ public class TransactionService implements ITransactionService, Constants {
         return transactionRepository.findOne(id);
     }
 }
-
