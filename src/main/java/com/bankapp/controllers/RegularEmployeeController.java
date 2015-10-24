@@ -20,13 +20,18 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.bankapp.constants.Constants;
+import com.bankapp.constants.Message;
+import com.bankapp.forms.TransferFundsForm;
 import com.bankapp.models.Account;
+import com.bankapp.models.PersonalIdentificationInfo;
 import com.bankapp.models.ProfileRequest;
 import com.bankapp.models.Transaction;
 import com.bankapp.services.IProfileRequestService;
 import com.bankapp.services.ISystemManagerService;
+import com.bankapp.services.ITransactionService;
 
 @Controller
 public class RegularEmployeeController implements Constants {
@@ -36,10 +41,19 @@ public class RegularEmployeeController implements Constants {
     @Autowired
     private IProfileRequestService req;
 
+    @Autowired
+    private ITransactionService transactionService;
+
     private final Logger LOGGER = Logger.getLogger(RegularEmployeeController.class);
+    
+    @RequestMapping(value = "/employee/myaccount", method = RequestMethod.GET)
+    public ModelAndView AdminDetails() {
+        ModelAndView mv = new ModelAndView("/employee/myaccount");
+        return mv;
+    }
 
     // VIEW TRANSACTIONS
-    @RequestMapping(value = "/viewtransactions", method = RequestMethod.GET)
+    @RequestMapping(value = "/employee/viewtransactions", method = RequestMethod.GET)
     public ModelAndView getPendingTransaction() {
         List<Transaction> transactions = manager.getTransactionsByStatus(S_PENDING);
         ModelAndView mv = new ModelAndView();
@@ -49,11 +63,9 @@ public class RegularEmployeeController implements Constants {
     }
 
     // VIEW USER_PROFILE
-    @RequestMapping(value = "/viewuserprofile", method = RequestMethod.GET)
+    @RequestMapping(value = "/employee/viewuserprofile", method = RequestMethod.GET)
     public ModelAndView getPendingProfileRequests() {
-
         List<ProfileRequest> requests = req.getRequestsByStatus(S_PROFILE_UPDATE_PENDING);
-
         ModelAndView mv = new ModelAndView();
         mv.addObject("profilerequest", requests);
         mv.setViewName("employee/employee_view");
@@ -65,15 +77,11 @@ public class RegularEmployeeController implements Constants {
     public ModelAndView authorizeProfileRequests(@ModelAttribute("row") ProfileRequest rId, BindingResult result,
             WebRequest request, Errors errors, Principal principal) {
         ModelAndView mv = new ModelAndView();
-
         ProfileRequest requests = req.getRequestById(rId.getrId());
-
         String str = "";
         str = req.authorizeRequest(requests);
-
         mv.addObject("result1", str);
         mv.setViewName("employee/employee_view");
-
         return mv;
     }
 
@@ -82,12 +90,9 @@ public class RegularEmployeeController implements Constants {
     public ModelAndView declineProfileRequests(@ModelAttribute("row") ProfileRequest rId, BindingResult result,
             WebRequest request, Errors errors, Principal principal) {
         ModelAndView mv = new ModelAndView();
-
         ProfileRequest requests = req.getRequestById(rId.getrId());
-
         String str = "";
         str = req.declineRequest(requests);
-
         mv.addObject("result1", str);
         mv.setViewName("employee/employee_view");
 
@@ -175,21 +180,14 @@ public class RegularEmployeeController implements Constants {
 
         Date TransferDate = transaction.getTransferDate();
         // throw new InvalidDateFormat(transferDate);
-
         Date date = new Date();
         date = sdf.parse(sdf.format(date));
         Date new_date = sdf.parse(transferDate);
         String str = "";
-
         if (new_date.compareTo(date) == 0 || new_date.compareTo(date) > 0) {
-
             str = manager.modifyTransaction(transaction, new_date);
-
-        }
-
-        else {
+        } else {
             str = manager.declineTransaction(transaction);
-
         }
 
         mv.addObject("result1", str);
@@ -198,5 +196,6 @@ public class RegularEmployeeController implements Constants {
         return mv;
 
     }
+
 
 }

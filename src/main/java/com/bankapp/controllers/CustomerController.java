@@ -28,6 +28,7 @@ import com.bankapp.constants.Message;
 import com.bankapp.forms.InitiateTransactionForm;
 import com.bankapp.forms.TransferFundsForm;
 import com.bankapp.models.Account;
+import com.bankapp.models.ProfileRequest;
 import com.bankapp.models.Transaction;
 import com.bankapp.models.User;
 import com.bankapp.services.IAccountService;
@@ -195,5 +196,42 @@ public class CustomerController implements Constants {
         LOGGER.info(logMessage);
 
         return redirectUrl;
+    }
+    
+    @RequestMapping(value = "/customer/authorizemerchant", method = RequestMethod.GET)
+    public ModelAndView authorizemerchant() {
+        ModelAndView mv = new ModelAndView("/customer/authorizemerchant");
+        mv.addObject("role", "customer");
+        List<Transaction> transactions = transactionService.getMerchantRequests(S_PENDING_CUSTOMER_VERIFICATION);
+        mv.addObject("transactions", transactions);
+        return mv;
+    }
+    
+    @RequestMapping(value = "/customer/approverequest", method = RequestMethod.POST)
+    public String approveRequest(@ModelAttribute("transaction") Transaction transaction, BindingResult result,
+            RedirectAttributes attributes) {
+        Message message;        
+        String msg = transactionService.actionOnRequest(transaction.getTransactionId(), S_CUSTOMER_VERIFIED);
+        if (msg.equals(SUCCESS)) {
+            message = new Message("success", "Request has been approved ");
+        } else {
+            message = new Message("error", "error please try again");
+        }
+        attributes.addFlashAttribute("message", message);
+        return "redirect:/customer/authorizemerchant";
+    }
+    
+    @RequestMapping(value = "/customer/declinerequest", method = RequestMethod.POST)
+    public String declineRequest(@ModelAttribute("transaction") Transaction transaction, BindingResult result,
+            RedirectAttributes attributes) {
+        Message message;        
+        String msg = transactionService.actionOnRequest(transaction.getTransactionId(), S_CUSTOMER_DECLINED);
+        if (msg.equals(SUCCESS)) {
+            message = new Message("success", "Request has been declined ");
+        } else {
+            message = new Message("error", "error please try again");
+        }
+        attributes.addFlashAttribute("message", message);
+        return "redirect:/customer/authorizemerchant";
     }
 }
