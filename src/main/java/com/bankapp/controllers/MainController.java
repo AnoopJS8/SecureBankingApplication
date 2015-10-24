@@ -232,7 +232,7 @@ public class MainController implements Constants {
                 eventPublisher.publishEvent(new OnOtpEvent(loggedInUser.getId(), R_USER));
             } catch (Exception e) {
                 String message = String.format("Action: %s, Message: %s", "change password", e.getMessage());
-                LOGGER.error(message);
+                LOGGER.info(message);
                 e.printStackTrace();
                 mv.addObject("message", e.getMessage());
                 mv.setViewName("error");
