@@ -34,6 +34,7 @@
 			<div class="form-group">
 				<label class="col-md-3 control-label">Phone Number: </label>
 				<div class="col-md-5">
+
 					<input type="text" th:field="*{phoneNumber}" class="form-control"
 						placeholder="Phone Number" /> <label
 						th:if="${#fields.hasErrors('phoneNumber')}" th:errors="*{phoneNumber}"></label>
@@ -42,6 +43,7 @@
 			<div class="form-group">
 				<label class="col-md-3 control-label">Date of Birth: </label>
 				<div class="col-md-5">
+
 					<div th:if="*{dateOfBirth} != null">
 						<input type="text" th:field="*{dateOfBirth}"
 							th:value="*{#dates.format(dateOfBirth, 'MM/dd/yyyy')}"

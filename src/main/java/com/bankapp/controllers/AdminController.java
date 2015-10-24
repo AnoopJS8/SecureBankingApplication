@@ -4,10 +4,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.validation.Valid;
+
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -156,14 +159,23 @@ public class AdminController implements Constants {
     }
 
     @RequestMapping(value = "/admin/add", method = RequestMethod.POST)
-    public String addUser(@ModelAttribute("form") AddEmployeeForm form, RedirectAttributes attr) {
+    public String addUser(final ModelMap model , @ModelAttribute("form") @Valid AddEmployeeForm form, BindingResult result, RedirectAttributes attr) {
 
         String logMessage = String.format("Action: %s, Message: %s",
                 "addEmployee", "POST");
         String redirectSuccessURL = "redirect:/admin/myaccount";
         String redirectFailureURL = "redirect:/admin/add";
 
-        User user = form.getUser();
+        if (result.hasErrors()) {
+            System.out.println(result.getAllErrors());
+            model.addAttribute("form", form);
+            return "admin/addemployee";
+        }
+        
+        User user = new User();
+        user.setEmail(form.getEmail());
+        user.setUsername(form.getUsername());
+        user.setDateOfBirth(form.getDateOfBirth());
         Role role = form.getRole();
         try {
             user = userService.addEmployee(user, role.getName());
