@@ -11,47 +11,49 @@
             <div class="form-group">
                 <label class="col-sm-2 control-label">Username</label>
                 <div class="col-sm-10">
-                    <input type="text" th:field="*{user.username}" class="form-control" placeholder="User name" />
-                    <label th:if="${#fields.hasErrors('user.username')}" th:errors="*{user.username}"></label>
+                    <input type="text" th:field="*{username}" class="form-control" placeholder="User name" />
+                    <label th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></label>
                 </div>
             </div>
             <div class="form-group">
                 <label class="col-sm-2 control-label">Email</label>
                 <div class="col-sm-10">
-                    <input type="email" th:field="*{user.email}" th:errorclass="fieldError" class="form-control" placeholder="Email address" />
-                    <label th:if="${#fields.hasErrors('user.email')}" th:errors="*{user.email}"></label>
+                    <input type="email" th:field="*{email}" th:errorclass="fieldError" class="form-control" placeholder="Email address" />
+                    <label th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></label>
                 </div>
             </div>
             <div class="form-group">
                 <label class="col-sm-2 control-label">Password</label>
                 <div class="col-sm-10">
-                    <input type="password" th:field="*{user.password}" class="form-control" placeholder="Password" />
-                    <label th:if="${#fields.hasErrors('user.password')}" th:errors="*{user.password}"></label>
+                    <input type="password" th:field="*{password}" class="form-control" placeholder="Password" />
+                    <label th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></label>
                 </div>
             </div>
             <div class="form-group">
                 <label class="col-sm-2 control-label">Address</label>
                 <div class="col-sm-10">
-                    <input type="text" th:field="*{user.address}" class="form-control" placeholder="Address" />
+                    <input type="text" th:field="*{address}" class="form-control" placeholder="Address" />
                 </div>
             </div>
             <div class="form-group">
                 <label class="col-sm-2 control-label">Phone Number</label>
                 <div class="col-sm-10">
-                    <input type="text" th:field="*{user.phoneNumber}" class="form-control" placeholder="Phone Number" />
+                    <input type="text" th:field="*{phoneNumber}" class="form-control" placeholder="Phone Number" />
+                    <label th:if="${#fields.hasErrors('phoneNumber')}" th:errors="*{phoneNumber}"></label>
                 </div>
             </div>
             <div class="form-group">
                 <label class="col-sm-2 control-label">Date of Birth</label>
                 <div class="col-sm-10">
-                    <input type="text" th:field="*{user.dateOfBirth}" class="form-control" placeholder="Date of Birth (mm/dd/yyyy)" />
+                    <input type="text" th:field="*{dateOfBirth}" class="form-control" placeholder="Date of Birth (mm/dd/yyyy)" />
+                    <label th:if="${#fields.hasErrors('dateOfBirth')}" th:errors="*{dateOfBirth}"></label>
                 </div>
             </div>
             <div class="form-group">
                 <label class="col-sm-2 control-label">Gender</label>
                 <div class="col-sm-10">
-                    <label><input type="radio" th:field="*{user.gender}" th:value="Male" /> Male</label>
-                    <label><input type="radio" th:field="*{user.gender}" th:value="Female" /> Female</label>
+                    <label><input type="radio" th:field="*{gender}" th:value="Male" /> Male</label>
+                    <label><input type="radio" th:field="*{gender}" th:value="Female" /> Female</label>
                 </div>
             </div>
             <div class="form-group">
@@ -66,13 +68,13 @@
             <div class="form-group">
                 <label class="col-sm-2 control-label">Security question</label>
                 <div class="col-sm-10">
-                    <input type="text" th:field="*{user.securityQuestion}" class="form-control" placeholder="This will be used in recovering your password" />
+                    <input type="text" th:field="*{securityQuestion}" class="form-control" placeholder="This will be used in recovering your password" />
                 </div>
             </div>
             <div class="form-group">
                 <label class="col-sm-2 control-label">Security question answer</label>
                 <div class="col-sm-10">
-                    <input type="text" th:field="*{user.securityAnswer}" class="form-control" placeholder="Answer to your security question" />
+                    <input type="text" th:field="*{securityAnswer}" class="form-control" placeholder="Answer to your security question" />
                 </div>
             </div>
             <div class="form-group">
