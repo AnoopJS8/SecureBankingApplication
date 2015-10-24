@@ -172,7 +172,7 @@ public class MainController implements Constants {
         } else {
             status = "success";
             message = "Request for changes are sent to out employee";
-            redirectUrl = "redirect:/success";
+            redirectUrl = "redirect:/profile";
         }
 
         attributes.addFlashAttribute("message", new Message(status, message));

@@ -227,7 +227,12 @@ public class CommonController implements Constants {
             status = "error";
             message = ERR_ACCOUNT_NOT_EXISTS;
             redirectUrl = "redirect:/" + role + "/initiatetransaction";
-        } else {
+        }else if(serviceStatus.equalsIgnoreCase("Same User")){
+            status="error";
+            message= "Can't send funds to the same user";
+            redirectUrl = "redirect:/" + role + "/initiatetransaction";
+        }
+        else {
             status = "error";
             message = "An unhandled error occurred. Please contact the administrator";
             redirectUrl = "redirect:/" + role + "/initiatetransaction";
