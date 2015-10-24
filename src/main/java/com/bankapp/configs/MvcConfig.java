@@ -1,4 +1,3 @@
-
 package com.bankapp.configs;
 
 import org.springframework.boot.autoconfigure.thymeleaf.ThymeleafProperties;

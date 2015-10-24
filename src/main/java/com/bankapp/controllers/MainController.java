@@ -1,4 +1,3 @@
-
 package com.bankapp.controllers;
 
 import java.security.Principal;
@@ -9,6 +8,7 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -21,6 +21,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.bankapp.constants.Constants;
 import com.bankapp.constants.Message;
 import com.bankapp.forms.OTPForm;
+import com.bankapp.forms.ProfileForm;
 import com.bankapp.listeners.OnOtpEvent;
 import com.bankapp.models.Account;
 import com.bankapp.models.PersonalIdentificationInfo;
@@ -131,7 +132,7 @@ public class MainController implements Constants {
 
     @RequestMapping(value = "/profile", method = RequestMethod.GET)
     public ModelAndView profile(Principal principal) {
-        ModelAndView mv = new ModelAndView();
+        ModelAndView mv = new ModelAndView("profile", "form", new ProfileForm());
         User loggedInUser = userService.getUserFromSession(principal);
         mv.addObject("user", loggedInUser);
         mv.addObject("role", loggedInUser.getRole().getName());
@@ -140,25 +141,49 @@ public class MainController implements Constants {
     }
 
     @RequestMapping(value = "/profile", method = RequestMethod.POST)
-    public ModelAndView updateProfile(@ModelAttribute("user") @Valid User user, BindingResult result,
-            WebRequest request, Errors errors, Principal principal) {
-        ModelAndView mv = new ModelAndView();
+    public String updateProfile(final ModelMap model, @ModelAttribute("user") @Valid ProfileForm form,
+            BindingResult result, WebRequest request, Errors errors, Principal principal,
+            RedirectAttributes attributes) {
+
+        String status;
+        String message;
+        String redirectUrl;
+        String logMessage;
+
+        if (result.hasErrors()) {
+            model.addAttribute("form", form);
+            return "profile";
+        }
+
         ProfileRequest profile = new ProfileRequest();
-        profile.setAddress(user.getAddress());
-        profile.setDateOfBirth(user.getDateOfBirth());
-        profile.setPhoneNumber(user.getPhoneNumber());
+        profile.setAddress(form.getAddress());
+        profile.setDateOfBirth(form.getDateOfBirth());
+        profile.setPhoneNumber(form.getPhoneNumber());
         profile.setStatus(S_PROFILE_UPDATE_PENDING);
         profile.setUser(userService.getUserFromSession(principal));
         profile.setRole(userService.getUserFromSession(principal).getRole());
-        String message = profileRequestService.saveProfileRequest(profile);
-        if (message.equalsIgnoreCase(ERROR)) {
-            mv.addObject("message", "Error occured");
-            mv.setViewName("error");
-            return mv;
+
+        String serviceStatus = profileRequestService.saveProfileRequest(profile);
+
+        if (serviceStatus.equalsIgnoreCase(ERROR)) {
+            status = "error";
+            message = "Error Occurred";
+            redirectUrl = "redirect:/profile";
+        } else {
+            status = "success";
+            message = "Request for changes are sent to out employee";
+            redirectUrl = "redirect:/success";
         }
-        mv.addObject("message", "Request for changes are sent to out employee");
-        mv.setViewName("success");
-        return mv;
+
+        attributes.addFlashAttribute("message", new Message(status, message));
+        attributes.addFlashAttribute("role", userService.getUserFromSession(principal).getRole());
+
+        logMessage = String.format("[Action=%s, Method=%s][Status=%s][Message=%s]", "transferfunds", "POST",
+                serviceStatus, message);
+        LOGGER.info(logMessage);
+
+        return redirectUrl;
+
     }
 
     @RequestMapping(value = "/changepassword", method = RequestMethod.GET)

@@ -43,6 +43,12 @@ public interface IUserService {
 
     boolean changePassword(User user);
 
+    
+    boolean emailExist(String email);
+    
+    boolean idExist(String id);
+
+
     public boolean verifyPassword(User user, String currentPassword);
 
     // OTP Section
@@ -52,8 +58,10 @@ public interface IUserService {
 
     boolean verifyOTP(String otp, String id, String name);
 
+
 	public List<User> displayDeleteUsers();
 
 	public void deleteExternalUser(User user);
+
 
 }

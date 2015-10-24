@@ -1,23 +1,120 @@
 package com.bankapp.forms;
 
+import java.util.Date;
+
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Past;
+import javax.validation.constraints.Pattern;
+
+import org.hibernate.validator.constraints.NotEmpty;
+import org.springframework.format.annotation.DateTimeFormat;
+
 import com.bankapp.models.Role;
-import com.bankapp.models.User;
+import com.bankapp.validators.ValidEmail;
+import com.bankapp.validators.ValidPassword;
 
 public class SignupForm extends RecaptchaForm {
-    User user;
+    @NotEmpty
+    private String username;
+
+    @ValidEmail
+    private String email;
+
+    @ValidPassword
+    private String password;
+
+    private String address;
+
+    @Pattern(regexp="\\d{10}", message = "Please enter a valid 10 digit phone number")
+    private String phoneNumber;
+
+    @DateTimeFormat(pattern = "MM/dd/yyyy")
+    @NotNull(message = "Please provide a date of birth.")
+    @Past
+    private Date dateOfBirth;
+
+    private String gender;
+
+    private String securityQuestion;
+
+    private String securityAnswer;
+
     Role role;
 
     public SignupForm() {
-        this.user = new User();
         this.role = new Role();
     }
 
-    public User getUser() {
-        return user;
+    public String getUsername() {
+        return username;
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
+    public Date getDateOfBirth() {
+        return dateOfBirth;
+    }
+
+    public void setDateOfBirth(Date dateOfBirth) {
+        this.dateOfBirth = dateOfBirth;
+    }
+
+    public String getGender() {
+        return gender;
+    }
+
+    public void setGender(String gender) {
+        this.gender = gender;
+    }
+
+    public String getSecurityQuestion() {
+        return securityQuestion;
+    }
+
+    public void setSecurityQuestion(String securityQuestion) {
+        this.securityQuestion = securityQuestion;
+    }
+
+    public String getSecurityAnswer() {
+        return securityAnswer;
+    }
+
+    public void setSecurityAnswer(String securityAnswer) {
+        this.securityAnswer = securityAnswer;
     }
 
     public Role getRole() {

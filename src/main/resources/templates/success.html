@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
 	xmlns:th="http://www.thymeleaf.org"
@@ -14,6 +13,7 @@
 		<div th:if="${role == 'customer'}">
 			<div th:replace="fragment/customer :: customer-header"></div>
 		</div>
+		<div th:replace="fragment/common :: message"></div>
 		<div class="alert alert-success" role="alert">
 			<p th:text="${message}"></p>
 		</div>

@@ -1,4 +1,3 @@
-
 package com.bankapp.constants;
 
 public interface Constants {

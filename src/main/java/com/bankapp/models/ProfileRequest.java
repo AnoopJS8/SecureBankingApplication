@@ -1,5 +1,7 @@
 package com.bankapp.models;
 
+import java.util.Date;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -28,7 +30,7 @@ public class ProfileRequest {
 
     private String phoneNumber;
 
-    private String dateOfBirth;
+    private Date dateOfBirth;
 
     @ManyToOne
     @JoinColumn(name = "roleId", nullable = false)
@@ -69,12 +71,12 @@ public class ProfileRequest {
         this.phoneNumber = phoneNumber;
     }
 
-    public String getDateOfBirth() {
+    public Date getDateOfBirth() {
         return dateOfBirth;
     }
 
-    public void setDateOfBirth(String dateOfBirth) {
-        this.dateOfBirth = dateOfBirth;
+    public void setDateOfBirth(Date date) {
+        this.dateOfBirth = date;
     }
 
     public String getStatus() {

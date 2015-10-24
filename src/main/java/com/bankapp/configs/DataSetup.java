@@ -1,4 +1,8 @@
+
+ 
 package com.bankapp.configs;
+
+import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -48,6 +52,8 @@ public class DataSetup implements ApplicationListener<ContextRefreshedEvent> {
         adminUser.setEmail("test@admin.com");
         adminUser.setRole(adminRole);
         adminUser.setEnabled(true);
+        adminUser.setDateOfBirth(new Date());
+        adminUser.setPhoneNumber("1231231231");
         adminUser.setSecurityQuestion("Name?");
         adminUser.setSecurityAnswer("test");
         userRepository.save(adminUser);
@@ -59,6 +65,8 @@ public class DataSetup implements ApplicationListener<ContextRefreshedEvent> {
         employeeUser.setEmail("test@employee.com");
         employeeUser.setRole(employeeRole);
         employeeUser.setEnabled(true);
+        employeeUser.setDateOfBirth(new Date());
+        employeeUser.setPhoneNumber("1231231231");
         employeeUser.setSecurityQuestion("Name?");
         employeeUser.setSecurityAnswer("test");
         userRepository.save(employeeUser);
@@ -70,6 +78,8 @@ public class DataSetup implements ApplicationListener<ContextRefreshedEvent> {
         managerUser.setEmail("test@manager.com");
         managerUser.setRole(managerRole);
         managerUser.setEnabled(true);
+        managerUser.setDateOfBirth(new Date());
+        managerUser.setPhoneNumber("1231231231");
         managerUser.setSecurityQuestion("Name?");
         managerUser.setSecurityAnswer("test");
         userRepository.save(managerUser);
@@ -81,6 +91,8 @@ public class DataSetup implements ApplicationListener<ContextRefreshedEvent> {
         customerUser.setEmail("test@customer.com");
         customerUser.setRole(customerRole);
         customerUser.setEnabled(true);
+        customerUser.setDateOfBirth(new Date());
+        customerUser.setPhoneNumber("1231231231");
         customerUser.setSecurityQuestion("Name?");
         customerUser.setSecurityAnswer("test");
         userRepository.save(customerUser);
