@@ -1,20 +1,32 @@
 package com.bankapp.forms;
 
-import javax.validation.constraints.NotNull;
+import java.util.Date;
 
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Past;
+import javax.validation.constraints.Pattern;
+
+import org.hibernate.validator.constraints.Email;
 import org.springframework.format.annotation.DateTimeFormat;
 
 public class ProfileForm {
+
+    String username;
+
+    @Email
+    String email;
 
     @NotNull
     String address;
 
     @NotNull
+    @Pattern(regexp="\\d{10}", message = "Please enter a valid 10 digit phone number")
     String phoneNumber;
 
     @NotNull
     @DateTimeFormat(pattern = "MM/dd/yyyy")
-    String dateOfBirth;
+    @Past
+    Date dateOfBirth;
 
     public String getAddress() {
         return address;
@@ -32,11 +44,29 @@ public class ProfileForm {
         this.phoneNumber = phoneNumber;
     }
 
-    public String getDateOfBirth() {
+
+    public Date getDateOfBirth() {
         return dateOfBirth;
     }
 
-    public void setDateOfBirth(String dateOfBirth) {
+    public void setDateOfBirth(Date dateOfBirth) {
         this.dateOfBirth = dateOfBirth;
     }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
 }

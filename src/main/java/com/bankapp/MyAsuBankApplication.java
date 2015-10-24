@@ -1,6 +1,8 @@
 
 package com.bankapp;
 
+import java.util.Locale;
+
 import org.apache.catalina.Context;
 import org.apache.catalina.connector.Connector;
 import org.apache.tomcat.util.descriptor.web.SecurityCollection;
@@ -13,7 +15,10 @@ import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletCon
 import org.springframework.boot.orm.jpa.EntityScan;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.web.servlet.LocaleResolver;
+import org.springframework.web.servlet.i18n.SessionLocaleResolver;
 
 @ComponentScan
 @EnableAutoConfiguration
@@ -56,5 +61,20 @@ public class MyAsuBankApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(MyAsuBankApplication.class, args);
+    }
+    
+    @Bean
+    public LocaleResolver localeResolver() {
+        SessionLocaleResolver slr = new SessionLocaleResolver();
+        slr.setDefaultLocale(Locale.US);
+        return slr;
+    }
+    
+    @Bean
+    public ReloadableResourceBundleMessageSource messageSource() {
+        ReloadableResourceBundleMessageSource messageSource = new ReloadableResourceBundleMessageSource();
+        messageSource.setBasename("classpath:locale/messages");
+        messageSource.setCacheSeconds(3600);
+        return messageSource;
     }
 }

@@ -51,6 +51,9 @@ public interface IUserService {
     boolean idExist(String id);
 
     public boolean verifyPassword(User user, String currentPassword);
+    
+    public void deleteExternalUser(User user);
+
 
     // OTP Section
     OneTimePassword generateOTP(String resourceId, String resourceName);
@@ -58,6 +61,8 @@ public interface IUserService {
     OneTimePassword generateNewOTP(String value);
 
     boolean verifyOTP(String otp, String id, String name);
+
+	List<User> displayDeleteUsers();
 
 	
 

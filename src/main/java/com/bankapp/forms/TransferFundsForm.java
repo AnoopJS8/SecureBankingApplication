@@ -1,22 +1,24 @@
 package com.bankapp.forms;
 
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
-public class transferFundsForm {
+public class TransferFundsForm {
     @NotNull
-    Long accountId;
+    String email;
 
     @NotNull
+    @Min(value = 0)
     Double amount;
 
     String comment;
 
-    public Long getAccountId() {
-        return accountId;
+    public String getEmail() {
+        return email;
     }
 
-    public void setAccountId(Long accountId) {
-        this.accountId = accountId;
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public Double getAmount() {

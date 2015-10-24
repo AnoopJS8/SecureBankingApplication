@@ -18,4 +18,10 @@ public interface ITransactionService {
 
     public String askCustomerPayment(Transaction transaction, User user);
 
+    public List<Transaction> getMerchantRequests(String status);
+
+    public String actionOnRequest(String id, String status);
+
+    public List<Transaction> getPendingTransactions();
+
 }

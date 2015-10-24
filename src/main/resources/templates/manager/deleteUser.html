@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+<head th:include="fragment/common :: headerFragment" />
+<body>
+	<div class="container">
+		<div th:replace="fragment/common :: top-nav(myaccount)"></div>
+		<div th:replace="fragment/manager :: manager-header"></div>
+		<div>
+			<h3>Delete User</h3>
+		</div>
+		<div class="table-responsive">
+			<table class="table table-bordered table-hover">
+				<thead>
+					<tr class="info">
+						<th>username</th>
+						<th>Email</th>
+						<th>Address</th>
+						<th>PhoneNumber</th>
+						<th>DoB</th>
+						<th>Gender</th>
+						<th>Delete</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr style="cursor: pointer" th:each="user : ${viewuser}">
+						<td><span th:text="*{user.username}"></span></td>
+						<td><span th:text="*{user.email}"></span></td>
+						<td><span th:text="${user.address}"></span></td>
+						<td><span th:text="${user.phoneNumber}"></span></td>
+						<td><span th:text="${user.dateOfBirth}"></span></td>
+						<td><span th:text="${user.gender}"></span></td>
+						<td>
+							<form action="#" th:object="${user}" th:action="@{/manager/deleteUsers}"
+								method="POST">
+								<input type="hidden" name="id" th:value="*{id}" /> <input type="hidden"
+									name="username" th:value="*{username}" />
+								<button type="submit" class="btn btn-danger">Delete</button>
+							</form>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</div>
+</body>
+</html>

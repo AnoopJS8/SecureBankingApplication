@@ -28,7 +28,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.bankapp.constants.Constants;
 import com.bankapp.constants.Message;
 import com.bankapp.forms.InitiateTransactionForm;
-import com.bankapp.forms.transferFundsForm;
+import com.bankapp.forms.TransferFundsForm;
 import com.bankapp.models.Account;
 import com.bankapp.models.Transaction;
 import com.bankapp.models.User;
@@ -53,7 +53,9 @@ public class CommonController implements Constants {
 
     @InitBinder("form")
     public void initBinder(WebDataBinder binder) {
-        CustomDateEditor editor = new CustomDateEditor(new SimpleDateFormat("MM/dd/yyyy"), true);
+        SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
+        sdf.setLenient(false);
+        CustomDateEditor editor = new CustomDateEditor(sdf, true);
         binder.registerCustomEditor(Date.class, editor);
     }
 
@@ -96,7 +98,7 @@ public class CommonController implements Constants {
         }
 
         ModelAndView mv = new ModelAndView("common/transferfunds");
-        mv.addObject("form", new transferFundsForm());
+        mv.addObject("form", new TransferFundsForm());
         mv.addObject("role", role);
 
         String logMessage = String.format("[Action=%s, Method=%s, Role=%s]", "transferfunds", "GET", role);
@@ -107,7 +109,7 @@ public class CommonController implements Constants {
 
     @RequestMapping(value = { "/customer/transferfunds", "/merchant/transferfunds" }, method = RequestMethod.POST)
     public String saveTransaction(@AuthenticationPrincipal UserDetails activeUser, final ModelMap model,
-            @ModelAttribute("form") @Valid transferFundsForm form, BindingResult result, HttpServletRequest request,
+            @ModelAttribute("form") @Valid TransferFundsForm form, BindingResult result, HttpServletRequest request,
             RedirectAttributes attributes) {
 
         String status;
@@ -128,13 +130,11 @@ public class CommonController implements Constants {
         }
 
         String fromEmail = activeUser.getUsername();
-       // String toEmail = form.getEmail();
-        String Email = "";
+        String toEmail = form.getEmail();
         Transaction transaction = new Transaction();
         transaction.setAmount(form.getAmount());
         transaction.setComment(form.getComment());
 
-        String toEmail="";
 		String serviceStatus = transactionService.saveTransaction(fromEmail, toEmail, transaction);
 
         if (serviceStatus.equalsIgnoreCase(LESS_BALANCE)) {

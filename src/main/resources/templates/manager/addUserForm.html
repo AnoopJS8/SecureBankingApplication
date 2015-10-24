@@ -9,6 +9,16 @@
 		<div th:replace="fragment/manager :: manager-header"></div>
 		<div >
 			<h3>Add User Form</h3>
+			<div th:if="${message}" th:object="${message}">
+			<div
+				th:class="*{status} == success ? 'alert alert-success alert-dismissible' : 'alert alert-danger alert-dismissible'"
+				role="alert">
+				<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+				<p th:text="*{msg}"></p>
+			</div>
+		</div>
 		</div>
 		<div th:replace="fragment/common :: message"></div>
 		<div class="table-responsive">

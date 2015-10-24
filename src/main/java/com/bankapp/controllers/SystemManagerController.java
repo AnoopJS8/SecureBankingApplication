@@ -31,15 +31,12 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.bankapp.constants.Constants;
 import com.bankapp.constants.Message;
-import com.bankapp.exceptions.EmailDoesNotExist;
 import com.bankapp.exceptions.EmailExistsException;
-import com.bankapp.exceptions.UserAlreadyExistException;
-import com.bankapp.exceptions.UserIdDoesNotExist;
 import com.bankapp.exceptions.UserNameExistsException;
+import com.bankapp.forms.AddEmployeeForm;
 import com.bankapp.forms.ManagerCreateUser;
-import com.bankapp.forms.ManagerViewByEmail;
-import com.bankapp.forms.ManagerViewById;
 import com.bankapp.forms.UpdateUsersForm;
+import com.bankapp.forms.ViewByEmailForm;
 import com.bankapp.listeners.OnRegistrationCompleteEvent;
 import com.bankapp.models.Account;
 import com.bankapp.models.OneTimePassword;
@@ -51,12 +48,13 @@ import com.bankapp.repositories.RoleRepository;
 import com.bankapp.repositories.UserRepository;
 import com.bankapp.services.IProfileRequestService;
 import com.bankapp.services.ISystemManagerService;
-import com.bankapp.services.IUserService;
+import com.bankapp.services.IUserService;;;
 
 /**
  * @author Nitesh Dhanpal
  *
  */
+
 @Controller
 @Secured("ROLE_MANAGER")
 public class SystemManagerController implements Constants {
@@ -153,20 +151,12 @@ public class SystemManagerController implements Constants {
 		return mv;
 	}
 
-	@RequestMapping(value = "/manager/getUserById", method = RequestMethod.GET)
-	public ModelAndView getuserId() {
-		ModelAndView mv = new ModelAndView();
-		ModelAndView modelAndView = new ModelAndView("/manager/viewUserByIdForm",
-				"form", new ManagerViewById());
-		mv.setViewName("/manager/viewUserByIdForm");
-		return modelAndView;
-	}
-
+	
 	@RequestMapping(value = "/manager/getUserByEmail", method = RequestMethod.GET)
 	public ModelAndView getuserEmail() {
 		ModelAndView mv = new ModelAndView();
 		ModelAndView modelAndView = new ModelAndView("/manager/viewUserByEmailForm",
-				"form", new ManagerViewByEmail());
+				"form", new ViewByEmailForm());
 		return modelAndView;
 	}
 
@@ -218,16 +208,11 @@ public class SystemManagerController implements Constants {
 		return mv;
 	}
 
-	@RequestMapping(value = "/manager/addUserForm", method = RequestMethod.GET)
-	public ModelAndView getUserAddage() {
-		ModelAndView modelAndView = new ModelAndView("/manager/addUserForm",
-				"form", new ManagerCreateUser());
-		return modelAndView;
-	}
+	
 
 	@RequestMapping(value = "/manager/addUserForm", method = RequestMethod.POST)
 	public String addUser(final ModelMap model,
-			@ModelAttribute("form") @Valid ManagerCreateUser form,
+			@ModelAttribute("form") @Valid AddEmployeeForm form,
 			BindingResult result, Errors errors, Principal principal,
 			HttpServletRequest request, RedirectAttributes attributes) throws UserNameExistsException {
 		User user = new User();
@@ -238,7 +223,6 @@ public class SystemManagerController implements Constants {
 		System.out.println(form.getUsername());
 		if (result.hasErrors()) {
 			model.addAttribute("form", form);
-//			System.out.println("asd");
 			return "/manager/addUserForm";
 		}
 
@@ -286,13 +270,14 @@ public class SystemManagerController implements Constants {
 
 	}
 
+
 	private String getAppUrl(HttpServletRequest request) {
 		return request.getScheme() + "://" + request.getServerName() + ":"
 				+ request.getServerPort();
 	}
 
 	@RequestMapping(value = "/manager/viewUserByEmailForm", method = RequestMethod.POST)
-	public ModelAndView getuser_byemail(final ModelAndView model,@ModelAttribute("form") @Valid ManagerViewByEmail form,
+	public ModelAndView getuser_byemail(final ModelAndView model,@ModelAttribute("form") @Valid ViewByEmailForm form,
 			BindingResult result, Errors errors, Principal principal,
 			 RedirectAttributes attributes) {
 	
@@ -384,53 +369,48 @@ public class SystemManagerController implements Constants {
 	
 	
 	
-	@RequestMapping(value = "/manager/viewUserByIdForm", method = RequestMethod.POST)
-	public ModelAndView getuser_byid(final ModelAndView model,@ModelAttribute("form") @Valid ManagerViewById form,
-			BindingResult result, Errors errors, Principal principal,
-			 RedirectAttributes attributes) {
-		
-		User user = null;
-		String status = "success";
-		String message = "";
-		
-		if(result.hasErrors())
-		{
-			model.addObject("form", form);
-			model.setViewName("/manager/viewUserByIdForm");
-			status = "error";
-			message = String.format("Message: Invalid Id");
-//			System.out.println(message);
-			model.addObject("message",new Message(status, message));
-			return model;
+	
 
-		}
-		
-		if(user_service.idExist(form.getId()))
-		{
-			try {
-				user = manager.viewUserById(form.getId());
-			} catch (Exception e) {
-				status = "error";
-				 message = String.format("Message: %s",
-						 e.getMessage());
-				LOGGER.error(message);
-			}
-			
-		}else
-		{
-			status = "error";
-			message = String.format("Message: IdDoesNotExist");
-//			System.out.println(message);
-			model.addObject("message",new Message(status, message));
-			model.setViewName("/manager/viewUserByIdForm");
-			return model;
+  
+    @RequestMapping(value = "/manager/deleteUsers", method = RequestMethod.GET)
+    public ModelAndView deleteUser() {
 
-		}
-		
-		model.addObject("viewuser", user);
-		model.setViewName("/manager/viewUser");
-		
-		return model;
+        ModelAndView mv = new ModelAndView();
+        mv.setViewName("/manager/deleteUser");
+        List<User> users = user_service.displayDeleteUsers();
+        mv.addObject("viewuser", users);
+        return mv;
+    }
+
+    @RequestMapping(value = "/manager/deleteUsers", method = RequestMethod.POST)
+    public String deleteManager(@ModelAttribute("user") User user, BindingResult result,
+            RedirectAttributes attributes) {
+        Message message;
+        user_service.deleteExternalUser(user);
+        String msg = String.format("Manager '%s' has been deleted", user.getUsername());
+        message = new Message("succes", msg);
+        attributes.addFlashAttribute("message", message);
+        return "redirect:/manager/deleteUsers";
+    }
+
+
+    
+
+   
+
+   
+
+    
+
+    @RequestMapping(value = "/manager/addUserForm", method = RequestMethod.GET)
+	public ModelAndView getUserAddage() {
+		ModelAndView modelAndView = new ModelAndView("/manager/addUserForm",
+				"form", new ManagerCreateUser());
+		return modelAndView;
 	}
+    
+    
+
+    
 
 }
