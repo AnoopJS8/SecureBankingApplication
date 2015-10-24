@@ -12,9 +12,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.bankapp.constants.Constants;
+import com.bankapp.constants.Message;
+import com.bankapp.forms.TransferFundsForm;
 import com.bankapp.models.Account;
+import com.bankapp.models.PersonalIdentificationInfo;
 import com.bankapp.models.ProfileRequest;
 import com.bankapp.models.Transaction;
 import com.bankapp.services.IProfileRequestService;
@@ -26,13 +30,14 @@ import com.bankapp.services.ITransactionService;
 public class EmployeeController implements Constants {
     @Autowired
     private ISystemManagerService managerService;
-    
-    @Autowired ITransactionService transactionService;
+
+    @Autowired
+    ITransactionService transactionService;
 
     @Autowired
     private IProfileRequestService profileRequestService;
-    
- // VIEW TRANSACTIONS
+
+    // VIEW TRANSACTIONS
     @RequestMapping(value = "/employee/myaccount", method = RequestMethod.GET)
     public ModelAndView getMyAccount() {
         ModelAndView mv = new ModelAndView();
@@ -50,12 +55,10 @@ public class EmployeeController implements Constants {
         return mv;
     }
 
-    // VIEW USER_PROFILE
     @RequestMapping(value = "/employee/requests", method = RequestMethod.GET)
     public ModelAndView getPendingProfileRequests() {
 
         List<ProfileRequest> requests = profileRequestService.getRequestsByStatus(S_PROFILE_UPDATE_PENDING);
-
         ModelAndView mv = new ModelAndView();
         mv.addObject("requests", requests);
         mv.setViewName("employee/viewRequests");
@@ -160,4 +163,5 @@ public class EmployeeController implements Constants {
 
         return mv;
     }
+
 }

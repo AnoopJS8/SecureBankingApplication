@@ -78,12 +78,16 @@
 						<td><span th:text="${transaction.amount}"></span></td>
 						<td><span th:text="${transaction.comment}"></span></td>
 						<td
-							th:if="${transaction.status.equalsIgnoreCase('V') || transaction.status.equalsIgnoreCase('OV')}">
+							th:if="${transaction.status.equalsIgnoreCase('V') || transaction.status.equalsIgnoreCase('OV') || transaction.status.equalsIgnoreCase('CV')}">
 							<span th:text="Completed"></span>
 						</td>
 						<td
 							th:if="${transaction.status.equalsIgnoreCase('P') || transaction.status.equalsIgnoreCase('OP') || transaction.status.equalsIgnoreCase('PCV') || transaction.status.equalsIgnoreCase('CV')}">
 							<span th:text="Pending"></span>
+						</td>
+						<td
+							th:if="${transaction.status.equalsIgnoreCase('CD')}">
+							<span th:text="Declined"></span>
 						</td>
 					</tr>
 				</tbody>

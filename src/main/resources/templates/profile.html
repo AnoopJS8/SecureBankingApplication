@@ -7,6 +7,7 @@
 	<div class="container">
 		<div th:replace="fragment/common :: top-nav(profile)"></div>
 		<div th:replace="fragment/roleheader :: role-header(${role})"></div>
+		<div th:replace="fragment/common :: message"></div>
 		<form class="form-horizontal" role="form" th:action="@{/profile}"
 			th:object="${user}" method="post">
 			<div class="form-group">
