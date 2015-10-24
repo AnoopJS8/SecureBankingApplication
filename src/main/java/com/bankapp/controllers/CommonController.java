@@ -135,7 +135,7 @@ public class CommonController implements Constants {
         transaction.setAmount(form.getAmount());
         transaction.setComment(form.getComment());
 
-		String serviceStatus = transactionService.saveTransaction(fromEmail, toEmail, transaction);
+        String serviceStatus = transactionService.saveTransaction(fromEmail, toEmail, transaction);
 
         if (serviceStatus.equalsIgnoreCase(LESS_BALANCE)) {
             status = "error";
@@ -148,6 +148,10 @@ public class CommonController implements Constants {
         } else if (serviceStatus.equalsIgnoreCase(ERR_ACCOUNT_NOT_EXISTS)) {
             status = "error";
             message = ERR_ACCOUNT_NOT_EXISTS;
+            redirectUrl = "redirect:/" + role + "/transferfunds";
+        } else if (serviceStatus.equalsIgnoreCase(ERR_SAME_USER)) {
+            status = "error";
+            message = ERR_SAME_USER;
             redirectUrl = "redirect:/" + role + "/transferfunds";
         } else if (serviceStatus.equalsIgnoreCase(CRITICAL)) {
             status = "success";
@@ -228,6 +232,10 @@ public class CommonController implements Constants {
         } else if (serviceStatus.equalsIgnoreCase(ERR_ACCOUNT_NOT_EXISTS)) {
             status = "error";
             message = ERR_ACCOUNT_NOT_EXISTS;
+            redirectUrl = "redirect:/" + role + "/initiatetransaction";
+        } else if (serviceStatus.equalsIgnoreCase(ERR_SAME_USER)) {
+            status = "error";
+            message = ERR_SAME_USER;
             redirectUrl = "redirect:/" + role + "/initiatetransaction";
         } else {
             status = "error";

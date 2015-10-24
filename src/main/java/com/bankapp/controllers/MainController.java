@@ -121,7 +121,7 @@ public class MainController implements Constants {
         if (registeredUser == null) {
             String message = String.format("Sorry, we could not find any user with the email '%s'", email);
             mv.setViewName("error");
-            mv.addObject("message", message);
+            mv.addObject("message", new Message("error", message));
             return mv;
         } else {
             String expectedAnswer = registeredUser.getSecurityAnswer();
@@ -130,14 +130,14 @@ public class MainController implements Constants {
                         "Thank you for answering your security question. We have sent an email with a temporary password to %s",
                         email);
                 mv.setViewName("success");
-                mv.addObject("message", message);
+                mv.addObject("message", new Message("success", message));
                 userService.generateTemporaryPassword(registeredUser);
                 return mv;
             } else {
                 String message = String
                         .format("Sorry, we could not verify the answer you specified. Please try again.");
                 mv.setViewName("error");
-                mv.addObject("message", message);
+                mv.addObject("message", new Message("error", message));
                 return mv;
             }
         }

@@ -34,12 +34,20 @@ public class CustomUserDetailsService implements UserDetailsService {
     @Autowired
     private HttpServletRequest request;
 
+    @Autowired
+    private LoginAttemptService loginAttemptService;
+
     public CustomUserDetailsService() {
         super();
     }
 
     @Override
     public UserDetails loadUserByUsername(final String email) throws UsernameNotFoundException {
+        String ip = request.getRemoteAddr();
+        if (loginAttemptService.isBlocked(ip)) {
+            throw new RuntimeException("blocked");
+        }
+
         boolean enabled = true;
         boolean accountNotExpired = true;
         boolean credentialsNotExpired = true;

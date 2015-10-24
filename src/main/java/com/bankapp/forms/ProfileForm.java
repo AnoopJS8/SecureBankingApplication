@@ -19,8 +19,24 @@ public class ProfileForm {
     @NotNull
     String address;
 
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
     @NotNull
-    @Pattern(regexp="\\d{10}", message = "Please enter a valid 10 digit phone number")
+    @Pattern(regexp = "\\d{10}", message = "Please enter a valid 10 digit phone number")
     String phoneNumber;
 
     @NotNull
@@ -53,20 +69,6 @@ public class ProfileForm {
         this.dateOfBirth = dateOfBirth;
     }
 
-    public String getUsername() {
-        return username;
-    }
 
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
 
 }
