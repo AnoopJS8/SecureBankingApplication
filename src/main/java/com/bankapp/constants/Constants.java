@@ -9,6 +9,7 @@ public interface Constants {
 	public String CRITICAL = "Critical transaction";
 	public String PII_EXISTS = "Pii already added";
 	public String ERR_SAME_USER = "Same user transfer is not valid";
+	public String ERR_PROFILE_UPDATE = "Could not authorize the request";
 	//Status
 	public String S_PENDING = "P"; //pending for request like transfer money and profile
 	public String S_OTP_PENDING = "OP"; //critical transaction
@@ -18,7 +19,7 @@ public interface Constants {
 	public String S_CUSTOMER_VERIFIED = "CV"; //merchant request verified
 	public String S_CUSTOMER_DECLINED = "CD"; //merchant request Declined
 	public String S_PROFILE_UPDATE_PENDING = "PUP"; //Profile Changes pending
-	public String S_PROFILE_UPDATE_VERFIED = "PUV";//profile changes verified
+	public String S_PROFILE_UPDATE_VERIFIED = "PUV";//profile changes verified
 	public String S_PROFILE_UPDATE_DECLINED = "PUD";//profile changes decline
 	public String S_PII_PENDING = "PIIP";//pii verification
 	public String S_PII_AUTHORIZED = "PIIA";//pii verification

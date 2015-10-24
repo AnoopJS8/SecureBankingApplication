@@ -7,6 +7,7 @@ import javax.validation.constraints.Past;
 import javax.validation.constraints.Pattern;
 
 import org.hibernate.validator.constraints.Email;
+import org.hibernate.validator.constraints.NotBlank;
 import org.springframework.format.annotation.DateTimeFormat;
 
 public class ProfileForm {
@@ -18,6 +19,12 @@ public class ProfileForm {
 
     @NotNull
     String address;
+
+    @NotBlank
+    String securityQuestion;
+
+    @NotBlank
+    String securityAnswer;
 
     public String getUsername() {
         return username;
@@ -60,7 +67,6 @@ public class ProfileForm {
         this.phoneNumber = phoneNumber;
     }
 
-
     public Date getDateOfBirth() {
         return dateOfBirth;
     }
@@ -69,6 +75,20 @@ public class ProfileForm {
         this.dateOfBirth = dateOfBirth;
     }
 
+    public String getSecurityQuestion() {
+        return securityQuestion;
+    }
 
+    public void setSecurityQuestion(String securityQuestion) {
+        this.securityQuestion = securityQuestion;
+    }
+
+    public String getSecurityAnswer() {
+        return securityAnswer;
+    }
+
+    public void setSecurityAnswer(String securityAnswer) {
+        this.securityAnswer = securityAnswer;
+    }
 
 }

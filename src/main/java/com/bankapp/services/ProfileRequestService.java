@@ -1,6 +1,5 @@
 package com.bankapp.services;
 
-
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,12 +12,16 @@ import com.bankapp.models.Role;
 import com.bankapp.models.User;
 import com.bankapp.repositories.ProfileRequestRepository;
 import com.bankapp.repositories.RoleRepository;
+import com.bankapp.repositories.UserRepository;
 
 @Service
 public class ProfileRequestService implements IProfileRequestService, Constants {
 
     @Autowired
     private RoleRepository roleRepository;
+
+    @Autowired
+    private UserRepository userRepository;
 
     @Autowired
     private ProfileRequestRepository profileRequestRepository;
@@ -44,22 +47,6 @@ public class ProfileRequestService implements IProfileRequestService, Constants 
         return profileRequest;
     }
 
-    @Transactional
-    @Override
-    public void setRequestToVerified(String id) {
-        ProfileRequest profile = profileRequestRepository.findOne(id);
-        changeUserData(profile);
-        profile.setStatus(S_PROFILE_UPDATE_VERFIED);
-        profileRequestRepository.save(profile);
-    }
-
-    private void changeUserData(ProfileRequest profile) {
-        User user = profile.getUser();
-        user.setAddress(profile.getAddress());
-        user.setPhoneNumber(profile.getPhoneNumber());
-        user.setDateOfBirth(profile.getDateOfBirth());
-    }
-
     @Override
     public void declineRequest(String id) {
         ProfileRequest profile = profileRequestRepository.findOne(id);
@@ -74,7 +61,6 @@ public class ProfileRequestService implements IProfileRequestService, Constants 
         Role customer = roleRepository.findByName("ROLE_CUSTOMER");
 
         List<ProfileRequest> list = profileRequestRepository.findByStatusAndRole(status, merchant);
-
         list.addAll(profileRequestRepository.findByStatusAndRole(status, customer));
         return list;
     }
@@ -86,38 +72,40 @@ public class ProfileRequestService implements IProfileRequestService, Constants 
         return request;
     }
 
-    public String authorizeRequest(ProfileRequest requests) {
-
-        String result = "";
-
-        requests.setStatus(S_PROFILE_UPDATE_VERFIED);
-
+    @Transactional
+    @Override
+    public String authorizeRequest(ProfileRequest request) {
         try {
-            profileRequestRepository.save(requests);
-            result = "Profile modification has been approved";
-
+            request.setStatus(S_PROFILE_UPDATE_VERIFIED);
+            profileRequestRepository.save(request);
+            updateUser(request);
         } catch (Exception e) {
-            result = "unsuccessull";
+            return ERR_PROFILE_UPDATE;
         }
 
-        return result;
+        return S_PROFILE_UPDATE_VERIFIED;
+    }
+
+    private User updateUser(ProfileRequest request) {
+        User user = request.getUser();
+        user.setAddress(request.getAddress());
+        user.setPhoneNumber(request.getPhoneNumber());
+        user.setDateOfBirth(request.getDateOfBirth());
+        user.setSecurityQuestion(request.getSecurityQuestion());
+        user.setSecurityAnswer(request.getSercurityAnswer());
+        return userRepository.save(user);
     }
 
     @Override
-    public String declineRequest(ProfileRequest requests) {
-        // TODO Auto-generated method stub
-        String result = "";
-        requests.setStatus(S_PROFILE_UPDATE_DECLINED);
-
+    public String declineRequest(ProfileRequest request) {
         try {
-            profileRequestRepository.save(requests);
-            result = "Profile modification has been declined";
-
+            request.setStatus(S_PROFILE_UPDATE_DECLINED);
+            profileRequestRepository.save(request);
         } catch (Exception e) {
-            result = "unsuccessull";
+            return ERROR;
         }
 
-        return result;
+        return S_PROFILE_UPDATE_DECLINED;
     }
 
 }

@@ -1,5 +1,6 @@
 package com.bankapp.controllers;
 
+import java.security.Principal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -57,8 +58,12 @@ public class AdminController implements Constants {
     IPIIService piiService;
 
     @RequestMapping(value = "/admin/myaccount", method = RequestMethod.GET)
-    public ModelAndView AdminDetails() {
+    public ModelAndView AdminDetails(Principal principal) {
         ModelAndView mv = new ModelAndView("/admin/myaccount");
+        if(userService.hasMissingFields(principal)) {
+            mv.addObject("message",
+                    new Message("error", "You are missing important details. Please update your profile urgently"));
+        }
         return mv;
     }
 
@@ -144,7 +149,7 @@ public class AdminController implements Constants {
     public String changeRequest(@ModelAttribute("request") ProfileRequest profileRequest, BindingResult result,
             RedirectAttributes attributes) {
         Message message;
-        profileService.setRequestToVerified(profileRequest.getrId());
+        profileService.authorizeRequest(profileRequest);
         message = new Message("succes", "Request has been approved");
         attributes.addFlashAttribute("message", message);
         return "redirect:/admin/requests";
@@ -196,8 +201,8 @@ public class AdminController implements Constants {
             RedirectAttributes attributes) {
 
         Message message;
-        profileService.setRequestToVerified(profileRequest.getrId());
-        message = new Message("succes", "Request has been declined");
+        profileService.declineRequest(profileRequest);
+        message = new Message("success", "Request has been declined");
         attributes.addFlashAttribute("message", message);
         return "redirect:/admin/requests";
 
