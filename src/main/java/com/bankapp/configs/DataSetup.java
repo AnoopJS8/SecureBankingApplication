@@ -1,6 +1,9 @@
+
+ 
 package com.bankapp.configs;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -15,7 +18,8 @@ import com.bankapp.repositories.UserRepository;
 @Component
 public class DataSetup implements ApplicationListener<ContextRefreshedEvent> {
 
-    private boolean alreadySetup = false;
+    @Value("${com.bankapp.data.doSetup}")
+    private Boolean doDataSetup;
 
     @Autowired
     private UserRepository userRepository;
@@ -29,7 +33,7 @@ public class DataSetup implements ApplicationListener<ContextRefreshedEvent> {
     @Override
     @Transactional
     public void onApplicationEvent(final ContextRefreshedEvent event) {
-        if (alreadySetup) {
+        if (!doDataSetup) {
             return;
         }
 
@@ -83,7 +87,7 @@ public class DataSetup implements ApplicationListener<ContextRefreshedEvent> {
         customerUser.setSecurityAnswer("test");
         userRepository.save(customerUser);
 
-        alreadySetup = true;
+        doDataSetup = true;
     }
 
     @Transactional

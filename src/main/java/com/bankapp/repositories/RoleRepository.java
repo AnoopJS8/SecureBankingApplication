@@ -4,7 +4,7 @@ import org.springframework.data.repository.CrudRepository;
 
 import com.bankapp.models.Role;
 
-public interface RoleRepository extends CrudRepository<Role, Long> {
+public interface RoleRepository extends CrudRepository<Role, String> {
 
     Role findByName(String name);
 

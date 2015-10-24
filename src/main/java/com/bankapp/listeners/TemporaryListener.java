@@ -30,7 +30,7 @@ public class TemporaryListener implements ApplicationListener<OnOtpEvent>, Const
 	}
 
 	private void confirmOTP(OnOtpEvent event) {
-		Long resourceId = event.getResourceId();
+		String resourceId = event.getResourceId();
 		String resourceName = event.getResourceName();
 		OneTimePassword otp = userService.generateOTP(resourceId, resourceName);
 		String recipientUsername, recipientEmail = null, textBody = null;
@@ -38,7 +38,7 @@ public class TemporaryListener implements ApplicationListener<OnOtpEvent>, Const
 		if (resourceName.equals(R_TRANSACTION)) {
 			Transaction transaction = transactionService.getTransactionsById(resourceId);
 			User recipientUser = transaction.getFromAccount().getUser();
-			long transactionID = transaction.getTransactionId();
+			String transactionID = transaction.getTransactionId();
 			recipientUsername = recipientUser.getUsername();
 			recipientEmail = recipientUser.getEmail();
 			textBody = String.format("Dear valued customer <b>%s</b>, <br><br>"

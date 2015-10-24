@@ -3,6 +3,7 @@ package com.bankapp.forms;
 import java.util.Date;
 
 import javax.validation.constraints.Future;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
 import org.springframework.format.annotation.DateTimeFormat;
@@ -10,9 +11,10 @@ import org.springframework.format.annotation.DateTimeFormat;
 public class InitiateTransactionForm {
 
     @NotNull
-    Long accountId;
+    String email;
 
     @NotNull
+    @Min(value = 0)
     Double amount;
 
     String comment;
@@ -22,12 +24,12 @@ public class InitiateTransactionForm {
     @Future
     Date transferDate;
 
-    public Long getAccountId() {
-        return accountId;
+    public String getEmail() {
+        return email;
     }
 
-    public void setAccountId(Long accountId) {
-        this.accountId = accountId;
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public Double getAmount() {

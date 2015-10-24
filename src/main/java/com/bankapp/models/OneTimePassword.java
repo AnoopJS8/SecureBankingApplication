@@ -9,18 +9,21 @@ import java.util.Random;
 import javax.persistence.Entity;
 
 import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
+
+import org.hibernate.annotations.GenericGenerator;
 
 @Entity
 public class OneTimePassword {
     private static final int EXPIRATION = 60 * 24;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
+    @GeneratedValue(generator = "uuid")
+    @GenericGenerator(name = "uuid", strategy = "uuid2")
+    private String id;
+
     private String resourceName;
-    private Long resourceId;
+    private String resourceId;
 
     private String value;
 
@@ -40,11 +43,11 @@ public class OneTimePassword {
         this.resourceName = resourceName;
     }
 
-    public Long getResourceId() {
+    public String getResourceId() {
         return resourceId;
     }
 
-    public void setResourceId(Long resourceId) {
+    public void setResourceId(String resourceId) {
         this.resourceId = resourceId;
     }
 
@@ -55,7 +58,7 @@ public class OneTimePassword {
         super();
     }
 
-    public OneTimePassword(Long resourceId, String resourceName) {
+    public OneTimePassword(String resourceId, String resourceName) {
         super();
         this.value = generateOTP();
         this.resourceId = resourceId;
@@ -71,11 +74,11 @@ public class OneTimePassword {
         return new Date(cal.getTime().getTime());
     }
 
-    public Long getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -110,5 +113,4 @@ public class OneTimePassword {
         return pass.toString();
     }
 
-  
 }

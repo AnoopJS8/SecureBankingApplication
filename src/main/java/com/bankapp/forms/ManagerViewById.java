@@ -3,16 +3,18 @@ package com.bankapp.forms;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
+import org.hibernate.validator.constraints.NotEmpty;
+
 
 public class ManagerViewById {
-	@NotNull
-	Long Id;
+	@NotEmpty
+	String Id;
 	
-	 public Long getId() {
+	 public String getId() {
 	        return this.Id;
 	    }
 
-	    public void setId(Long Id) {
+	    public void setId(String Id) {
 	        this.Id = Id;
 	    }
 }

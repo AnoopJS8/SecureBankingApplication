@@ -1,4 +1,3 @@
-
 package com.bankapp.configs;
 
 import org.springframework.boot.autoconfigure.thymeleaf.ThymeleafProperties;
@@ -28,5 +27,7 @@ public class MvcConfig extends WebMvcAutoConfigurationAdapter {
     @Override
     public void addViewControllers(ViewControllerRegistry registry) {
         registry.addViewController("/login").setViewName("login");
+  
+        
     }
 }

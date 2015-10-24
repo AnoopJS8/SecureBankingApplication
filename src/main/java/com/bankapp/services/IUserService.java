@@ -9,12 +9,12 @@ import com.bankapp.models.User;
 import com.bankapp.models.VerificationToken;
 
 public interface IUserService {
-    
+
     public User addEmployee(User user, String roleName) throws EmailExistsException;
-        
+
     User registerNewUserAccount(User accountDto, String roleName) throws EmailExistsException;
 
-    User getUserById(Long id);
+    User getUserById(String id);
 
     User getUserByEmail(String email);
 
@@ -30,7 +30,7 @@ public interface IUserService {
 
     VerificationToken generateNewVerificationToken(String VerificationToken);
 
-    void updateUser(Long existingUserId, User newUser);
+    void updateUser(String existingUserId, User newUser);
 
     void deleteUser(User user);
 
@@ -44,16 +44,15 @@ public interface IUserService {
     
     boolean emailExist(String email);
     
-    boolean idExist(Long id);
+    boolean idExist(String id);
 
     public boolean verifyPassword(User user, String currentPassword);
 
     // OTP Section
-    OneTimePassword generateOTP(Long resourceId, String resourceName);
+    OneTimePassword generateOTP(String resourceId, String resourceName);
 
     OneTimePassword generateNewOTP(String value);
 
-    boolean verifyOTP(String otp, Long id, String name);
-    
-    
+    boolean verifyOTP(String otp, String id, String name);
+
 }

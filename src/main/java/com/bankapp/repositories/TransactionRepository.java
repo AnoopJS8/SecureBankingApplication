@@ -7,14 +7,11 @@ import org.springframework.data.repository.CrudRepository;
 import com.bankapp.models.Account;
 import com.bankapp.models.Transaction;
 
+public interface TransactionRepository extends CrudRepository<Transaction, String> {
 
-public interface TransactionRepository extends CrudRepository<Transaction, Long> {
+    List<Transaction> findByFromAccountOrToAccountOrderByCreatedDesc(Account fromAccount, Account toAccount);
 
-
-    List<Transaction> findByFromAccountOrToAccountOrderByCreatedAsc(Account fromAccount, Account toAccount);
-
-    Transaction findByTransactionId(Long id);
+    Transaction findByTransactionId(String id);
 
     List<Transaction> findByStatus(String str);
 }
-

@@ -8,14 +8,14 @@ import com.bankapp.models.User;
 
 public interface ITransactionService {
 
-	public List<Transaction> getTransactionsByAccount(Account fromAccount, Account toAccount);
+    public List<Transaction> getTransactionsByAccount(Account fromAccount, Account toAccount);
 
-	public String saveTransaction(Transaction transaction, User user);
+    public String saveTransaction(String fromEmail, String toEmail, Transaction transaction);
 
-	public String initiateTransaction(Transaction transaction, User user);
-	public Transaction getTransactionsById(Long id);
+    public String initiateTransaction(String fromEmail, String toEmail, Transaction transaction);
 
-	public String askCustomerPayment(Transaction transaction, User user);
+    public Transaction getTransactionsById(String id);
+
+    public String askCustomerPayment(Transaction transaction, User user);
 
 }
-

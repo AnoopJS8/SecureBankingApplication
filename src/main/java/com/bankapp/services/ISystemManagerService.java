@@ -1,5 +1,6 @@
 package com.bankapp.services;
 
+import java.util.Date;
 import java.util.List;
 
 import com.bankapp.exceptions.EmailDoesNotExist;
@@ -18,17 +19,21 @@ public interface ISystemManagerService {
 	
 	public User addUser(User user) throws EmailExistsException, UserNameExistsException, UserAlreadyExistException;
 	
-	public User viewUserById(Long id);
+	public User viewUserById(String id);
 	
 	public User viewUserByEmail(String email);
 	
 	public String approveTransaction(Transaction transaction);
 	
-	public Transaction getTransactionbyid(Long id);
+	public Transaction getTransactionbyid(String string);
 	
 	public String reflectChangesToSender(Account account, Double balance, Double amount);
 	
 	public String reflectChangesToReceiver(Account account, Double balance, Double amount);
+
+	public String declineTransaction(Transaction transaction);
+
+	public String modifyTransaction(Transaction transaction, Date new_date);
 
 	
 

@@ -22,28 +22,34 @@ public class TransactionService implements ITransactionService, Constants {
     @Autowired
     private IAccountService accountService;
 
+    @Autowired
+    private IUserService userService;
+
     @Transactional
     @Override
     public List<Transaction> getTransactionsByAccount(Account fromAccount, Account toAccount) {
-        List<Transaction> list = transactionRepository.findByFromAccountOrToAccountOrderByCreatedAsc(fromAccount,
+        List<Transaction> list = transactionRepository.findByFromAccountOrToAccountOrderByCreatedDesc(fromAccount,
                 toAccount);
         return list;
     }
 
     @Transactional
     @Override
-    public String saveTransaction(Transaction transaction, User user) {
+    public String saveTransaction(String fromEmail, String toEmail, Transaction transaction) {
 
-        Long accId = transaction.getToAccount().getAccId();
-        Account toAccount = accountService.getAccountByAccountId(accId);
-        if (toAccount == null) {
+        User fromUser = userService.getUserByEmail(fromEmail);
+        User toUser = userService.getUserByEmail(toEmail);
+        if (fromUser == null || toUser == null) {
             return ERR_ACCOUNT_NOT_EXISTS;
         }
-        Account fromAccount = accountService.getAccountByUser(user);
-        transaction.setToAccount(toAccount);
+        Account fromAccount = accountService.getAccountByUser(fromUser);
+        Account toAccount = accountService.getAccountByUser(toUser);
+        if (fromAccount == null || toAccount == null) {
+            return ERR_ACCOUNT_NOT_EXISTS;
+        }
         transaction.setFromAccount(fromAccount);
-        Date date = new Date();
-        transaction.setTransferDate(date);
+        transaction.setToAccount(toAccount);
+        transaction.setTransferDate(new Date());
 
         if (fromAccount.getBalance() < transaction.getAmount()) {
             return LESS_BALANCE;
@@ -59,7 +65,6 @@ public class TransactionService implements ITransactionService, Constants {
             transactionRepository.save(transaction);
             return message;
         }
-
     }
 
     private boolean isBelowCriticalLimit(Account fromAccount, Transaction transaction) {
@@ -71,44 +76,51 @@ public class TransactionService implements ITransactionService, Constants {
     }
 
     @Transactional
-	@Override
-	public String askCustomerPayment(Transaction transaction, User user) {
-		Long accId = transaction.getToAccount().getAccId();
-		if(accId==null){
-            return ERR_ACCOUNT_NOT_EXISTS;
+    @Override
+    public String askCustomerPayment(Transaction transaction, User user) {
+        try {
+            if (transaction.getFromAccount() == null) {
+                return ERR_ACCOUNT_NOT_EXISTS;
+            }
+            transaction.setToAccount(accountService.getAccountByUser(user));
+            transaction.setStatus(S_PENDING_CUSTOMER_VERIFICATION);
+            Date date = new Date();
+            transaction.setTransferDate(date);
+            transactionRepository.save(transaction);
+            return SUCCESS;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ERROR;
         }
-		try {
-			transaction.setToAccount(accountService.getAccountByUser(user));
-			transaction.setFromAccount(accountService.getAccountByAccountId(accId));
-			transaction.setStatus(S_PENDING_CUSTOMER_VERIFICATION);
-			Date date = new Date();
-			transaction.setTransferDate(date);
-			transactionRepository.save(transaction);
-			return SUCCESS;
-		} catch (Exception e) {
-			e.printStackTrace();
-			return ERROR;
-		}
-	}
+    }
 
-	@Transactional
-	@Override
-	public String initiateTransaction(Transaction transaction, User user) {
-		Long accId = transaction.getToAccount().getAccId();
-		if(accId==null){
-            return ERR_ACCOUNT_NOT_EXISTS;
+    @Transactional
+    @Override
+    public String initiateTransaction(String fromEmail, String toEmail, Transaction transaction) {
+        try {
+            User fromUser = userService.getUserByEmail(fromEmail);
+            User toUser = userService.getUserByEmail(toEmail);
+            if (fromUser == null || toUser == null) {
+                return ERR_ACCOUNT_NOT_EXISTS;
+            }
+            Account fromAccount = accountService.getAccountByUser(fromUser);
+            Account toAccount = accountService.getAccountByUser(toUser);
+            if (fromAccount == null || toAccount == null) {
+                return ERR_ACCOUNT_NOT_EXISTS;
+            }
+            transaction.setFromAccount(fromAccount);
+            transaction.setToAccount(toAccount);
+            transaction.setStatus(S_PENDING);
+            transactionRepository.save(transaction);
+            return SUCCESS;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ERROR;
         }
-		transaction.setToAccount(accountService.getAccountByAccountId(accId));
-		transaction.setFromAccount(accountService.getAccountByUser(user));
-		transaction.setStatus(S_PENDING);
-		System.out.println(transaction.getTransferDate());
-		transaction.setTransferDate(transaction.getTransferDate());
-		transactionRepository.save(transaction);
-		return SUCCESS;
-	}
+    }
 
     @Override
-    public Transaction getTransactionsById(Long id) {
+    public Transaction getTransactionsById(String id) {
         return transactionRepository.findOne(id);
     }
 }

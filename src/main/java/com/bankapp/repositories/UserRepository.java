@@ -13,11 +13,10 @@ import com.bankapp.models.User;
 
 @Repository
 @Qualifier(value = "userRepository")
-public interface UserRepository extends CrudRepository<User, Long> {
+public interface UserRepository extends CrudRepository<User, String> {
     public User findByEmail(String email);
 
-    public User findById(Long id);
-
+    public User findById(String id);
 
     public User findByUsername(String name);
 

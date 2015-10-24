@@ -126,8 +126,7 @@ public class SystemManagerController implements Constants {
 		// //System.out.println("Entered Approve");
 		// //System.out.println("Transaction" + Id.getTransactionId());
 
-		Transaction transaction = manager.getTransactionbyid(Id
-				.getTransactionId());
+		Transaction transaction = manager.getTransactionbyid(Id.getTransactionId());
 
 		Account FromAccount = transaction.getFromAccount();
 		Account ToAccount = transaction.getToAccount();
@@ -234,6 +233,7 @@ public class SystemManagerController implements Constants {
 	public ModelAndView getuser_byemail(final ModelAndView model,@ModelAttribute("form") @Valid ManagerViewByEmail form,
 			BindingResult result, Errors errors, Principal principal,
 			 RedirectAttributes attributes) {
+	
 
 		User user = null;
 		String status = "success";
@@ -247,7 +247,7 @@ public class SystemManagerController implements Constants {
 			return model;
 		}
 
-		
+
 			
 			if(user_service.emailExist(form.getEmail()))
 			{
@@ -293,10 +293,11 @@ public class SystemManagerController implements Constants {
 			model.addObject("form", form);
 			model.setViewName("/manager/viewUserByIdForm");
 			status = "error";
-			message = String.format("Action: Invalid Id");
+			message = String.format("Message: Invalid Id");
 //			System.out.println(message);
 			model.addObject("message",new Message(status, message));
 			return model;
+
 		}
 		
 		if(user_service.idExist(form.getId()))
@@ -313,7 +314,7 @@ public class SystemManagerController implements Constants {
 		}else
 		{
 			status = "error";
-			message = String.format("Action: IdDoesNotExist");
+			message = String.format("Message: IdDoesNotExist");
 //			System.out.println(message);
 			model.addObject("message",new Message(status, message));
 			model.setViewName("/manager/viewUserByIdForm");
