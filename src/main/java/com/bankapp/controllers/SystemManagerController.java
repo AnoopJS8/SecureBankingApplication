@@ -38,12 +38,13 @@ import com.bankapp.models.Role;
 import com.bankapp.models.Transaction;
 import com.bankapp.models.User;
 import com.bankapp.services.ISystemManagerService;
-import com.bankapp.services.IUserService;
+import com.bankapp.services.IUserService;;;
 
 /**
  * @author Nitesh Dhanpal
  *
  */
+
 @Controller
 @Secured("ROLE_MANAGER")
 public class SystemManagerController implements Constants {
@@ -59,6 +60,27 @@ public class SystemManagerController implements Constants {
 
     @Autowired
     ApplicationEventPublisher eventPublisher;
+
+    @RequestMapping(value = "/manager/deleteUsers", method = RequestMethod.GET)
+    public ModelAndView deleteUser() {
+
+        ModelAndView mv = new ModelAndView();
+        mv.setViewName("/manager/deleteUser");
+        List<User> users = user_service.displayDeleteUsers();
+        mv.addObject("viewuser", users);
+        return mv;
+    }
+
+    @RequestMapping(value = "/manager/deleteUsers", method = RequestMethod.POST)
+    public String deleteManager(@ModelAttribute("user") User user, BindingResult result,
+            RedirectAttributes attributes) {
+        Message message;
+        user_service.deleteExternalUser(user);
+        String msg = String.format("Manager '%s' has been deleted", user.getUsername());
+        message = new Message("succes", msg);
+        attributes.addFlashAttribute("message", message);
+        return "redirect:/manager/deleteUsers";
+    }
 
     private final Logger LOGGER = Logger.getLogger(SystemManagerController.class);
 

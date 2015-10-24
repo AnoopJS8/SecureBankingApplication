@@ -27,14 +27,15 @@ import com.bankapp.services.ITransactionService;
 public class EmployeeController implements Constants {
     @Autowired
     private ISystemManagerService managerService;
-    
-    @Autowired ITransactionService transactionService;
+
+    @Autowired
+    ITransactionService transactionService;
 
     @Autowired
 
     private IProfileRequestService profileRequestService;
-    
- // VIEW TRANSACTIONS
+
+    // VIEW TRANSACTIONS
     @RequestMapping(value = "/employee/myaccount", method = RequestMethod.GET)
     public ModelAndView getMyAccount() {
         ModelAndView mv = new ModelAndView();
@@ -52,12 +53,10 @@ public class EmployeeController implements Constants {
         return mv;
     }
 
-    // VIEW USER_PROFILE
     @RequestMapping(value = "/employee/requests", method = RequestMethod.GET)
     public ModelAndView getPendingProfileRequests() {
 
         List<ProfileRequest> requests = profileRequestService.getRequestsByStatus(S_PROFILE_UPDATE_PENDING);
-
         ModelAndView mv = new ModelAndView();
         mv.addObject("requests", requests);
         mv.setViewName("employee/viewRequests");
@@ -162,4 +161,5 @@ public class EmployeeController implements Constants {
 
         return mv;
     }
+
 }

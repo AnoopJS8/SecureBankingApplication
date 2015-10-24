@@ -42,6 +42,9 @@ public class TransactionService implements ITransactionService, Constants {
         if (fromUser == null || toUser == null) {
             return ERR_ACCOUNT_NOT_EXISTS;
         }
+        if(fromUser.equals(toUser)){
+            return "Same User";
+        }
         Account fromAccount = accountService.getAccountByUser(fromUser);
         Account toAccount = accountService.getAccountByUser(toUser);
         if (fromAccount == null || toAccount == null) {
@@ -136,9 +139,32 @@ public class TransactionService implements ITransactionService, Constants {
         return transactionRepository.findOne(id);
     }
 
+    @Override
+    public List<Transaction> getMerchantRequests(String status) {
+        List<Transaction> transactions = transactionRepository.findByStatus(status);
+        return transactions;
+    }
+
+    @Transactional
+    @Override
+    public String actionOnRequest(String id, String status) {
+        try {
+            Transaction transaction = transactionRepository.findOne(id);
+            transaction.setStatus(status);
+            if (status.equals(S_CUSTOMER_VERIFIED)) {
+                String msg = saveTransaction(transaction.getFromAccount().getUser().getEmail(),
+                        transaction.getToAccount().getUser().getEmail(), transaction);
+                return msg;
+            } 
+            transactionRepository.save(transaction);
+            return SUCCESS;
+        } catch (Exception e) {
+            return ERROR;
+        }
+    }
     @Transactional
     @Override
     public List<Transaction> getPendingTransactions() {
-        return transactionRepository.findByStatus("P");
+        return transactionRepository.findByStatus(S_PENDING);
     }
 }

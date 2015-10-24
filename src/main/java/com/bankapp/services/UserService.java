@@ -10,13 +10,17 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.bankapp.exceptions.EmailExistsException;
+import com.bankapp.models.Account;
 import com.bankapp.models.OneTimePassword;
 
 import com.bankapp.models.Role;
+import com.bankapp.models.Transaction;
 import com.bankapp.models.User;
 import com.bankapp.models.VerificationToken;
+import com.bankapp.repositories.AccountRepository;
 import com.bankapp.repositories.OTPRepository;
 import com.bankapp.repositories.RoleRepository;
+import com.bankapp.repositories.TransactionRepository;
 import com.bankapp.repositories.UserRepository;
 import com.bankapp.repositories.VerificationTokenRepository;
 
@@ -27,6 +31,9 @@ public class UserService implements IUserService {
     private UserRepository userRepository;
 
     @Autowired
+    private TransactionRepository transRepository;
+
+    @Autowired
     private OTPRepository oTPRepository;
 
     @Autowired
@@ -34,6 +41,9 @@ public class UserService implements IUserService {
 
     @Autowired
     private RoleRepository roleRepository;
+
+    @Autowired
+    private AccountRepository accountRepository;
 
     @Autowired
     private VerificationTokenRepository tokenRepository;
@@ -70,7 +80,7 @@ public class UserService implements IUserService {
         }
         return false;
     }
-    
+
     public boolean idExist(String id) {
         User user = userRepository.findById(id);
         if (user != null) {
@@ -151,7 +161,6 @@ public class UserService implements IUserService {
         mailService.sendEmail(recipientAddress, subject, textBody);
     }
 
-
     @Override
     public void updateUser(String existingUserId, User updatedUser) {
         User existingUser = userRepository.findById(existingUserId);
@@ -190,6 +199,7 @@ public class UserService implements IUserService {
     public boolean changePassword(User user) {
         try {
             user.setPassword(passwordEncoder.encode(user.getNewpassword()));
+            user.setNewpassword(null);
             userRepository.save(user);
         } catch (Exception e) {
             return false;
@@ -220,7 +230,6 @@ public class UserService implements IUserService {
         return existingOTP;
 
     }
-
 
     @Override
     public boolean verifyOTP(String otp, String id, String name) {
@@ -261,4 +270,40 @@ public class UserService implements IUserService {
 
         return user;
     }
+
+    @Override
+    public List<User> displayDeleteUsers() {
+        List<User> users = userRepository.findByIsDeleted(true);
+
+        return users;
+    }
+
+    @Override
+    public void deleteExternalUser(User user) {
+        Account account = accountRepository.findByUser(user);
+
+        VerificationToken verifyuser = tokenRepository.findByUser(user);
+        if (verifyuser != null) {
+            tokenRepository.delete(verifyuser);
+        }
+
+        if (account != null) {
+            List<Transaction> transactionfromAccount = transRepository.findByFromAccount(account);
+            List<Transaction> transactiontoAccount = transRepository.findByToAccount(account);
+
+            for (int i = 0; i < transactionfromAccount.size(); i++) {
+                transRepository.delete(transactionfromAccount.get(i));
+            }
+
+            for (int i = 0; i < transactiontoAccount.size(); i++) {
+                transRepository.delete(transactiontoAccount.get(i));
+            }
+
+            accountRepository.delete(account);
+        }
+
+        userRepository.delete(user);
+
+    }
+
 }

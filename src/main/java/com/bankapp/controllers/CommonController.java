@@ -53,7 +53,9 @@ public class CommonController implements Constants {
 
     @InitBinder("form")
     public void initBinder(WebDataBinder binder) {
-        CustomDateEditor editor = new CustomDateEditor(new SimpleDateFormat("MM/dd/yyyy"), true);
+        SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
+        sdf.setLenient(false);
+        CustomDateEditor editor = new CustomDateEditor(sdf, true);
         binder.registerCustomEditor(Date.class, editor);
     }
 
@@ -147,7 +149,11 @@ public class CommonController implements Constants {
             status = "error";
             message = ERR_ACCOUNT_NOT_EXISTS;
             redirectUrl = "redirect:/" + role + "/transferfunds";
-        } else if (serviceStatus.equalsIgnoreCase(CRITICAL)) {
+        } else if(serviceStatus.equalsIgnoreCase("Same User")){
+            status="error";
+            message= "Can't send funds to the same user";
+            redirectUrl = "redirect:/" + role + "/transferfunds";
+        }else if (serviceStatus.equalsIgnoreCase(CRITICAL)) {
             status = "success";
             message = "Its a critical transaction, so it will be handled by our employees shortly";
             redirectUrl = "redirect:/" + role + "/myaccount";
