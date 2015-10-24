@@ -11,7 +11,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 public class InitiateTransactionForm {
 
     @NotNull
-    String accountId;
+    String email;
 
     @NotNull
     @Min(value = 0)
@@ -24,12 +24,12 @@ public class InitiateTransactionForm {
     @Future
     Date transferDate;
 
-    public String getAccountId() {
-        return accountId;
+    public String getEmail() {
+        return email;
     }
 
-    public void setAccountId(String accountId) {
-        this.accountId = accountId;
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public Double getAmount() {
