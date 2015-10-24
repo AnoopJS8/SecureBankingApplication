@@ -24,13 +24,19 @@ public class PIIRequestService implements IPIIRequestService, Constants {
     @Transactional
     @Override
     public String saveRequest(PiiRequest piiRequest) {
-        piiRequest.setStatus(S_PII_REQUEST_PENDING);
-        try {
-            piiRequestRepository.save(piiRequest);
-            return SUCCESS;
-        } catch (Exception e) {
-            return ERROR;
+        PersonalIdentificationInfo pii = piiRepository.findByEmail(piiRequest.getEmail());
+        if(pii!=null){
+            piiRequest.setStatus(S_PII_REQUEST_PENDING);
+            try {
+                piiRequestRepository.save(piiRequest);
+                return SUCCESS;
+            } catch (Exception e) {
+                return ERROR;
+            }
+        }else{
+            return ERR_EMAIL_NOT_EXISTS;
         }
+        
     }
 
     @Transactional

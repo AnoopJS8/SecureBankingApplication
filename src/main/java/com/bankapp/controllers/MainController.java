@@ -310,10 +310,10 @@ public class MainController implements Constants {
         pii.setStatus(S_PII_PENDING);
         String message = ipiiservice.savePII(pii);
         if (message.equals(SUCCESS)) {
-            mv.addObject("message", "Pii added successfully");
+            mv.addObject("message", new Message("success", "Pii added successfully"));
             mv.setViewName("success");
         } else {
-            mv.addObject("message", "Error in adding the pii please try again");
+            mv.addObject("message", new Message("error", "Error in adding the pii please try again"));
             mv.setViewName("error");
         }
         return mv;

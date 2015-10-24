@@ -9,6 +9,7 @@ public interface Constants {
 	public String CRITICAL = "Critical transaction";
 	public String PII_EXISTS = "Pii already added";
 	public String ERR_SAME_USER = "Same user transfer is not valid";
+	public String ERR_EMAIL_NOT_EXISTS = "email not present with agency";
 	//Status
 	public String S_PENDING = "P"; //pending for request like transfer money and profile
 	public String S_OTP_PENDING = "OP"; //critical transaction

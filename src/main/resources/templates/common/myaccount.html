@@ -69,7 +69,7 @@
 				</thead>
 				<tbody>
 					<tr th:if="${transactions.size()} == 0">
-						<td colspan="5">There are no transactions</td>
+						<td colspan="6">There are no transactions</td>
 					</tr>
 					<tr th:each="transaction : ${transactions}">
 						<td><span th:text="*{#dates.format(transaction.transferDate,'MM/dd/yyyy')}"></span></td>

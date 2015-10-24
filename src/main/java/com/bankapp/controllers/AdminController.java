@@ -145,7 +145,7 @@ public class AdminController implements Constants {
             RedirectAttributes attributes) {
         Message message;
         profileService.setRequestToVerified(profileRequest.getrId());
-        message = new Message("succes", "Request has been approved");
+        message = new Message("success", "Request has been approved");
         attributes.addFlashAttribute("message", message);
         return "redirect:/admin/requests";
     }
@@ -197,7 +197,7 @@ public class AdminController implements Constants {
 
         Message message;
         profileService.setRequestToVerified(profileRequest.getrId());
-        message = new Message("succes", "Request has been declined");
+        message = new Message("success", "Request has been declined");
         attributes.addFlashAttribute("message", message);
         return "redirect:/admin/requests";
 
@@ -219,8 +219,10 @@ public class AdminController implements Constants {
         Message message;
         String msg = piiRequestService.saveRequest(piiRequest);
         if (msg.equals(SUCCESS)) {
-            message = new Message("succes", "Request has been forwarded to agency ");
-        } else {
+            message = new Message("success", "Request has been forwarded to agency ");
+        } else if(msg.equals(ERR_EMAIL_NOT_EXISTS)){
+            message = new Message("error", "Email does not exist");
+        }else {
             message = new Message("error", "error please try again");
         }
         attributes.addFlashAttribute("message", message);
