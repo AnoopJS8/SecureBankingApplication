@@ -72,7 +72,7 @@
 						<td colspan="5">There are no transactions</td>
 					</tr>
 					<tr th:each="transaction : ${transactions}">
-						<td><span th:text="${transaction.transferDate}"></span></td>
+						<td><span th:text="*{#dates.format(transferDate,'MM/dd/yyyy')}"></span></td>
 						<td><span th:text="${transaction.fromAccount.user.username}"></span></td>
 						<td><span th:text="${transaction.toAccount.user.username}"></span></td>
 						<td><span th:text="${transaction.amount}"></span></td>

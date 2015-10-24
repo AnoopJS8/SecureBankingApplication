@@ -19,7 +19,7 @@
 				</thead>
 				<tbody>
 					<tr th:each="row : ${modify_transaction}">
-						<td><span th:text="${row.transferDate}"></span></td>
+						<td><span th:text="*{#dates.format(transferDate,'MM/dd/yyyy')}"></span></td>
 						<td>
 							<form action="#" th:action="@{/modifyDate_transactions}"
 								th:object="${row}" method="post">

@@ -104,7 +104,8 @@ public class SignupController {
 		newUser.setDateOfBirth(form.getDateOfBirth());
 		newUser.setPhoneNumber(form.getPhoneNumber());
 		newUser.setGender(form.getGender());
-		
+		newUser.setSecurityQuestion(form.getSecurityQuestion());
+		newUser.setSecurityAnswer(form.getSecurityAnswer());
 		Role role = form.getRole();
 		String logMessage = String.format("Registering user account with information: {%s, %s}", newUser, role);
 		LOGGER.info(logMessage);
