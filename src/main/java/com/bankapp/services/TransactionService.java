@@ -123,4 +123,10 @@ public class TransactionService implements ITransactionService, Constants {
     public Transaction getTransactionsById(String id) {
         return transactionRepository.findOne(id);
     }
+
+    @Transactional
+    @Override
+    public List<Transaction> getPendingTransactions() {
+        return transactionRepository.findByStatus("P");
+    }
 }

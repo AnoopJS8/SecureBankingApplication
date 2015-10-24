@@ -3,10 +3,8 @@ package com.bankapp.services;
 import java.util.Date;
 import java.util.List;
 
-import com.bankapp.exceptions.EmailDoesNotExist;
 import com.bankapp.exceptions.EmailExistsException;
 import com.bankapp.exceptions.UserAlreadyExistException;
-import com.bankapp.exceptions.UserIdDoesNotExist;
 import com.bankapp.exceptions.UserNameExistsException;
 import com.bankapp.models.Account;
 import com.bankapp.models.Transaction;
