@@ -2,10 +2,10 @@ package com.bankapp.services;
 
 import java.security.GeneralSecurityException;
 import java.security.Principal;
-import java.util.Base64;
 import java.util.List;
 import java.util.UUID;
 
+import org.apache.commons.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -143,10 +143,8 @@ public class UserService implements IUserService {
     public void saveRegisteredUser(User user) {
         try {
             RSAKeyPair keyPair = new RSAKeyPair(2048);
-            user.setPublicKey(keyPair.getPublicKey());
-
-            String privateKey = Base64.getEncoder().encodeToString(keyPair.getPrivateKey());
-            System.out.println(privateKey);
+            user.setPublicKey(keyPair.getPrivateKey());
+            String publicKey = new String(Base64.encodeBase64(keyPair.getPublicKey()));
             String userName = user.getUsername();
             String recipientAddress = user.getEmail();
             String subject = "My ASU Bank - Security Feature";
@@ -156,7 +154,7 @@ public class UserService implements IUserService {
                     + "Please download our transaction verifier, and use the below provided "
                     + "PIN to encrypt your transactions.<br /><br />%s<br /><br />"
                     + "Download the transaction verifier from: <a href='%s'>HERE</a>"
-                    + "<br />Regards,<br />My ASU Bank", userName, privateKey, "DUMMY");
+                    + "<br />Regards,<br />My ASU Bank", userName, publicKey, "DUMMY");
 
             mailService.sendEmail(recipientAddress, subject, textBody);
             userRepository.save(user);
