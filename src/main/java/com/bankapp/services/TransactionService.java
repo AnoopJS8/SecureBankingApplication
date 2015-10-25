@@ -217,6 +217,10 @@ public class TransactionService implements ITransactionService, Constants {
                 transaction.setStatus(A_CREDIT);
             } else {
                 transaction.setStatus(A_DEBIT);
+                
+                if(fromAccount.getBalance() < transaction.getAmount()) {
+                    return ERR_LESS_BALANCE;
+                }
             }
 
             transaction.setFromAccount(fromAccount);

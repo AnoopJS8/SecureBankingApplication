@@ -41,7 +41,7 @@
 							id="transferdate" placeholder="MM/dd/yyyy" th:field="*{transferDate}"
 							th:value="*{#dates.format(transferDate, 'MM/dd/yyyy')}" /><label
 							th:if="${#fields.hasErrors('transferDate')}"
-							th:errors="*{#dates.format(transferDate,'MM/dd/yyyy')}"></label>
+							th:errors="*{transferDate}"></label>
 					</div>
 					<div th:if="*{transferDate} == null">
 						<input type="text" class="form-control" name="transferdate"
