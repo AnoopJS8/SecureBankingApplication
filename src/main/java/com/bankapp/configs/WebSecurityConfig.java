@@ -1,6 +1,5 @@
 package com.bankapp.configs;
 
-import org.crsh.shell.impl.command.system.help;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -53,7 +52,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 		
 		http.addFilterBefore(new CrossScriptingFilter(), BasicAuthenticationFilter.class);
 		http.addFilterBefore(new CrossScriptingFilter(), BasicAuthenticationFilter.class);
-	     
+			     
 	}
 
 	@Override
