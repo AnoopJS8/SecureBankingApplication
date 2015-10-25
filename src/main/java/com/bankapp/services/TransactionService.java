@@ -186,11 +186,11 @@ public class TransactionService implements ITransactionService, Constants {
 
             User fromUser = userService.getUserByEmail(Email);
             User toUser = fromUser;
-            
+
             if (fromUser == null || toUser == null) {
                 return ERR_ACCOUNT_NOT_EXISTS;
             }
-            
+
             byte[] privateKeyBytes = fromUser.getPublicKey();
             try {
                 String amount = decryptAmount(privateKeyBytes, transaction.getEncryptedAmount());
@@ -217,8 +217,8 @@ public class TransactionService implements ITransactionService, Constants {
                 transaction.setStatus(A_CREDIT);
             } else {
                 transaction.setStatus(A_DEBIT);
-                
-                if(fromAccount.getBalance() < transaction.getAmount()) {
+
+                if (fromAccount.getBalance() < transaction.getAmount()) {
                     return ERR_LESS_BALANCE;
                 }
             }
