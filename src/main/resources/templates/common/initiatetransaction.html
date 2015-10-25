@@ -28,30 +28,27 @@
 			<div class="form-group">
 				<label class="col-md-3 control-label">Amount in dollars: </label>
 				<div class="col-md-5">
-					<div class="input-group">
-						<div class="input-group-addon">$</div>
-						<input type="number" class="form-control" name="amount" id="amount"
-							th:field="*{amount}" /><label th:if="${#fields.hasErrors('amount')}"
-							th:errors="*{amount}"></label>
-					</div>
+					<input type="text" class="form-control" name="amount" id="amount"
+						th:field="*{amount}" /><label th:if="${#fields.hasErrors('amount')}"
+						th:errors="*{amount}"></label>
 				</div>
 			</div>
 			<div class="form-group">
 				<label class="col-md-3 control-label">Transfer Date: </label>
 				<div class="col-md-5">
-				
-				<div th:if="*{transferDate} != null">
-					<input type="text" class="form-control" name="transferdate"
-						id="transferdate" placeholder="MM/dd/yyyy" th:field="*{transferDate}" th:value="*{#dates.format(transferDate, 'MM/dd/yyyy')}"/><label
-						th:if="${#fields.hasErrors('transferDate')}" th:errors="*{#dates.format(transferDate,'MM/dd/yyyy')}"></label>
-				</div>
-				<div th:if="*{transferDate} == null">
-					<input type="text" class="form-control" name="transferdate"
-						id="transferdate" placeholder="MM/dd/yyyy" th:field="*{transferDate}" th:value="*{transferDate}"/><label
-						th:if="${#fields.hasErrors('transferDate')}" th:errors="*{transferDate}"></label>
-						
-				</div>
-					
+					<div th:if="*{transferDate} != null">
+						<input type="text" class="form-control" name="transferdate"
+							id="transferdate" placeholder="MM/dd/yyyy" th:field="*{transferDate}"
+							th:value="*{#dates.format(transferDate, 'MM/dd/yyyy')}" /><label
+							th:if="${#fields.hasErrors('transferDate')}"
+							th:errors="*{transferDate}"></label>
+					</div>
+					<div th:if="*{transferDate} == null">
+						<input type="text" class="form-control" name="transferdate"
+							id="transferdate" placeholder="MM/dd/yyyy" th:field="*{transferDate}"
+							th:value="*{transferDate}" /><label
+							th:if="${#fields.hasErrors('transferDate')}" th:errors="*{transferDate}"></label>
+					</div>
 				</div>
 			</div>
 			<div class="form-group">

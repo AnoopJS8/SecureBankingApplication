@@ -7,6 +7,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
@@ -28,7 +29,7 @@ public class User {
     @GenericGenerator(name = "uuid", strategy = "uuid2")
     private String id;
 
-    @NotEmpty    
+    @NotEmpty
     private String username;
 
     @NotEmpty
@@ -36,7 +37,6 @@ public class User {
     @Email
     @Column(unique = true)
     private String email;
-
 
     @ManyToOne(cascade = CascadeType.ALL)
     private Role role;
@@ -60,7 +60,7 @@ public class User {
     private String gender;
 
     private boolean enabled;
-    
+
     private boolean isDeleted;
 
     private boolean tokenExpired;
@@ -77,6 +77,8 @@ public class User {
 
     private Date lastLoginDate;
 
+    @Lob
+    private byte[] publicKey;
 
     public User() {
         super();
@@ -160,8 +162,6 @@ public class User {
     public boolean isEnabled() {
         return enabled;
     }
-    
-    
 
     public void setEnabled(final boolean enabled) {
         this.enabled = enabled;
@@ -225,7 +225,6 @@ public class User {
         this.securityAnswer = securtiyAnswer;
     }
 
-
     public String getCurrentLoginIP() {
         return currentLoginIP;
     }
@@ -258,6 +257,22 @@ public class User {
         this.lastLoginIP = lastLoginIP;
     }
 
+    public boolean isDeleted() {
+        return isDeleted;
+    }
+
+    public void setDeleted(boolean isDeleted) {
+        this.isDeleted = isDeleted;
+    }
+
+    public byte[] getPublicKey() {
+        return publicKey;
+    }
+
+    public void setPublicKey(byte[] publicKey) {
+        this.publicKey = publicKey;
+    }
+
     @Override
     public String toString() {
         String value = String.format(
@@ -265,13 +280,5 @@ public class User {
                 id, username, email, address, phoneNumber, dateOfBirth, gender, securityQuestion, securityAnswer);
         return value;
     }
-
-	public boolean isDeleted() {
-		return isDeleted;
-	}
-
-	public void setDeleted(boolean isDeleted) {
-		this.isDeleted = isDeleted;
-	}
 
 }

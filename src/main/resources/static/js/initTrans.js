@@ -2,32 +2,29 @@ $(document).ready(function() {
 	$('#init-form').validate({
 		errorClass : 'error',
 		rules : {
-
-		'accountId' : {
-			required : true
-		},
-		'amount' : {
-			required : true,
-			digits : true
-		},
-		'comment' : {
-			required : false
-		},
-		'transferDate' : {
-			required : true,
-			dateFA: true,
-			maxDate : true,
-			minDate: true
-		}
-	},
-	// Specify the validation error messages
-	messages : {
-		'accountId' : {
-			required: "Recepient Account number cannot be NULL"
+			'accountId' : {
+				required : true
 			},
 			'amount' : {
-				required : "Transfer amount cannot be NULL",
-				digits : "Please enter valid amount"
+				required : true
+			},
+			'comment' : {
+				required : false
+			},
+			'transferDate' : {
+				required : true,
+				dateFA : true,
+				maxDate : true,
+				minDate : true
+			}
+		},
+		// Specify the validation error messages
+		messages : {
+			'accountId' : {
+				required : "Recepient Account number cannot be NULL"
+			},
+			'amount' : {
+				required : "Transfer amount cannot be NULL"
 			},
 			'transferDate' : {
 				required : "Transfer date cannot be NULL",
@@ -59,6 +56,5 @@ $.validator.addMethod("maxDate", function(value, element) {
 	var now = new Date('December 31, 2099');
 	var myDate = new Date(value);
 	return this.optional(element) || (myDate.getFullYear() < now);
-
 
 });
