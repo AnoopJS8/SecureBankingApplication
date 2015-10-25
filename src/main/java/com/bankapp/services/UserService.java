@@ -205,6 +205,18 @@ public class UserService implements IUserService {
         Role employeeRole = roleRepository.findByName("ROLE_EMPLOYEE");
         return userRepository.findByRole(employeeRole);
     }
+    
+    @Override
+    public List<User> getCustomers() {
+        Role role = roleRepository.findByName("ROLE_CUSTOMER");
+        return userRepository.findByRole(role);
+    }
+    
+    @Override
+    public List<User> getMerchants() {
+        Role role = roleRepository.findByName("ROLE_MERCHANT");
+        return userRepository.findByRole(role);
+    }
 
     @Override
     public boolean verifyPassword(User user, String currentPassword) {

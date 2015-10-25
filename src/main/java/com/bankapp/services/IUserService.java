@@ -1,4 +1,3 @@
-
 package com.bankapp.services;
 
 import java.security.Principal;
@@ -41,6 +40,10 @@ public interface IUserService {
 
     List<User> getEmployees();
 
+    List<User> getCustomers();
+
+    List<User> getMerchants();
+
     void generateTemporaryPassword(User user);
 
     boolean changePassword(User user);
@@ -51,8 +54,6 @@ public interface IUserService {
 
     public boolean verifyPassword(User user, String currentPassword);
 
-    public List<User> displayDeleteUsers();
-
     public void deleteExternalUser(User user);
 
     // OTP Section
@@ -61,5 +62,7 @@ public interface IUserService {
     OneTimePassword generateNewOTP(String value);
 
     boolean verifyOTP(String otp, String id, String name);
+
+    List<User> displayDeleteUsers();
 
 }

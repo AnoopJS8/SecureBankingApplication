@@ -28,7 +28,14 @@
 						<td><span th:text="*{user.email}"></span></td>
 						<td><span th:text="${user.address}"></span></td>
 						<td><span th:text="${user.phoneNumber}"></span></td>
-						<td><span th:text="${user.dateOfBirth}"></span></td>
+						<td>
+                                <div th:if="*{dateOfBirth} != null">
+                                    <span th:text="*{#dates.format(dateOfBirth,'MM/dd/yyyy')}"></span>
+                                </div>
+                                <div th:if="*{dateOfBirth} == null">
+                                    <span th:text="*{dateOfBirth}"></span>
+                                </div>
+                            </td>
 						<td><span th:text="${user.gender}"></span></td>
 						<td>
 							<form action="#" th:object="${user}" th:action="@{/manager/deleteUsers}"

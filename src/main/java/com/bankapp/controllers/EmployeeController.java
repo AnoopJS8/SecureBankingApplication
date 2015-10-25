@@ -108,7 +108,7 @@ public class EmployeeController implements Constants {
             WebRequest request, Errors errors) {
         ModelAndView mv = new ModelAndView();
 
-        Transaction transaction = managerService.getTransactionbyid(Id.getTransactionId());
+        Transaction transaction = managerService.getTransactionById(Id.getTransactionId());
 
         Account FromAccount = transaction.getFromAccount();
         Account ToAccount = transaction.getToAccount();
@@ -139,7 +139,7 @@ public class EmployeeController implements Constants {
             WebRequest request, Errors errors) {
         ModelAndView mv = new ModelAndView();
 
-        Transaction transaction = managerService.getTransactionbyid(Id.getTransactionId());
+        Transaction transaction = managerService.getTransactionById(Id.getTransactionId());
 
         String str = managerService.declineTransaction(transaction);
 
@@ -155,7 +155,7 @@ public class EmployeeController implements Constants {
             WebRequest request, Errors errors) {
         ModelAndView mv = new ModelAndView();
 
-        Transaction transaction = managerService.getTransactionbyid(Id.getTransactionId());
+        Transaction transaction = managerService.getTransactionById(Id.getTransactionId());
 
         /*
          * Account ToAccount = transaction.getToAccount(); String to_acct =
