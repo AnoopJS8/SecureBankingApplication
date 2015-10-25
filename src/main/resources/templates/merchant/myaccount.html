@@ -57,7 +57,7 @@
 						<td th:if="${transaction.status.equalsIgnoreCase('V') || transaction.status.equalsIgnoreCase('OV')}">
 							<span th:text="Completed"></span>
 						</td>
-						<td th:if="${transaction.status.equalsIgnoreCase('P') || transaction.status.equalsIgnoreCase('OP') || transaction.status.equalsIgnoreCase('PCV') || transaction.status.equalsIgnoreCase('CV')}">
+						<td th:if="${transaction.status.equalsIgnoreCase('P') || transaction.status.equalsIgnoreCase('OP') || transaction.status.equalsIgnoreCase('PCV') || transaction.status.equalsIgnoreCase('CV') || transaction.status.equalsIgnoreCase('ACR') || transaction.status.equalsIgnoreCase('ADT')}">
 							<span th:text="Pending"></span>
 						</td>
 					</tr>

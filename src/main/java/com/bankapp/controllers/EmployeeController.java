@@ -1,5 +1,6 @@
 package com.bankapp.controllers;
 
+import java.security.Principal;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,14 +13,17 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.bankapp.constants.Constants;
+import com.bankapp.constants.Message;
 import com.bankapp.models.Account;
 import com.bankapp.models.ProfileRequest;
 import com.bankapp.models.Transaction;
 import com.bankapp.services.IProfileRequestService;
 import com.bankapp.services.ISystemManagerService;
 import com.bankapp.services.ITransactionService;
+import com.bankapp.services.IUserService;
 
 @Controller
 @Secured("ROLE_EMPLOYEE")
@@ -29,16 +33,22 @@ public class EmployeeController implements Constants {
     private ISystemManagerService managerService;
 
     @Autowired
-    ITransactionService transactionService;
+    private ITransactionService transactionService;
 
     @Autowired
-
     private IProfileRequestService profileRequestService;
+
+    @Autowired
+    private IUserService userService;
 
     // VIEW TRANSACTIONS
     @RequestMapping(value = "/employee/myaccount", method = RequestMethod.GET)
-    public ModelAndView getMyAccount() {
+    public ModelAndView getMyAccount(Principal principal) {
         ModelAndView mv = new ModelAndView();
+        if (userService.hasMissingFields(principal)) {
+            mv.addObject("message",
+                    new Message("error", "You are missing important details. Please update your profile urgently"));
+        }
         mv.setViewName("employee/myaccount");
         return mv;
     }
@@ -63,36 +73,33 @@ public class EmployeeController implements Constants {
         return mv;
     }
 
-    // AUTHORIZE USER_PROFILE
-    @RequestMapping(value = "/authorize_userprofile", method = RequestMethod.POST, params = "action=Authorize")
-    public ModelAndView authorizeProfileRequests(@ModelAttribute("row") ProfileRequest profileRequest,
-            BindingResult result, WebRequest request, Errors errors) {
-        ModelAndView mv = new ModelAndView();
+    @RequestMapping(value = "/employee/requests", method = RequestMethod.POST, params = "action=Authorize")
+    public String authorizeProfileRequests(@ModelAttribute("row") ProfileRequest profileRequest, BindingResult result,
+            RedirectAttributes attributes) {
+        ProfileRequest pRequest = profileRequestService.getRequestById(profileRequest.getrId());
+        String serviceStatus = profileRequestService.authorizeRequest(pRequest);
+        if (serviceStatus.equalsIgnoreCase(S_PROFILE_UPDATE_VERIFIED)) {
+            attributes.addFlashAttribute("message", new Message("success", "Request has been approved successfully"));
+        } else {
+            attributes.addFlashAttribute("message", new Message("error", serviceStatus));
+        }
 
-        ProfileRequest requests = profileRequestService.getRequestById(profileRequest.getrId());
-
-        String str = profileRequestService.authorizeRequest(requests);
-
-        mv.addObject("result1", str);
-        mv.setViewName("employee/viewRequests");
-
-        return mv;
+        return "redirect:/employee/requests";
     }
 
     // DECLINE USER_PROFILE
-    @RequestMapping(value = "/authorize_userprofile", method = RequestMethod.POST, params = "action=Decline")
-    public ModelAndView declineProfileRequests(@ModelAttribute("row") ProfileRequest rId, BindingResult result,
-            WebRequest request, Errors errors) {
-        ModelAndView mv = new ModelAndView();
+    @RequestMapping(value = "/employee/requests", method = RequestMethod.POST, params = "action=Decline")
+    public String declineProfileRequests(@ModelAttribute("row") ProfileRequest profileRequest, BindingResult result,
+            WebRequest request, Errors errors, RedirectAttributes attributes) {
+        ProfileRequest pRequest = profileRequestService.getRequestById(profileRequest.getrId());
+        String serviceStatus = profileRequestService.declineRequest(pRequest);
+        if (serviceStatus.equalsIgnoreCase(S_PROFILE_UPDATE_DECLINED)) {
+            attributes.addFlashAttribute("message", new Message("success", "Request has been declined successfully"));
+        } else {
+            attributes.addFlashAttribute("message", new Message("error", serviceStatus));
+        }
 
-        ProfileRequest requests = profileRequestService.getRequestById(rId.getrId());
-
-        String str = profileRequestService.declineRequest(requests);
-
-        mv.addObject("result1", str);
-        mv.setViewName("employee/viewRequests");
-
-        return mv;
+        return "redirect:/employee/requests";
     }
 
     // EMPLOYEE AUTHORIZE TRANSACTION

@@ -24,4 +24,6 @@ public interface ITransactionService {
 
     public List<Transaction> getPendingTransactions();
 
+    public String creditDebit(String Email, Transaction transaction);
+
 }

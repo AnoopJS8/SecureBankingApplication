@@ -43,7 +43,9 @@ public class CustomerController implements Constants {
         String msg = transactionService.actionOnRequest(transaction.getTransactionId(), S_CUSTOMER_VERIFIED);
         if (msg.equals(SUCCESS)) {
             message = new Message("success", "Request has been approved ");
-        } else {
+        } else if(msg.equals(LESS_BALANCE)){
+            message = new Message("error", "You have insufficient balance. ");
+        }else {
             message = new Message("error", "error please try again");
         }
         attributes.addFlashAttribute("message", message);

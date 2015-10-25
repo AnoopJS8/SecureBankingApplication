@@ -27,6 +27,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.bankapp.constants.Constants;
 import com.bankapp.constants.Message;
+import com.bankapp.forms.CreditDebitForm;
 import com.bankapp.forms.InitiateTransactionForm;
 import com.bankapp.forms.TransferFundsForm;
 import com.bankapp.models.Account;
@@ -135,7 +136,7 @@ public class CommonController implements Constants {
         transaction.setAmount(form.getAmount());
         transaction.setComment(form.getComment());
 
-		String serviceStatus = transactionService.saveTransaction(fromEmail, toEmail, transaction);
+        String serviceStatus = transactionService.saveTransaction(fromEmail, toEmail, transaction);
 
         if (serviceStatus.equalsIgnoreCase(LESS_BALANCE)) {
             status = "error";
@@ -149,11 +150,11 @@ public class CommonController implements Constants {
             status = "error";
             message = ERR_ACCOUNT_NOT_EXISTS;
             redirectUrl = "redirect:/" + role + "/transferfunds";
-        } else if(serviceStatus.equalsIgnoreCase("Same User")){
-            status="error";
-            message= "Can't send funds to the same user";
+        } else if (serviceStatus.equalsIgnoreCase(ERR_SAME_USER)) {
+            status = "error";
+            message = ERR_SAME_USER;
             redirectUrl = "redirect:/" + role + "/transferfunds";
-        }else if (serviceStatus.equalsIgnoreCase(CRITICAL)) {
+        } else if (serviceStatus.equalsIgnoreCase(CRITICAL)) {
             status = "success";
             message = "Its a critical transaction, so it will be handled by our employees shortly";
             redirectUrl = "redirect:/" + role + "/myaccount";
@@ -233,12 +234,11 @@ public class CommonController implements Constants {
             status = "error";
             message = ERR_ACCOUNT_NOT_EXISTS;
             redirectUrl = "redirect:/" + role + "/initiatetransaction";
-        }else if(serviceStatus.equalsIgnoreCase("Same User")){
-            status="error";
-            message= "Can't send funds to the same user";
+        } else if (serviceStatus.equalsIgnoreCase(ERR_SAME_USER)) {
+            status = "error";
+            message = ERR_SAME_USER;
             redirectUrl = "redirect:/" + role + "/initiatetransaction";
-        }
-        else {
+        } else {
             status = "error";
             message = "An unhandled error occurred. Please contact the administrator";
             redirectUrl = "redirect:/" + role + "/initiatetransaction";
@@ -253,4 +253,80 @@ public class CommonController implements Constants {
 
         return redirectUrl;
     }
+
+    @RequestMapping(value = { "/customer/creditdebit",
+            "/merchant/creditdebit" }, method = RequestMethod.GET)
+    public ModelAndView creditDebit(HttpServletRequest request) {
+        String role;
+
+        if (request.isUserInRole("ROLE_CUSTOMER")) {
+            role = "customer";
+        } else {
+            role = "merchant";
+        }
+
+        ModelAndView mv = new ModelAndView("common/creditdebit");
+        mv.addObject("form", new CreditDebitForm());
+        mv.addObject("role", role);
+
+        String logMessage = String.format("[Action=%s, Method=%s, Role=%s]", "creditdebit", "GET", role);
+        LOGGER.info(logMessage);
+
+        return mv;
+    }
+
+    @RequestMapping(value = { "/customer/creditdebit",
+            "/merchant/creditdebit" }, method = RequestMethod.POST)
+    public String creditDebit(@AuthenticationPrincipal UserDetails activeUser, final ModelMap model,
+            @ModelAttribute("form") @Valid CreditDebitForm form, BindingResult result,
+            HttpServletRequest request, RedirectAttributes attributes) {
+
+        String status;
+        String message;
+        String redirectUrl;
+        String logMessage;
+        String role;
+
+        if (request.isUserInRole("ROLE_CUSTOMER")) {
+            role = "customer";
+        } else {
+            role = "merchant";
+        }
+
+        if (result.hasErrors()) {
+            model.addAttribute("form", form);
+            return "common/creditdebit";
+        }
+
+        String Email = activeUser.getUsername();
+        Transaction transaction = new Transaction();
+        transaction.setAmount(form.getAmount());
+        transaction.setStatus(form.getStatus());
+        
+        String serviceStatus = transactionService.creditDebit(Email, transaction);
+
+        if (serviceStatus.equalsIgnoreCase(SUCCESS)) {
+            status = "success";
+            message = "Your transaction is initiated and will be handled by our employees";
+            redirectUrl = "redirect:/" + role + "/myaccount";
+        } else if (serviceStatus.equalsIgnoreCase(ERR_ACCOUNT_NOT_EXISTS)) {
+            status = "error";
+            message = ERR_ACCOUNT_NOT_EXISTS;
+            redirectUrl = "redirect:/" + role + "/creditdebit";
+        } else {
+            status = "error";
+            message = "An unhandled error occurred. Please contact the administrator";
+            redirectUrl = "redirect:/" + role + "/creditdebit";
+        }
+
+        attributes.addFlashAttribute("message", new Message(status, message));
+        attributes.addFlashAttribute("role", role);
+
+        logMessage = String.format("[Action=%s, Method=%s, Role=%s][Status=%s][Message=%s]", "creditdebit",
+                "POST", role, serviceStatus, message);
+        LOGGER.info(logMessage);
+
+        return redirectUrl;
+    }
+
 }

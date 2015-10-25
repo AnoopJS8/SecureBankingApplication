@@ -31,6 +31,7 @@ import com.bankapp.listeners.OnOtpEvent;
 import com.bankapp.models.Account;
 import com.bankapp.models.PersonalIdentificationInfo;
 import com.bankapp.models.ProfileRequest;
+import com.bankapp.models.Role;
 import com.bankapp.models.User;
 import com.bankapp.services.IAccountService;
 import com.bankapp.services.IPIIService;
@@ -56,7 +57,7 @@ public class MainController implements Constants {
 
     @Autowired
     private IPIIService ipiiservice;
-    
+
     @InitBinder("form")
     public void initBinder(WebDataBinder binder) {
         SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
@@ -154,7 +155,10 @@ public class MainController implements Constants {
         form.setUsername(loggedInUser.getUsername());
         form.setEmail(loggedInUser.getEmail());
         form.setAddress(loggedInUser.getAddress());
+        form.setPhoneNumber(loggedInUser.getPhoneNumber());
         form.setDateOfBirth(loggedInUser.getDateOfBirth());
+        form.setSecurityQuestion(loggedInUser.getSecurityQuestion());
+        form.setSecurityAnswer(loggedInUser.getSecurityAnswer());
 
         mv.addObject("form", form);
         mv.addObject("role", role);
@@ -176,13 +180,18 @@ public class MainController implements Constants {
             return "profile";
         }
 
+        User loggedInUser = userService.getUserFromSession(principal);
+        Role role = loggedInUser.getRole();
+
         ProfileRequest profile = new ProfileRequest();
         profile.setAddress(form.getAddress());
         profile.setDateOfBirth(form.getDateOfBirth());
         profile.setPhoneNumber(form.getPhoneNumber());
         profile.setStatus(S_PROFILE_UPDATE_PENDING);
-        profile.setUser(userService.getUserFromSession(principal));
-        profile.setRole(userService.getUserFromSession(principal).getRole());
+        profile.setSecurityQuestion(form.getSecurityQuestion());
+        profile.setSercurityAnswer(form.getSecurityAnswer());
+        profile.setUser(loggedInUser);
+        profile.setRole(role);
 
         String serviceStatus = profileRequestService.saveProfileRequest(profile);
 
@@ -192,7 +201,7 @@ public class MainController implements Constants {
             redirectUrl = "redirect:/profile";
         } else {
             status = "success";
-            message = "Request for changes are sent to out employee";
+            message = "Request for changes to your profile have been sent to our employee";
             redirectUrl = "redirect:/profile";
         }
 
@@ -310,10 +319,10 @@ public class MainController implements Constants {
         pii.setStatus(S_PII_PENDING);
         String message = ipiiservice.savePII(pii);
         if (message.equals(SUCCESS)) {
-            mv.addObject("message", "Pii added successfully");
+            mv.addObject("message", new Message("success", "Pii added successfully"));
             mv.setViewName("success");
         } else {
-            mv.addObject("message", "Error in adding the pii please try again");
+            mv.addObject("message", new Message("error", "Error in adding the pii please try again"));
             mv.setViewName("error");
         }
         return mv;

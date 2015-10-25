@@ -32,6 +32,10 @@ public class ProfileRequest {
 
     private Date dateOfBirth;
 
+    private String securityQuestion;
+
+    private String sercurityAnswer;
+
     @ManyToOne
     @JoinColumn(name = "roleId", nullable = false)
     private Role role;
@@ -100,6 +104,22 @@ public class ProfileRequest {
 
     public void setRole(Role role) {
         this.role = role;
+    }
+
+    public String getSecurityQuestion() {
+        return securityQuestion;
+    }
+
+    public void setSecurityQuestion(String securityQuestion) {
+        this.securityQuestion = securityQuestion;
+    }
+
+    public String getSercurityAnswer() {
+        return sercurityAnswer;
+    }
+
+    public void setSercurityAnswer(String sercurityAnswer) {
+        this.sercurityAnswer = sercurityAnswer;
     }
 
 }

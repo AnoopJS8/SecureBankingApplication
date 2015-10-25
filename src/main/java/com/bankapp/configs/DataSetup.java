@@ -1,5 +1,4 @@
 
- 
 package com.bankapp.configs;
 
 import java.util.Date;
@@ -96,6 +95,19 @@ public class DataSetup implements ApplicationListener<ContextRefreshedEvent> {
         customerUser.setSecurityQuestion("Name?");
         customerUser.setSecurityAnswer("test");
         userRepository.save(customerUser);
+
+        final Role agencyRole = roleRepository.findByName("ROLE_AGENCY");
+        User agencyUser = new User();
+        agencyUser.setUsername("Test Agency");
+        agencyUser.setPassword(passwordEncoder.encode("test123"));
+        agencyUser.setEmail("test@agency.com");
+        agencyUser.setRole(agencyRole);
+        agencyUser.setEnabled(true);
+        agencyUser.setDateOfBirth(new Date());
+        agencyUser.setPhoneNumber("1231231231");
+        agencyUser.setSecurityQuestion("Name?");
+        agencyUser.setSecurityAnswer("test");
+        userRepository.save(agencyUser);
 
         doDataSetup = true;
     }
