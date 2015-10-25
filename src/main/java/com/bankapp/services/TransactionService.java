@@ -18,7 +18,11 @@ import com.bankapp.exceptions.TimeExpiredException;
 import com.bankapp.models.Account;
 import com.bankapp.models.Transaction;
 import com.bankapp.models.User;
+import com.bankapp.repositories.AccountRepository;
 import com.bankapp.repositories.TransactionRepository;
+
+import apple.laf.JRSUIConstants.State;
+import scala.annotation.meta.setter;
 
 @Service
 public class TransactionService implements ITransactionService, Constants {
@@ -85,7 +89,7 @@ public class TransactionService implements ITransactionService, Constants {
         transaction.setTransferDate(new Date());
 
         if (fromAccount.getBalance() < transaction.getAmount()) {
-            transaction.setStatus(S_PENDING_CUSTOMER_VERIFICATION);
+            transaction.setStatus(S_DECLINED);
             transactionRepository.save(transaction);
             return ERR_LESS_BALANCE;
         } else {
@@ -285,5 +289,55 @@ public class TransactionService implements ITransactionService, Constants {
         }
 
         return decryptedWords[0];
+    }
+
+    @Transactional
+    @Override
+    public List<Transaction> getCreditDebitRequest() {
+        List<Transaction> list = transactionRepository.findByStatus(A_CREDIT);
+        list.addAll(transactionRepository.findByStatus(A_DEBIT));
+        return list;
+    }
+
+    @Override
+    public String creditDebitTransaction(User user, String action, Transaction transaction) {
+        try{
+            byte[] privateKeyBytes = user.getPublicKey();
+            try {
+                String amount = decryptAmount(privateKeyBytes, transaction.getEncryptedAmount());
+                Double parsedAmount = Double.parseDouble(amount);
+                transaction.setAmount(parsedAmount);
+                transaction.setEncryptedAmount(null);
+            } catch (UnsupportedEncodingException e) {
+                return ERR_TRANS_DECODE;
+            } catch (GeneralSecurityException e) {
+                return ERR_TRANS_DECRYPTION;
+            } catch (NumberFormatException e) {
+                return ERR_TRANS_INCORRECT_FORMAT;
+            } catch (TimeExpiredException e) {
+                return ERR_TRANS_EXPIRED;
+            } catch (Exception e) {
+                return ERR_UNHANDLED;
+            }
+            double amount = 0;
+            if(action.equals(A_CREDIT)){
+                 amount = transaction.getToAccount().getBalance() + transaction.getAmount();
+                
+            } else{
+                if (transaction.getToAccount().getBalance() < transaction.getAmount()) {
+                    transaction.setStatus(S_DECLINED);
+                    transactionRepository.save(transaction);
+                    return ERR_LESS_BALANCE;
+                }
+                amount = transaction.getToAccount().getBalance() - transaction.getAmount();
+            }
+            transaction.getToAccount().setBalance(amount);
+            transaction.setStatus(S_VERIFIED);
+            accountService.saveAccount(transaction.getToAccount());
+            transactionRepository.save(transaction);
+        }catch(Exception e){
+            return ERROR;
+        }
+        return SUCCESS;
     }
 }
