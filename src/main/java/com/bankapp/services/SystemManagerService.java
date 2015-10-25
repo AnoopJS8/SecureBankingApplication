@@ -7,9 +7,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.bankapp.models.Account;
+import com.bankapp.models.ProfileRequest;
 import com.bankapp.models.Transaction;
 import com.bankapp.models.User;
 import com.bankapp.repositories.AccountRepository;
+import com.bankapp.repositories.ProfileRequestRepository;
 import com.bankapp.repositories.TransactionRepository;
 import com.bankapp.repositories.UserRepository;
 
@@ -24,6 +26,9 @@ public class SystemManagerService implements ISystemManagerService {
 
     @Autowired
     private AccountRepository AccountRepo;
+    
+    @Autowired
+    private ProfileRequestRepository ProfileRepo;
     
 
 
@@ -70,7 +75,7 @@ public class SystemManagerService implements ISystemManagerService {
     }
 
     @Override
-    public Transaction getTransactionbyid(String id) {
+    public Transaction getTransactionById(String id) {
         Transaction transaction = TransRepo.findOne(id);
         return transaction;
     }
@@ -107,7 +112,7 @@ public class SystemManagerService implements ISystemManagerService {
         transaction.setStatus("Declined");
         TransRepo.save(transaction);
         result = "Transaction has been declined";
-        System.out.println("Not approved");
+      //  System.out.println("Not approved");
 
         return result;
     }
@@ -119,8 +124,49 @@ public class SystemManagerService implements ISystemManagerService {
         transaction.setTransferDate(new_Date);
         TransRepo.save(transaction);
         result = "Transaction has been modified";
-        System.out.println("Done modified");
+    //    System.out.println("Done modified");
 
         return result;
     }
+    
+    public String saveUser(User user)
+    {
+    	String str = "";
+    	try {
+    	UserRepo.save(user);
+    	str = "Success";
+    	}catch(Exception e)
+    	{
+    		str = "Error";
+    	}
+    	return str;
+    }
+
+	@Override
+	public String approveProfileRequest(ProfileRequest request) {
+		// TODO Auto-generated method stub
+		String result= "";
+		request.setStatus("Approved");
+		
+		 try {
+	            ProfileRepo.save(request);
+	            result = "success";
+	            //System.out.println("Done approve");
+	        } catch (Exception e) {
+	            result = "error";
+	        }
+
+	        return result;
+		
+	}
+
+	
+
+	@Override
+	public ProfileRequest getProfilebRequestByRId(String id) {
+		// TODO Auto-generated method stub
+        ProfileRequest Request = ProfileRepo.findOne(id);
+
+		return Request;
+	}
 }

@@ -3,14 +3,20 @@ package com.bankapp.constants;
 public interface Constants {
 
 	public String SUCCESS = "success";
-	public String LESS_BALANCE = "lessbal";
+	public String ERR_LESS_BALANCE = "You are low on balance, the transaction cannot go through.";
 	public String ERROR = "error";
-	public String ERR_ACCOUNT_NOT_EXISTS = "Account does not exist!";
-	public String CRITICAL = "Critical transaction";
+	public String CRITICAL = "Its a critical transaction, so it will be handled by our employees shortly";
 	public String PII_EXISTS = "Pii already added";
+	
+	public String ERR_ACCOUNT_NOT_EXISTS = "Account does not exist!";
 	public String ERR_SAME_USER = "Same user transfer is not valid";
 	public String ERR_EMAIL_NOT_EXISTS = "email not present with agency";
 	public String ERR_PROFILE_UPDATE = "Could not authorize the request";
+	public String ERR_TRANS_DECODE = "Could not decode your input. Please try again!";
+	public String ERR_TRANS_DECRYPTION = "Invalid encypted input. Please try again!";
+	public String ERR_TRANS_EXPIRED = "Transaction encryption has expired. Please retry using the applet!";
+	public String ERR_TRANS_INCORRECT_FORMAT = "Incorrect amount specified. Please try again!";
+	public String ERR_UNHANDLED = "Oops, something unexpected happened. Please contact the administrator";
 	//Status
 	public String S_PENDING = "P"; //pending for request like transfer money and profile
 	public String S_OTP_PENDING = "OP"; //critical transaction

@@ -23,7 +23,7 @@ public interface ITransactionService {
     public String actionOnRequest(String id, String status);
 
     public List<Transaction> getPendingTransactions();
-
+    
     public String creditDebit(String Email, Transaction transaction);
 
 }

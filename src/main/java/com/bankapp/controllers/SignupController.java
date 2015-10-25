@@ -38,173 +38,174 @@ import com.bankapp.services.IMailService;
 
 @Controller
 public class SignupController {
-	private final Logger LOGGER = Logger.getLogger(SignupController.class);
+    private final Logger LOGGER = Logger.getLogger(SignupController.class);
 
-	@Autowired
-	private IUserService userService;
+    @Autowired
+    private IUserService userService;
 
-	@Autowired
-	private IMailService mailService;
+    @Autowired
+    private IMailService mailService;
 
-	@Autowired
-	private IAccountService accountService;
+    @Autowired
+    private IAccountService accountService;
 
-	@Autowired
-	ApplicationEventPublisher eventPublisher;
+    @Autowired
+    ApplicationEventPublisher eventPublisher;
 
-	@Value("${com.bankapp.account.default_balance}")
-	private double defaultBalance;
+    @Value("${com.bankapp.account.default_balance}")
+    private double defaultBalance;
 
-	@Value("${com.bankapp.account.default_critical_limit}")
-	private double defaultCriticalLimit;
+    @Value("${com.bankapp.account.default_critical_limit}")
+    private double defaultCriticalLimit;
 
-	final private String signupViewName = "registration/signup";
+    final private String signupViewName = "registration/signup";
 
-	private final RecaptchaFormValidator recaptchaFormValidator;
+    private final RecaptchaFormValidator recaptchaFormValidator;
 
-	@ModelAttribute("recaptchaSiteKey")
-	public String getRecaptchaSiteKey(@Value("${recaptcha.site-key}") String recaptchaSiteKey) {
-		return recaptchaSiteKey;
-	}
+    @ModelAttribute("recaptchaSiteKey")
+    public String getRecaptchaSiteKey(@Value("${recaptcha.site-key}") String recaptchaSiteKey) {
+        return recaptchaSiteKey;
+    }
 
-	@Autowired
-	public SignupController(RecaptchaFormValidator recaptchaFormValidator) {
-		this.recaptchaFormValidator = recaptchaFormValidator;
-	}
+    @Autowired
+    public SignupController(RecaptchaFormValidator recaptchaFormValidator) {
+        this.recaptchaFormValidator = recaptchaFormValidator;
+    }
 
-	@InitBinder("form")
-	public void initBinder(WebDataBinder binder) {
-		binder.addValidators(recaptchaFormValidator);
-		CustomDateEditor editor = new CustomDateEditor(new SimpleDateFormat("MM/dd/yyyy"), true);
+    @InitBinder("form")
+    public void initBinder(WebDataBinder binder) {
+        binder.addValidators(recaptchaFormValidator);
+        CustomDateEditor editor = new CustomDateEditor(new SimpleDateFormat("MM/dd/yyyy"), true);
         binder.registerCustomEditor(Date.class, editor);
-	}
+    }
 
-	@RequestMapping(value = "/signup", method = RequestMethod.GET)
-	public ModelAndView getSignupPage() {
-		ModelAndView modelAndView = new ModelAndView(signupViewName, "form", new SignupForm());
-		return modelAndView;
-	}
+    @RequestMapping(value = "/signup", method = RequestMethod.GET)
+    public ModelAndView getSignupPage() {
+        ModelAndView modelAndView = new ModelAndView(signupViewName, "form", new SignupForm());
+        return modelAndView;
+    }
 
-	@RequestMapping(value = "/signup", method = RequestMethod.POST)
-	public ModelAndView registerUser(@Valid @ModelAttribute("form") SignupForm form, BindingResult resultForm,
-	        HttpServletRequest request) {
+    @RequestMapping(value = "/signup", method = RequestMethod.POST)
+    public ModelAndView registerUser(@Valid @ModelAttribute("form") SignupForm form, BindingResult resultForm,
+            HttpServletRequest request) {
 
-		ModelAndView mv = new ModelAndView(signupViewName);
+        ModelAndView mv = new ModelAndView(signupViewName);
 
-		if (resultForm.hasErrors()) {
-			mv.addObject("form", form);
-			mv.addObject("errors", resultForm.getAllErrors());
-			return mv;
-		}
-		
-		User newUser = new User();
-		newUser.setUsername(form.getUsername());
-		newUser.setEmail(form.getEmail());
-		newUser.setPassword(form.getPassword());
-		newUser.setAddress(form.getAddress());
-		newUser.setDateOfBirth(form.getDateOfBirth());
-		newUser.setPhoneNumber(form.getPhoneNumber());
-		newUser.setGender(form.getGender());
-		newUser.setSecurityQuestion(form.getSecurityQuestion());
-		newUser.setSecurityAnswer(form.getSecurityAnswer());
-		Role role = form.getRole();
-		String logMessage = String.format("Registering user account with information: {%s, %s}", newUser, role);
-		LOGGER.info(logMessage);
+        if (resultForm.hasErrors()) {
+            mv.addObject("form", form);
+            mv.addObject("errors", resultForm.getAllErrors());
+            return mv;
+        }
 
-		User registered = createUserAccount(newUser, role.getName());
-		if (registered == null) {
-			String message = String.format("This email is already taken");
-			mv.addObject("message", message);
-			mv.addObject("form", form);
-			return mv;
-		}
-		try {
-			eventPublisher
-			        .publishEvent(new OnRegistrationCompleteEvent(registered, request.getLocale(), getAppUrl(request)));
-		} catch (Exception e) {
-			String message = String.format("Action: %s, Message: %s", "signup", e.getMessage());
-			LOGGER.error(message);
+        User newUser = new User();
+        newUser.setUsername(form.getUsername());
+        newUser.setEmail(form.getEmail());
+        newUser.setPassword(form.getPassword());
+        newUser.setAddress(form.getAddress());
+        newUser.setDateOfBirth(form.getDateOfBirth());
+        newUser.setPhoneNumber(form.getPhoneNumber());
+        newUser.setGender(form.getGender());
+        newUser.setSecurityQuestion(form.getSecurityQuestion());
+        newUser.setSecurityAnswer(form.getSecurityAnswer());
+        Role role = form.getRole();
+        String logMessage = String.format("Registering user account with information: {%s, %s}", newUser, role);
+        LOGGER.info(logMessage);
 
-			mv.addObject("message", e.getMessage());
-			mv.addObject("form", form);
-			return mv;
-		}
+        User registered = createUserAccount(newUser, role.getName());
+        if (registered == null) {
+            String message = String.format("This email is already taken");
+            mv.addObject("message", message);
+            mv.addObject("form", form);
+            return mv;
+        }
+        try {
+            eventPublisher
+                    .publishEvent(new OnRegistrationCompleteEvent(registered, request.getLocale(), getAppUrl(request)));
+        } catch (Exception e) {
+            String message = String.format("Action: %s, Message: %s", "signup", e.getMessage());
+            LOGGER.error(message);
 
-		mv.setViewName("registration/activationInfo");
-		mv.addObject("username", newUser.getUsername());
-		mv.addObject("email", newUser.getEmail());
-		return mv;
-	}
+            mv.addObject("message", e.getMessage());
+            mv.addObject("form", form);
+            return mv;
+        }
 
-	@RequestMapping(value = "/registrationConfirm", method = RequestMethod.GET)
-	public ModelAndView confirmRegistration(HttpServletRequest request, Model model,
-	        @RequestParam("token") String token) {
-		String logMessage = String.format("Verifying user account with information: {token = %s}", token);
-		LOGGER.info(logMessage);
+        mv.setViewName("registration/activationInfo");
+        mv.addObject("username", newUser.getUsername());
+        mv.addObject("email", newUser.getEmail());
+        return mv;
+    }
 
-		VerificationToken verificationToken = userService.getVerificationToken(token);
-		if (verificationToken == null) {
-			String message = String.format("The token is invalid, please register again!");
-			return new ModelAndView("registration/activationFailed", "message", new Message("error", message));
-		}
+    @RequestMapping(value = "/registrationConfirm", method = RequestMethod.GET)
+    public ModelAndView confirmRegistration(HttpServletRequest request, Model model,
+            @RequestParam("token") String token) {
+        String logMessage = String.format("Verifying user account with information: {token = %s}", token);
+        LOGGER.info(logMessage);
 
-		User user = verificationToken.getUser();
-		Calendar cal = Calendar.getInstance();
-		if ((verificationToken.getExpiryDate().getTime() - cal.getTime().getTime()) <= 0) {
-			String message = String.format("The verification token has expired. Please register again!");
-			String url = getAppUrl(request) + "/resendRegistrationToken?token=" + token;
-			ModelAndView mv = new ModelAndView("registration/activationFailed");
-			mv.addObject("message", new Message("error", message));
-			mv.addObject("url", url);
-			return mv;
-		}
+        VerificationToken verificationToken = userService.getVerificationToken(token);
+        if (verificationToken == null) {
+            String message = String.format("The token is invalid, please register again!");
+            return new ModelAndView("registration/activationFailed", "message", new Message("error", message));
+        }
 
-		user.setEnabled(true);
-		userService.saveRegisteredUser(user);
+        User user = verificationToken.getUser();
+        Calendar cal = Calendar.getInstance();
+        if ((verificationToken.getExpiryDate().getTime() - cal.getTime().getTime()) <= 0) {
+            String message = String.format("The verification token has expired. Please register again!");
+            String url = getAppUrl(request) + "/resendRegistrationToken?token=" + token;
+            ModelAndView mv = new ModelAndView("registration/activationFailed");
+            mv.addObject("message", new Message("error", message));
+            mv.addObject("url", url);
+            return mv;
+        }
 
-		// Create user account
-		Account userAccount = new Account(user, defaultBalance, defaultCriticalLimit);
-		accountService.saveAccount(userAccount);
-		logMessage = String.format("User %s has been verified, created new account [%s]", user.getId(), userAccount);
-		LOGGER.info(logMessage);
+        user.setEnabled(true);
+        userService.saveRegisteredUser(user);
 
-		return new ModelAndView("registration/activationSuccess");
-	}
+        // Create user account
+        Account userAccount = new Account(user, defaultBalance, defaultCriticalLimit);
+        accountService.saveAccount(userAccount);
 
-	@RequestMapping(value = "/resendRegistrationToken", method = RequestMethod.GET)
-	public ModelAndView resendRegistrationToken(HttpServletRequest request,
-	        @RequestParam("token") String existingToken) {
-		String newToken = userService.generateNewVerificationToken(existingToken).getToken();
-		User user = userService.getUser(newToken);
+        logMessage = String.format("User %s has been verified, created new account [%s]", user.getId(), userAccount);
+        LOGGER.info(logMessage);
 
-		String recipientAddress = user.getEmail();
-		String userName = user.getUsername();
-		String subject = String.format("My ASU Bank - Resending Activation");
-		String confirmationUrl = getAppUrl(request) + "/registrationConfirm?token=" + newToken;
+        return new ModelAndView("registration/activationSuccess");
+    }
 
-		String textBody = String.format(
-		        "Dear %s, <br /><br />Here is your new account verification link:<br />"
-		                + "<a href='%s'>%s</a>.<br /><br />Regards,<br />My ASU Bank",
-		        userName, confirmationUrl, confirmationUrl);
-		mailService.sendEmail(recipientAddress, subject, textBody);
+    @RequestMapping(value = "/resendRegistrationToken", method = RequestMethod.GET)
+    public ModelAndView resendRegistrationToken(HttpServletRequest request,
+            @RequestParam("token") String existingToken) {
+        String newToken = userService.generateNewVerificationToken(existingToken).getToken();
+        User user = userService.getUser(newToken);
 
-		ModelAndView mv = new ModelAndView("registration/activationInfo");
-		mv.addObject("email", recipientAddress);
-		mv.addObject("username", userName);
-		return mv;
-	}
+        String recipientAddress = user.getEmail();
+        String userName = user.getUsername();
+        String subject = String.format("My ASU Bank - Resending Activation");
+        String confirmationUrl = getAppUrl(request) + "/registrationConfirm?token=" + newToken;
 
-	private User createUserAccount(final User newUser, final String roleName) {
-		User registered = null;
-		try {
-			registered = userService.registerNewUserAccount(newUser, roleName);
-		} catch (final EmailExistsException e) {
-			return null;
-		}
-		return registered;
-	}
+        String textBody = String.format(
+                "Dear %s, <br /><br />Here is your new account verification link:<br />"
+                        + "<a href='%s'>%s</a>.<br /><br />Regards,<br />My ASU Bank",
+                userName, confirmationUrl, confirmationUrl);
+        mailService.sendEmail(recipientAddress, subject, textBody);
 
-	private String getAppUrl(HttpServletRequest request) {
-		return request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort();
-	}
+        ModelAndView mv = new ModelAndView("registration/activationInfo");
+        mv.addObject("email", recipientAddress);
+        mv.addObject("username", userName);
+        return mv;
+    }
+
+    private User createUserAccount(final User newUser, final String roleName) {
+        User registered = null;
+        try {
+            registered = userService.registerNewUserAccount(newUser, roleName);
+        } catch (final EmailExistsException e) {
+            return null;
+        }
+        return registered;
+    }
+
+    private String getAppUrl(HttpServletRequest request) {
+        return request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort();
+    }
 }

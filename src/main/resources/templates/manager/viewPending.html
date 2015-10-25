@@ -1,13 +1,12 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml"
-	xmlns:th="http://www.thymeleaf.org"
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
 	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
 <head th:include="fragment/common :: headerFragment" />
 <body>
 	<div class="container">
-		<div th:replace="fragment/common :: top-nav(myaccount)"></div>	
+		<div th:replace="fragment/common :: top-nav(myaccount)"></div>
 		<div th:replace="fragment/manager :: manager-header"></div>
-		<div >
+		<div>
 			<h3>Pending Transaction</h3>
 		</div>
 		<div class="table-responsive">
@@ -25,19 +24,23 @@
 				</thead>
 				<tbody>
 					<tr th:each="row : ${pending}">
-						<td><span th:text="*{#dates.format(transferDate,'MM/dd/yyyy')}"></span></td>
+						<td>
+							<div th:if="*{created} != null">
+								<span th:text="*{#dates.format(created, 'MM/dd/yyyy')}"></span>
+							</div>
+							<div th:if="*{created} == null">
+								<span>No creation date</span>
+							</div>
+						</td>
 						<td><span th:text="${row.fromAccount.user.username}"></span></td>
 						<td><span th:text="${row.toAccount.user.username}"></span></td>
 						<td><span th:text="${row.amount}"></span></td>
-						<td><span th:text="${row.status}"></span></td>						
+						<td><span th:text="${row.status}"></span></td>
 						<td><span th:text="${row.comment}"></span></td>
-						
 					</tr>
 				</tbody>
 			</table>
 		</div>
-		
-	
 	</div>
 </body>
 </html>

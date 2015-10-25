@@ -32,7 +32,12 @@
 							<input type="hidden" name="rId" th:value="*{rId}" />
 							<td><span th:text="${request.rId}"></span></td>
 							<td><span th:text="${request.address}"></span></td>
-							<td><span th:text="*{#dates.format(dateOfBirth,'MM/dd/yyyy')}"></span></td>
+							<td>
+								<div th:if="*{dateOfBirth} != null">
+									<span th:text="*{#dates.format(dateOfBirth,'MM/dd/yyyy')}"></span>
+								</div>
+								<div th:if="*{dateOfBirth} == null">N/A</div>
+							</td>
 							<td><span th:text="${request.phoneNumber}"></span></td>
 							<td><span th:text="${request.status}"></span></td>
 							<td>

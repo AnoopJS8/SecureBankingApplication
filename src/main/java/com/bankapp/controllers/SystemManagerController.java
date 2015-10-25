@@ -4,7 +4,11 @@
 package com.bankapp.controllers;
 
 import java.security.Principal;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
@@ -30,13 +34,16 @@ import com.bankapp.constants.Message;
 import com.bankapp.exceptions.EmailExistsException;
 import com.bankapp.exceptions.UserNameExistsException;
 import com.bankapp.forms.AddEmployeeForm;
+import com.bankapp.forms.UpdateUsersForm;
 import com.bankapp.forms.ViewByEmailForm;
 import com.bankapp.listeners.OnRegistrationCompleteEvent;
 import com.bankapp.models.Account;
 import com.bankapp.models.OneTimePassword;
+import com.bankapp.models.ProfileRequest;
 import com.bankapp.models.Role;
 import com.bankapp.models.Transaction;
 import com.bankapp.models.User;
+import com.bankapp.services.IProfileRequestService;
 import com.bankapp.services.ISystemManagerService;
 import com.bankapp.services.IUserService;;;
 
@@ -61,26 +68,8 @@ public class SystemManagerController implements Constants {
     @Autowired
     ApplicationEventPublisher eventPublisher;
 
-    @RequestMapping(value = "/manager/deleteUsers", method = RequestMethod.GET)
-    public ModelAndView deleteUser() {
-
-        ModelAndView mv = new ModelAndView();
-        mv.setViewName("/manager/deleteUser");
-        List<User> users = userService.displayDeleteUsers();
-        mv.addObject("viewuser", users);
-        return mv;
-    }
-
-    @RequestMapping(value = "/manager/deleteUsers", method = RequestMethod.POST)
-    public String deleteManager(@ModelAttribute("user") User user, BindingResult result,
-            RedirectAttributes attributes) {
-        Message message;
-        userService.deleteExternalUser(user);
-        String msg = String.format("Manager '%s' has been deleted", user.getUsername());
-        message = new Message("succes", msg);
-        attributes.addFlashAttribute("message", message);
-        return "redirect:/manager/deleteUsers";
-    }
+    @Autowired
+    private IProfileRequestService profileReq;
 
     private final Logger LOGGER = Logger.getLogger(SystemManagerController.class);
 
@@ -102,19 +91,63 @@ public class SystemManagerController implements Constants {
         return mv;
     }
 
+    @RequestMapping(value = "/manager/profilerequests", method = RequestMethod.GET)
+    public ModelAndView getProfileRequests() {
+        List<ProfileRequest> list = profileReq.getRequestsByStatus(S_PENDING);
+        List<ProfileRequest> list1 = new ArrayList<>();
+        ;
+        int k = 0;
+        for (int i = 0; i < list.size(); i++) {
+            ProfileRequest Req = list.get(i);
+            String role = Req.getRole().getName();
+            if (role.equals("ROLE_CUSTOMER") || role.equals("ROLE_MERCHANT")) {
+                list1.add(k, Req);
+                k++;
+            }
+        }
+        ModelAndView mv = new ModelAndView();
+        mv.addObject("profileRequests", list1);
+        mv.setViewName("/manager/profileRequests");
+        return mv;
+    }
+
+    @RequestMapping(value = "/manager/approveprofilerequest", method = RequestMethod.POST)
+    public ModelAndView approveprofilerequest(@ModelAttribute("row") ProfileRequest Id, BindingResult result,
+            WebRequest request, Errors errors, Principal principal) {
+        ModelAndView mv = new ModelAndView();
+
+        ProfileRequest profile = manager.getProfilebRequestByRId(Id.getrId());
+        String Address = profile.getAddress();
+        Date DoB = profile.getDateOfBirth();
+        String Ph = profile.getPhoneNumber();
+
+        User user = profile.getUser();
+        user.setAddress(Address);
+        user.setDateOfBirth(DoB);
+        user.setPhoneNumber(Ph);
+        manager.saveUser(user);
+
+        String status = manager.approveProfileRequest(profile);
+
+        mv.addObject("message", new Message(status, "Action Completed"));
+        // System.out.println("Done");
+        mv.setViewName("/manager/profileRequests");
+
+        return mv;
+    }
+
     @RequestMapping(value = "/manager/getUserByEmail", method = RequestMethod.GET)
     public ModelAndView getuserEmail() {
-        ModelAndView mv = new ModelAndView("/manager/viewUserByEmailForm", "form", new ViewByEmailForm());
-        return mv;
+        ModelAndView modelAndView = new ModelAndView("/manager/viewUserByEmailForm", "form", new ViewByEmailForm());
+        return modelAndView;
     }
 
     @RequestMapping(value = "/manager/myaccount", method = RequestMethod.GET)
     public ModelAndView getmanagerhome(Principal principal) {
         ModelAndView mv = new ModelAndView();
-        if(userService.hasMissingFields(principal)) {
-            mv.addObject("message",
-                    new Message("error", "You are missing important details. Please update your profile urgently"));
-        }
+        User loggedInUser = userService.getUserFromSession(principal);
+        String Username = loggedInUser.getUsername();
+        mv.addObject("username", Username);
         mv.setViewName("manager/myaccount");
         return mv;
     }
@@ -126,7 +159,7 @@ public class SystemManagerController implements Constants {
         // //System.out.println("Entered Approve");
         // //System.out.println("Transaction" + Id.getTransactionId());
 
-        Transaction transaction = manager.getTransactionbyid(Id.getTransactionId());
+        Transaction transaction = manager.getTransactionById(Id.getTransactionId());
 
         Account FromAccount = transaction.getFromAccount();
         Account ToAccount = transaction.getToAccount();
@@ -154,12 +187,6 @@ public class SystemManagerController implements Constants {
         return mv;
     }
 
-    @RequestMapping(value = "/manager/addUserForm", method = RequestMethod.GET)
-    public ModelAndView getUserAddage() {
-        ModelAndView modelAndView = new ModelAndView("/manager/addUserForm", "form", new AddEmployeeForm());
-        return modelAndView;
-    }
-
     @RequestMapping(value = "/manager/addUserForm", method = RequestMethod.POST)
     public String addUser(final ModelMap model, @ModelAttribute("form") @Valid AddEmployeeForm form,
             BindingResult result, Errors errors, Principal principal, HttpServletRequest request,
@@ -168,9 +195,13 @@ public class SystemManagerController implements Constants {
         Role role = form.getRole();
         String redirectUrl = "redirect:/manager/addUserForm";
         String status = "success";
+
+        // System.out.println(form.getUsername());
         if (result.hasErrors()) {
+            status = "error";
             model.addAttribute("form", form);
-            System.out.println("asd");
+            String message = "Invalid Details";
+            model.addAttribute("message", new Message(status, message));
             return "/manager/addUserForm";
         }
 
@@ -178,11 +209,10 @@ public class SystemManagerController implements Constants {
 
         user.setEmail(form.getEmail());
         user.setUsername(form.getUsername());
-        user.setDateOfBirth(form.getDateOfBirth());
 
         String temporaryPassword = OneTimePassword.generateOTP();
         user.setPassword(passwordEncoder.encode(temporaryPassword));
-        String message = "Success";
+        String message = "success";
         try {
             registered = userService.registerNewUserAccount(user, role.getName());
         } catch (EmailExistsException e1) {
@@ -191,7 +221,6 @@ public class SystemManagerController implements Constants {
             LOGGER.error(message);
             redirectUrl = "redirect:/manager/addUserForm";
 
-            System.out.println("message" + message);
         }
 
         if (registered != null) {
@@ -209,7 +238,7 @@ public class SystemManagerController implements Constants {
             userService.generateTemporaryPassword(registered);
         }
 
-        System.out.println("message out" + message);
+        // System.out.println("message out" + message) ;
         attributes.addFlashAttribute("message", new Message(status, message));
         return redirectUrl;
 
@@ -258,6 +287,68 @@ public class SystemManagerController implements Constants {
 
         return model;
 
+    }
+
+    @RequestMapping(value = "/manager/update", method = RequestMethod.GET)
+    public ModelAndView customerAndMerchantDetails() {
+        ModelAndView mv = new ModelAndView("/manager/update");
+        List<User> customers = userService.getCustomers();
+        List<User> merchants = userService.getMerchants();
+        List<User> newList = new ArrayList<User>(customers);
+        newList.addAll(merchants);
+        UpdateUsersForm form = new UpdateUsersForm();
+        form.setUsers(newList);
+        mv.addObject("form", form);
+        return mv;
+    }
+
+    @RequestMapping(value = "/manager/delete", method = RequestMethod.POST)
+    public String deleteUser(@ModelAttribute("user") User user, BindingResult result, RedirectAttributes attributes) {
+        userService.deleteUser(user);
+        Map<String, String> message = new HashMap<String, String>();
+        message.put("status", "success");
+        String msg = String.format("User '%s' has been deleted", user.getUsername());
+        message.put("msg", msg);
+        attributes.addFlashAttribute("message", message);
+        return "redirect:/manager/update";
+    }
+
+    @RequestMapping(value = "/manager/update", method = RequestMethod.POST)
+    public String updateustomerAndMerchantDetails(@ModelAttribute("user") User updatedUser, BindingResult result,
+            RedirectAttributes attributes) {
+        userService.updateUser(updatedUser.getId(), updatedUser);
+        Map<String, String> message = new HashMap<String, String>();
+        message.put("status", "success");
+        message.put("msg", "Details have been updated");
+        attributes.addFlashAttribute("message", message);
+        return "redirect:/manager/update";
+    }
+
+    @RequestMapping(value = "/manager/deleteUsers", method = RequestMethod.GET)
+    public ModelAndView deleteUser() {
+
+        ModelAndView mv = new ModelAndView();
+        mv.setViewName("/manager/deleteUser");
+        List<User> users = userService.displayDeleteUsers();
+        mv.addObject("viewuser", users);
+        return mv;
+    }
+
+    @RequestMapping(value = "/manager/deleteUsers", method = RequestMethod.POST)
+    public String deleteManager(@ModelAttribute("user") User user, BindingResult result,
+            RedirectAttributes attributes) {
+        Message message;
+        userService.deleteExternalUser(user);
+        String msg = String.format("Manager '%s' has been deleted", user.getUsername());
+        message = new Message("succes", msg);
+        attributes.addFlashAttribute("message", message);
+        return "redirect:/manager/deleteUsers";
+    }
+
+    @RequestMapping(value = "/manager/addUserForm", method = RequestMethod.GET)
+    public ModelAndView getUserAddage() {
+        ModelAndView modelAndView = new ModelAndView("/manager/addUserForm", "form", new AddEmployeeForm());
+        return modelAndView;
     }
 
 }

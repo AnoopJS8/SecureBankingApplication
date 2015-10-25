@@ -26,6 +26,15 @@ public class ProfileForm {
     @NotBlank
     String securityAnswer;
 
+    @NotNull
+    @Pattern(regexp = "\\d{10}", message = "Please enter a valid 10 digit phone number")
+    String phoneNumber;
+
+    @NotNull
+    @DateTimeFormat(pattern = "MM/dd/yyyy")
+    @Past
+    Date dateOfBirth;
+
     public String getUsername() {
         return username;
     }
@@ -41,15 +50,6 @@ public class ProfileForm {
     public void setEmail(String email) {
         this.email = email;
     }
-
-    @NotNull
-    @Pattern(regexp = "\\d{10}", message = "Please enter a valid 10 digit phone number")
-    String phoneNumber;
-
-    @NotNull
-    @DateTimeFormat(pattern = "MM/dd/yyyy")
-    @Past
-    Date dateOfBirth;
 
     public String getAddress() {
         return address;
@@ -90,5 +90,4 @@ public class ProfileForm {
     public void setSecurityAnswer(String securityAnswer) {
         this.securityAnswer = securityAnswer;
     }
-
 }
