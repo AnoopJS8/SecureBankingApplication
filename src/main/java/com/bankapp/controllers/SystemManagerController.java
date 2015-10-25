@@ -167,8 +167,6 @@ public class SystemManagerController implements Constants {
         Role role = form.getRole();
         String redirectUrl = "redirect:/manager/addUserForm";
         String status = "success";
-
-        System.out.println(form.getUser().getUsername());
         if (result.hasErrors()) {
             model.addAttribute("form", form);
             System.out.println("asd");
@@ -177,8 +175,9 @@ public class SystemManagerController implements Constants {
 
         User registered = null;
 
-        user.setEmail(form.getUser().getEmail());
-        user.setUsername(form.getUser().getUsername());
+        user.setEmail(form.getEmail());
+        user.setUsername(form.getUsername());
+        user.setDateOfBirth(form.getDateOfBirth());
 
         String temporaryPassword = OneTimePassword.generateOTP();
         user.setPassword(passwordEncoder.encode(temporaryPassword));

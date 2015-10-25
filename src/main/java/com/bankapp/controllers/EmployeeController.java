@@ -23,6 +23,7 @@ import com.bankapp.services.ITransactionService;
 
 @Controller
 @Secured("ROLE_EMPLOYEE")
+
 public class EmployeeController implements Constants {
     @Autowired
     private ISystemManagerService managerService;
@@ -31,6 +32,7 @@ public class EmployeeController implements Constants {
     ITransactionService transactionService;
 
     @Autowired
+
     private IProfileRequestService profileRequestService;
 
     // VIEW TRANSACTIONS

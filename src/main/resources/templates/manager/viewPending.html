@@ -25,7 +25,7 @@
 				</thead>
 				<tbody>
 					<tr th:each="row : ${pending}">
-						<td><span th:text="${row.created}"></span></td>
+						<td><span th:text="*{#dates.format(transferDate,'MM/dd/yyyy')}"></span></td>
 						<td><span th:text="${row.fromAccount.user.username}"></span></td>
 						<td><span th:text="${row.toAccount.user.username}"></span></td>
 						<td><span th:text="${row.amount}"></span></td>

@@ -199,6 +199,7 @@ public class UserService implements IUserService {
     public boolean changePassword(User user) {
         try {
             user.setPassword(passwordEncoder.encode(user.getNewpassword()));
+            user.setNewpassword(null);
             userRepository.save(user);
         } catch (Exception e) {
             return false;

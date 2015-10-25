@@ -3,6 +3,7 @@ package com.bankapp.forms;
 import java.util.Date;
 
 import javax.validation.constraints.Future;
+import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
@@ -15,6 +16,7 @@ public class InitiateTransactionForm {
 
     @NotNull
     @Min(value = 0)
+    @Max(value = 100000,message="Maximum Limit is $100000")
     Double amount;
 
     String comment;

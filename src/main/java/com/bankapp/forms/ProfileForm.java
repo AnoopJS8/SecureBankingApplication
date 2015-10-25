@@ -4,6 +4,7 @@ import java.util.Date;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Past;
+import javax.validation.constraints.Pattern;
 
 import org.hibernate.validator.constraints.Email;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -18,7 +19,24 @@ public class ProfileForm {
     @NotNull
     String address;
 
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
     @NotNull
+    @Pattern(regexp = "\\d{10}", message = "Please enter a valid 10 digit phone number")
     String phoneNumber;
 
     @NotNull
@@ -42,6 +60,7 @@ public class ProfileForm {
         this.phoneNumber = phoneNumber;
     }
 
+
     public Date getDateOfBirth() {
         return dateOfBirth;
     }
@@ -50,20 +69,6 @@ public class ProfileForm {
         this.dateOfBirth = dateOfBirth;
     }
 
-    public String getUsername() {
-        return username;
-    }
 
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
 
 }
