@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.bankapp.constants.Constants;
 import com.bankapp.models.Account;
 import com.bankapp.models.ProfileRequest;
 import com.bankapp.models.Transaction;
@@ -16,7 +17,7 @@ import com.bankapp.repositories.TransactionRepository;
 import com.bankapp.repositories.UserRepository;
 
 @Service
-public class SystemManagerService implements ISystemManagerService {
+public class SystemManagerService implements ISystemManagerService, Constants {
 
     @Autowired
     private UserRepository UserRepo;
@@ -61,7 +62,7 @@ public class SystemManagerService implements ISystemManagerService {
     public String approveTransaction(Transaction transaction) {
 
         String result = "";
-        transaction.setStatus("Approved");
+        transaction.setStatus(S_VERIFIED);
 
         try {
             TransRepo.save(transaction);
@@ -109,7 +110,7 @@ public class SystemManagerService implements ISystemManagerService {
     public String declineTransaction(Transaction transaction) {
 
         String result = "";
-        transaction.setStatus("Declined");
+        transaction.setStatus(S_DECLINED);
         TransRepo.save(transaction);
         result = "Transaction has been declined";
       //  System.out.println("Not approved");
@@ -120,7 +121,7 @@ public class SystemManagerService implements ISystemManagerService {
     public String modifyTransaction(Transaction transaction, Date new_Date) {
 
         String result = "";
-        transaction.setStatus("Approved");
+        transaction.setStatus(S_VERIFIED);
         transaction.setTransferDate(new_Date);
         TransRepo.save(transaction);
         result = "Transaction has been modified";
@@ -146,7 +147,7 @@ public class SystemManagerService implements ISystemManagerService {
 	public String approveProfileRequest(ProfileRequest request) {
 		// TODO Auto-generated method stub
 		String result= "";
-		request.setStatus("Approved");
+		request.setStatus(S_PROFILE_UPDATE_VERIFIED);
 		
 		 try {
 	            ProfileRepo.save(request);

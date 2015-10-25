@@ -104,11 +104,9 @@ public class EmployeeController implements Constants {
 
     // EMPLOYEE AUTHORIZE TRANSACTION
     @RequestMapping(value = "/employee/transactions", method = RequestMethod.POST, params = "action=Authorize")
-    public ModelAndView approvetransaction(@ModelAttribute("row") Transaction Id, BindingResult result,
-            WebRequest request, Errors errors) {
-        ModelAndView mv = new ModelAndView();
-
-        Transaction transaction = managerService.getTransactionById(Id.getTransactionId());
+    public String approvetransaction(@ModelAttribute("row") Transaction txn, BindingResult result, WebRequest request,
+            Errors errors, RedirectAttributes attributes) {
+        Transaction transaction = managerService.getTransactionById(txn.getTransactionId());
 
         Account FromAccount = transaction.getFromAccount();
         Account ToAccount = transaction.getToAccount();
@@ -123,30 +121,24 @@ public class EmployeeController implements Constants {
             Double ToAccountBalance = ToAccount.getBalance();
             managerService.reflectChangesToReceiver(ToAccount, ToAccountBalance, AmountToBeSent);
             str = managerService.approveTransaction(transaction);
+            attributes.addFlashAttribute("message", new Message("success", str));
         } else {
             str = managerService.declineTransaction(transaction);
+            attributes.addFlashAttribute("message", new Message("error", str));
         }
 
-        mv.addObject("result1", str);
-        mv.setViewName("employee/viewTransactions");
-
-        return mv;
+        return "redirect:/employee/transactions";
     }
 
     // EMPLOYEE DECLINE TRANSACTION
     @RequestMapping(value = "/employee/transactions", method = RequestMethod.POST, params = "action=Decline")
-    public ModelAndView declinetransaction(@ModelAttribute("row") Transaction Id, BindingResult result,
-            WebRequest request, Errors errors) {
-        ModelAndView mv = new ModelAndView();
+    public String declinetransaction(@ModelAttribute("row") Transaction txn, BindingResult result, WebRequest request,
+            Errors errors, RedirectAttributes attributes) {
 
-        Transaction transaction = managerService.getTransactionById(Id.getTransactionId());
-
+        Transaction transaction = managerService.getTransactionById(txn.getTransactionId());
         String str = managerService.declineTransaction(transaction);
-
-        mv.addObject("result1", str);
-        mv.setViewName("employee/viewTransactions");
-
-        return mv;
+        attributes.addFlashAttribute("message", new Message("success", str));
+        return "redirect:/employee/transactions";
     }
 
     // EMPLOYEE MODIFY TRANSACTION
