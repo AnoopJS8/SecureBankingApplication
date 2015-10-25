@@ -1,6 +1,5 @@
 package com.bankapp.forms;
 
-import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
 public class TransferFundsForm {
@@ -8,8 +7,7 @@ public class TransferFundsForm {
     String email;
 
     @NotNull
-    @Min(value = 0)
-    Double amount;
+    String amount;
 
     String comment;
 
@@ -21,11 +19,11 @@ public class TransferFundsForm {
         this.email = email;
     }
 
-    public Double getAmount() {
+    public String getAmount() {
         return amount;
     }
 
-    public void setAmount(Double amount) {
+    public void setAmount(String amount) {
         this.amount = amount;
     }
 

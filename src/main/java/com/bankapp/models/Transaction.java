@@ -40,8 +40,10 @@ public class Transaction {
 
     @NotNull
     @Min(value = 0)
-    @Max(value = 100000,message="Maximum Limit is $100000")
+    @Max(value = 100000, message = "Maximum Limit is $100000")
     private Double amount;
+
+    private String encryptedAmount;
 
     private Date transferDate;
 
@@ -106,6 +108,14 @@ public class Transaction {
         this.amount = amount;
     }
 
+    public String getEncryptedAmount() {
+        return encryptedAmount;
+    }
+
+    public void setEncryptedAmount(String encryptedAmount) {
+        this.encryptedAmount = encryptedAmount;
+    }
+
     public Date getCreated() {
         return created;
     }
@@ -129,5 +139,4 @@ public class Transaction {
     public void setTransferDate(Date transferDate) {
         this.transferDate = transferDate;
     }
-
 }

@@ -7,8 +7,7 @@ $(document).ready(function() {
 				digits : true
 			},
 			'amount' : {
-				required : true,
-				digits : true
+				required : true
 			},
 			'comment' : {
 				required : false
@@ -17,9 +16,8 @@ $(document).ready(function() {
 		},
 		// Specify the validation error messages
 		messages : {
-			'toAccount.accId' : {
-				required : "Recepient Account number cannot be NULL",
-				digits : "Please enter valid recepient account number"
+			'amount' : {
+				required : "Recepient Account number cannot be NULL
 			},
 			'amount' : {
 				required : "Transfer amount cannot be NULL",

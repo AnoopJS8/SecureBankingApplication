@@ -132,35 +132,40 @@ public class CommonController implements Constants {
         String fromEmail = activeUser.getUsername();
         String toEmail = form.getEmail();
         Transaction transaction = new Transaction();
-        transaction.setAmount(form.getAmount());
+        transaction.setEncryptedAmount(form.getAmount());
         transaction.setComment(form.getComment());
 
         String serviceStatus = transactionService.saveTransaction(fromEmail, toEmail, transaction);
 
-        if (serviceStatus.equalsIgnoreCase(LESS_BALANCE)) {
+        switch (serviceStatus) {
+
+        case ERR_TRANS_DECODE:
+        case ERR_TRANS_DECRYPTION:
+        case ERR_TRANS_INCORRECT_FORMAT:
+        case ERR_TRANS_EXPIRED:
+        case ERR_LESS_BALANCE:
+        case ERR_ACCOUNT_NOT_EXISTS:
+        case ERR_SAME_USER:
+        case ERR_UNHANDLED:
             status = "error";
-            message = "You are low on balance, the transaction cannot go through.";
+            message = serviceStatus;
             redirectUrl = "redirect:/" + role + "/transferfunds";
-        } else if (serviceStatus.equalsIgnoreCase(SUCCESS)) {
+            break;
+        case CRITICAL:
+            status = "success";
+            message = serviceStatus;
+            redirectUrl = "redirect:/" + role + "/myaccount";
+            break;
+        case SUCCESS:
             status = "success";
             message = "Money transfered successfully";
             redirectUrl = "redirect:/" + role + "/myaccount";
-        } else if (serviceStatus.equalsIgnoreCase(ERR_ACCOUNT_NOT_EXISTS)) {
+            break;
+        default:
             status = "error";
-            message = ERR_ACCOUNT_NOT_EXISTS;
+            message = ERR_UNHANDLED;
             redirectUrl = "redirect:/" + role + "/transferfunds";
-        } else if (serviceStatus.equalsIgnoreCase(ERR_SAME_USER)) {
-            status = "error";
-            message = ERR_SAME_USER;
-            redirectUrl = "redirect:/" + role + "/transferfunds";
-        } else if (serviceStatus.equalsIgnoreCase(CRITICAL)) {
-            status = "success";
-            message = "Its a critical transaction, so it will be handled by our employees shortly";
-            redirectUrl = "redirect:/" + role + "/myaccount";
-        } else {
-            status = "error";
-            message = "An unhandled error occurred. Please contact the administrator";
-            redirectUrl = "redirect:/" + role + "/transferfunds";
+            break;
         }
 
         attributes.addFlashAttribute("message", new Message(status, message));
@@ -220,27 +225,40 @@ public class CommonController implements Constants {
         String fromEmail = activeUser.getUsername();
         String toEmail = form.getEmail();
         Transaction transaction = new Transaction();
-        transaction.setAmount(form.getAmount());
+        transaction.setEncryptedAmount(form.getAmount());
         transaction.setComment(form.getComment());
         transaction.setTransferDate(form.getTransferDate());
         String serviceStatus = transactionService.initiateTransaction(fromEmail, toEmail, transaction);
 
-        if (serviceStatus.equalsIgnoreCase(SUCCESS)) {
+        switch (serviceStatus) {
+
+        case ERR_TRANS_DECODE:
+        case ERR_TRANS_DECRYPTION:
+        case ERR_TRANS_INCORRECT_FORMAT:
+        case ERR_TRANS_EXPIRED:
+        case ERR_LESS_BALANCE:
+        case ERR_ACCOUNT_NOT_EXISTS:
+        case ERR_SAME_USER:
+        case ERR_UNHANDLED:
+            status = "error";
+            message = serviceStatus;
+            redirectUrl = "redirect:/" + role + "/initiatetransaction";
+            break;
+        case CRITICAL:
+            status = "success";
+            message = serviceStatus;
+            redirectUrl = "redirect:/" + role + "/myaccount";
+            break;
+        case SUCCESS:
             status = "success";
             message = "Your transaction is initiated and will be handled by our employees";
             redirectUrl = "redirect:/" + role + "/myaccount";
-        } else if (serviceStatus.equalsIgnoreCase(ERR_ACCOUNT_NOT_EXISTS)) {
+            break;
+        default:
             status = "error";
-            message = ERR_ACCOUNT_NOT_EXISTS;
+            message = ERR_UNHANDLED;
             redirectUrl = "redirect:/" + role + "/initiatetransaction";
-        } else if (serviceStatus.equalsIgnoreCase(ERR_SAME_USER)) {
-            status = "error";
-            message = ERR_SAME_USER;
-            redirectUrl = "redirect:/" + role + "/initiatetransaction";
-        } else {
-            status = "error";
-            message = "An unhandled error occurred. Please contact the administrator";
-            redirectUrl = "redirect:/" + role + "/initiatetransaction";
+            break;
         }
 
         attributes.addFlashAttribute("message", new Message(status, message));

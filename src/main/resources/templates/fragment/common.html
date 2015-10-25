@@ -1,15 +1,14 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml"
-	xmlns:th="http://www.thymeleaf.org">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
 <head th:fragment="headerFragment">
 <title>MyASU Bank</title>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<link th:href="@{/webjars/normalize-css/3.0.3/normalize.css}"
-	rel="stylesheet" media="screen" />
+<link th:href="@{/webjars/normalize-css/3.0.3/normalize.css}" rel="stylesheet"
+	media="screen" />
 <link th:href="@{/webjars/bootstrap/3.3.4/css/bootstrap.min.css}"
 	rel="stylesheet" media="screen" />
 <link th:href="@{/webjars/font-awesome/4.4.0/css/font-awesome.min.css}"
-    rel="stylesheet" media="screen" />
+	rel="stylesheet" media="screen" />
 <link href="../../static/css/app.css" th:href="@{/css/app.css}" rel="stylesheet" />
 <script th:src="@{/webjars/jquery/2.1.4/jquery.min.js}"></script>
 <script th:src="@{/webjars/bootstrap/3.3.4/js/bootstrap.min.js}"></script>
@@ -22,14 +21,12 @@
 			<div class="navbar-header">
 				<button type="button" class="navbar-toggle" data-toggle="collapse"
 					data-target=".sidebar-collapse">
-					<span class="sr-only">Toggle navigation</span> <span
-						class="icon-bar"></span> <span class="icon-bar"></span> <span
-						class="icon-bar"></span>
+					<span class="sr-only">Toggle navigation</span> <span class="icon-bar"></span>
+					<span class="icon-bar"></span> <span class="icon-bar"></span>
 				</button>
 				<a class="navbar-brand" th:href="@{/}">My ASU Bank</a>
 			</div>
 			<!-- /.navbar-header -->
-
 			<!--  User is anonymous -->
 			<div sec:authorize="isAnonymous()">
 				<ul class="nav navbar-nav navbar-right">
@@ -39,33 +36,32 @@
 						th:href="@{/signup}">Register</a></li>
 				</ul>
 			</div>
-
 			<!-- User has logged in -->
 			<div sec:authorize="isAuthenticated()">
 				<ul class="nav navbar-nav navbar-right">
-    				<li><a th:href="@{/profile}">Profile</a></li>
-					<li sec:authorize="hasRole('ROLE_ADMIN')">
-                        <a th:href="@{/admin/myaccount}">My Account</a>
-                    </li>
-                    <li sec:authorize="hasRole('ROLE_MANAGER')">
-                        <a th:href="@{/manager/myaccount}">My Account</a>
-                    </li>
-                    <li sec:authorize="hasRole('ROLE_EMPLOYEE')">
-                        <a th:href="@{/employee/myaccount}">My Account</a>
-                    </li>
-                    <li sec:authorize="hasRole('ROLE_CUSTOMER')">
-                        <a th:href="@{/customer/myaccount}">My Account</a>
-                    </li>
-                    <li sec:authorize="hasRole('ROLE_MERCHANT')">
-                        <a th:href="@{/merchant/myaccount}">My Account</a>
-                    </li>
-                    <li sec:authorize="hasRole('ROLE_AGENCY')">
-                        <a th:href="@{/agency/myaccount}">My Account</a>
-                    </li>
+					<li><a th:href="@{/profile}">Profile</a></li>
+					<li sec:authorize="hasRole('ROLE_ADMIN')"><a
+						th:href="@{/admin/myaccount}">My Account</a></li>
+					<li sec:authorize="hasRole('ROLE_MANAGER')"><a
+						th:href="@{/manager/myaccount}">My Account</a></li>
+					<li sec:authorize="hasRole('ROLE_EMPLOYEE')"><a
+						th:href="@{/employee/myaccount}">My Account</a></li>
+					<li sec:authorize="hasRole('ROLE_CUSTOMER')"><a
+						th:href="@{/customer/myaccount}">My Account</a></li>
+					<li sec:authorize="hasRole('ROLE_MERCHANT')"><a
+						th:href="@{/merchant/myaccount}">My Account</a></li>
+					<li sec:authorize="hasRole('ROLE_AGENCY')"><a
+						th:href="@{/agency/myaccount}">My Account</a></li>
 					<li><a href="/logout" th:href="@{#}"
 						onclick="$('#logout-form').submit();">Logout</a>
-						<form style="visibility: hidden" id="logout-form" method="post"
-							action="#" th:action="@{/logout}"></form></li>
+						<form style="visibility: hidden" id="logout-form" method="post" action="#"
+							th:action="@{/logout}"></form>
+						<noscript>
+							<form id="logout-form" method="post" action="#" th:action="@{/logout}">
+								<button type="submit">Logout</button>
+							</form>
+						</noscript>
+					</li>
 				</ul>
 			</div>
 			<!-- /.navbar-top-links -->
