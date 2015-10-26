@@ -156,7 +156,7 @@ public class UserService implements IUserService {
                     "Dear %s, <br /><br />As a valued customer, we respect your privacy "
                     + "and ensure that your account is alwasy secured.<br /><br />"
                     + "Please download our transaction verifier, and use the below provided "
-                    + "PIN to encrypt your transactions.<br /><br /><div style='max-width: 100%;"
+                    + "PIN to encrypt your transactions.<br /><br /><div style='max-width: 100%%;"
                     + "word-wrap: break-word;'>%s</div><br /><br />"
                     + "Download the transaction encrypter from <strong><a href='%s'>this</a></strong> link."
                     + "<br /><br />Regards,<br />My ASU Bank", userName, publicKey, appletUrl);
