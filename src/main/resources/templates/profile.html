@@ -8,7 +8,7 @@
 		<div th:replace="fragment/common :: top-nav(profile)"></div>
 		<div th:replace="fragment/roleheader :: role-header(${role})"></div>
 		<div th:replace="fragment/common :: message"></div>
-		<form class="form-horizontal" role="form" th:action="@{/profile}"
+		<form id="profile-form" class="form-horizontal" role="form" th:action="@{/profile}"
 			th:object="${form}" method="post">
 			<div class="form-group">
 				<label class="col-md-3 control-label">Username: </label>
@@ -90,5 +90,7 @@
 			<a th:href="@{/pii}">Add Personal Identification Information</a>
 		</div>
 	</div>
+	<script th:src="@{/webjars/jquery-validation/1.14.0/jquery.validate.min.js}"></script>
+	<script type="text/javascript" th:src="@{/js/profile.js}"></script>
 </body>
 </html>
