@@ -278,6 +278,9 @@ public class SystemManagerController implements Constants {
             // System.out.println(message);
             model.addObject("message", new Message(status, message));
             model.setViewName("/manager/viewUserByEmailForm");
+            String logMessage = String.format("[Action=%s, Method=%s, Role=%s][Status=%s][Message=%s]", "viewUserByEmailForm",
+                    "POST", "manager", "error",message);
+            LOGGER.info(logMessage);
             return model;
 
         }
@@ -310,6 +313,9 @@ public class SystemManagerController implements Constants {
         String msg = String.format("User '%s' has been deleted", user.getUsername());
         message.put("msg", msg);
         attributes.addFlashAttribute("message", message);
+        String logMessage = String.format("[Action=%s, Method=%s, Role=%s][Status=%s][Message=%s]", "deleteUsers",
+                "POST", "manager", "success",message);
+        LOGGER.info(logMessage);
         return "redirect:/manager/update";
     }
 
@@ -321,6 +327,9 @@ public class SystemManagerController implements Constants {
         message.put("status", "success");
         message.put("msg", "Details have been updated");
         attributes.addFlashAttribute("message", message);
+        String logMessage = String.format("[Action=%s, Method=%s, Role=%s][Status=%s][Message=%s]", "update",
+                "POST", "manager", "success",message);
+        LOGGER.info(logMessage);
         return "redirect:/manager/update";
     }
 
@@ -342,6 +351,9 @@ public class SystemManagerController implements Constants {
         String msg = String.format("Manager '%s' has been deleted", user.getUsername());
         message = new Message("succes", msg);
         attributes.addFlashAttribute("message", message);
+        String logMessage = String.format("[Action=%s, Method=%s, Role=%s][Status=%s][Message=%s]", "deleteUsers",
+                "POST", "manager", message,msg);
+        LOGGER.info(logMessage);
         return "redirect:/manager/deleteUsers";
     }
 

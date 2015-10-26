@@ -325,13 +325,19 @@ public class MainController implements Constants {
         pii.setEmail(loggedInUser.getEmail());
         pii.setStatus(S_PII_PENDING);
         String message = ipiiservice.savePII(pii);
+        String msg ;
         if (message.equals(SUCCESS)) {
             mv.addObject("message", new Message("success", "Pii added successfully"));
+            msg="Pii added successfully";
             mv.setViewName("success");
         } else {
+            msg="Error in adding the pii please try again";
             mv.addObject("message", new Message("error", "Error in adding the pii please try again"));
             mv.setViewName("error");
         }
+        String logMessage = String.format("[Action=%s, Method=%s, Role=%s][Status=%s][Message=%s]", "pii",
+                "POST", "main", message,msg);
+        LOGGER.info(logMessage);
         return mv;
     }
 }
