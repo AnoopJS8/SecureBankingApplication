@@ -1,6 +1,8 @@
 package com.bankapp.controllers;
 
 import java.util.List;
+
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
@@ -28,6 +30,9 @@ public class AgencyController implements Constants{
     @Autowired
     IPIIService piiService;
     
+    private final Logger LOGGER = Logger
+            .getLogger(AgencyController.class);
+    
     @RequestMapping(value = "/agency/myaccount", method = RequestMethod.GET)
     public ModelAndView AdminDetails() {
         ModelAndView mv = new ModelAndView("/agency/myaccount");
@@ -40,6 +45,9 @@ public class AgencyController implements Constants{
         mv.addObject("role", "agency");
         List<PiiRequest> piiRequestList = piiRequestService.getPiiAdminRequest();
         mv.addObject("piiRequest", piiRequestList);
+        String logMessage = String.format("[Action=%s, Method=%s, Role=%s][Status=%s][Message=%s]", "Admin Request",
+                "GET", "agency", "success", "View all request");
+        LOGGER.info(logMessage);
         return mv;
     }
     
@@ -56,6 +64,9 @@ public class AgencyController implements Constants{
             status = "error";
             message = "Request has been authorized";
         }
+        String logMessage = String.format("[Action=%s, Method=%s, Role=%s][Status=%s][Message=%s]", "Approve PII Request",
+                "GET", "agency", status, message);
+        LOGGER.info(logMessage);
         attributes.addFlashAttribute("message", new Message(status, message));
         return "redirect:/agency/adminrequests";
     }
@@ -64,13 +75,19 @@ public class AgencyController implements Constants{
     public String declineDetails(@ModelAttribute("request") PiiRequest request, BindingResult result,
             RedirectAttributes attributes) {
         Message message;
+        String status;
         String msg = piiRequestService.decline(request);
         if(msg.equals(SUCCESS)){
+            status = "success";
             message = new Message("succes", "Request has been declined");
         }else{
+            status = "error";
             message = new Message("error", "error please try again");
         }
         attributes.addFlashAttribute("message", message);
+        String logMessage = String.format("[Action=%s, Method=%s, Role=%s][Status=%s][Message=%s]", "Decline PII Request",
+                "GET", "agency", status, message);
+        LOGGER.info(logMessage);
         return "redirect:/agency/adminrequests";
         
     }
@@ -81,6 +98,9 @@ public class AgencyController implements Constants{
         mv.addObject("role", "agency");
         List<PersonalIdentificationInfo> piiList = piiService.getPiiInfo();
         mv.addObject("piiInfo", piiList);
+        String logMessage = String.format("[Action=%s, Method=%s, Role=%s][Status=%s][Message=%s]", " PII Details",
+                "GET", "agency", "success", "Pii details");
+        LOGGER.info(logMessage);
         return mv;
     }
 
