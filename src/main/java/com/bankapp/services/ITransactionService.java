@@ -29,5 +29,7 @@ public interface ITransactionService {
     public String creditDebit(String Email, Transaction transaction);
     
     public List<Transaction> getCreditDebitRequest();
+    
+    public String executeTransaction(Transaction transaction);
 
 }
