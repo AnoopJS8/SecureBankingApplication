@@ -71,7 +71,7 @@ public class SystemManagerController implements Constants {
 
     @Autowired
     private IProfileRequestService profileReq;
-    
+
     @Autowired
     private ITransactionService transactionService;
 
@@ -156,15 +156,15 @@ public class SystemManagerController implements Constants {
     }
 
     @RequestMapping(value = "/manager/approvetransaction", method = RequestMethod.POST)
-    public String approvetransaction(@ModelAttribute("row") Transaction txn, BindingResult result,
-            WebRequest request, Errors errors, Principal principal, RedirectAttributes attributes) {
+    public String approvetransaction(@ModelAttribute("row") Transaction txn, BindingResult result, WebRequest request,
+            Errors errors, Principal principal, RedirectAttributes attributes) {
         Transaction transaction = transactionService.getTransactionsById(txn.getTransactionId());
         String serviceStatus = transactionService.executeTransaction(transaction);
         String status;
         String message;
         String redirectUrl;
         String logMessage;
-        String role="manager";
+        String role = "manager";
         switch (serviceStatus) {
         case SUCCESS:
             status = "success";
@@ -181,8 +181,8 @@ public class SystemManagerController implements Constants {
         attributes.addFlashAttribute("message", new Message(status, message));
         attributes.addFlashAttribute("role", role);
 
-        logMessage = String.format("[Action=%s, Method=%s, Role=%s][Status=%s][Message=%s]", "approve critical transaction", "POST",
-                role, serviceStatus, message);
+        logMessage = String.format("[Action=%s, Method=%s, Role=%s][Status=%s][Message=%s]",
+                "approve critical transaction", "POST", role, serviceStatus, message);
         LOGGER.info(logMessage);
 
         return redirectUrl;
@@ -260,7 +260,6 @@ public class SystemManagerController implements Constants {
         if (result.hasErrors()) {
             model.addObject("form", form);
             model.setViewName("/manager/viewUserByEmailForm");
-
             return model;
         }
 
@@ -279,8 +278,8 @@ public class SystemManagerController implements Constants {
             // System.out.println(message);
             model.addObject("message", new Message(status, message));
             model.setViewName("/manager/viewUserByEmailForm");
-            String logMessage = String.format("[Action=%s, Method=%s, Role=%s][Status=%s][Message=%s]", "viewUserByEmailForm",
-                    "POST", "manager", "error",message);
+            String logMessage = String.format("[Action=%s, Method=%s, Role=%s][Status=%s][Message=%s]",
+                    "viewUserByEmailForm", "POST", "manager", "error", message);
             LOGGER.info(logMessage);
             return model;
 
@@ -315,7 +314,7 @@ public class SystemManagerController implements Constants {
         message.put("msg", msg);
         attributes.addFlashAttribute("message", message);
         String logMessage = String.format("[Action=%s, Method=%s, Role=%s][Status=%s][Message=%s]", "deleteUsers",
-                "POST", "manager", "success",message);
+                "POST", "manager", "success", message);
         LOGGER.info(logMessage);
         return "redirect:/manager/update";
     }
@@ -328,8 +327,8 @@ public class SystemManagerController implements Constants {
         message.put("status", "success");
         message.put("msg", "Details have been updated");
         attributes.addFlashAttribute("message", message);
-        String logMessage = String.format("[Action=%s, Method=%s, Role=%s][Status=%s][Message=%s]", "update",
-                "POST", "manager", "success",message);
+        String logMessage = String.format("[Action=%s, Method=%s, Role=%s][Status=%s][Message=%s]", "update", "POST",
+                "manager", "success", message);
         LOGGER.info(logMessage);
         return "redirect:/manager/update";
     }
@@ -353,7 +352,7 @@ public class SystemManagerController implements Constants {
         message = new Message("succes", msg);
         attributes.addFlashAttribute("message", message);
         String logMessage = String.format("[Action=%s, Method=%s, Role=%s][Status=%s][Message=%s]", "deleteUsers",
-                "POST", "manager", message,msg);
+                "POST", "manager", message, msg);
         LOGGER.info(logMessage);
         return "redirect:/manager/deleteUsers";
     }

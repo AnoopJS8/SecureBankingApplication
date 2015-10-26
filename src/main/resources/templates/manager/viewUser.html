@@ -13,7 +13,6 @@
 			<table class="table table-bordered table-hover">
 				<thead>
 					<tr class="info">
-						<th>Id</th>
 						<th>Username</th>
 						<th>Email</th>
 						<th>Address</th>
@@ -25,21 +24,21 @@
 				</thead>
 				<tbody>
 					<tr>
-						<td><span th:text="${viewuser.id}"></span></td>
 						<td><span th:text="${viewuser.username}"></span></td>
 						<td><span th:text="${viewuser.email}"></span></td>
 						<td><span th:text="${viewuser.address}"></span></td>
 						<td><span th:text="${viewuser.phoneNumber}"></span></td>
 						<td>
-							<div th:if="*{dateOfBirth} != null">
+							<div th:if="*{viewuser.dateOfBirth} != null">
 								<span th:text="${#dates.format(viewuser.dateOfBirth,'MM/dd/yyyy')}"></span>
 							</div>
-							<div th:if="*{dateOfBirth} == null">
-								<span th:text="*{dateOfBirth}"></span>
+							<div th:if="*{viewuser.dateOfBirth} == null">
+								<span th:text="*{viewuser.dateOfBirth}"></span>
 							</div>
 						</td>
-						<td><span th:text="${viewuser.gender}"></span></td>
-						<td><span th:text="${viewuser.role.name}"></span></td>
+						<td><span th:text="*{viewuser.gender}"></span></td>
+						<td th:if="*{viewuser.role.name.equalsIgnoreCase('ROLE_MERCHANT')}"><span th:text="Merchant"></span></td>
+						<td th:if="*{viewuser.role.name.equalsIgnoreCase('ROLE_CUSTOMER')}"><span th:text="Customer"></span></td>
 					</tr>
 				</tbody>
 			</table>

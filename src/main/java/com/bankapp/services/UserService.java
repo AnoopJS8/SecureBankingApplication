@@ -337,36 +337,41 @@ public class UserService implements IUserService, Constants {
     }
 
     @Override
-    public User addEmployee(User user, String roleName) throws EmailExistsException {
+    public String addEmployee(User user, String roleName) throws EmailExistsException {
+        try {
+            String temporaryPassword = OneTimePassword.generateOTP();
+            user.setPassword(passwordEncoder.encode(temporaryPassword));
+            user.setRole(roleRepository.findByName(roleName));
+            user.setEnabled(true);
+            if (!emailExist(user.getEmail()))
+                userRepository.save(user);
+            else
+                return "EmailExits";
+            String userName = user.getUsername();
+            String recipientAddress = user.getEmail();
+            String subject = "My ASU Bank - New Account Creation";
+            String role = user.getRole().getName();
 
-        String temporaryPassword = OneTimePassword.generateOTP();
-        user.setPassword(passwordEncoder.encode(temporaryPassword));
-        user.setRole(roleRepository.findByName(roleName));
-        user.setEnabled(true);
-        userRepository.save(user);
+            if (role.equalsIgnoreCase("ROLE_MANAGER"))
+                role = "MANAGER";
+            else if (role.equalsIgnoreCase("ROLE_ADMIN"))
+                role = "ADMIN";
+            else
+                role = "EMPLOYEE";
 
-        String userName = user.getUsername();
-        String recipientAddress = user.getEmail();
-        String subject = "My ASU Bank - New Account Creation";
-        String role = user.getRole().getName();
-
-        if (role.equalsIgnoreCase("ROLE_MANAGER"))
-            role = "MANAGER";
-        else if (role.equalsIgnoreCase("ROLE_ADMIN"))
-            role = "ADMIN";
-        else
-            role = "EMPLOYEE";
-
-        String textBody = String
-                .format("Dear %s, <br /><br />You are now registered as %s. Here is your temporary password : %s<br />"
-                        + "<br />Regards,<br />My ASU Bank", userName, role, temporaryPassword);
-        mailService.sendEmail(recipientAddress, subject, textBody);
-
+            String textBody = String
+                    .format("Dear %s, <br /><br />You are now registered as %s. Here is your temporary password : %s<br />"
+                            + "<br />Regards,<br />My ASU Bank", userName, role, temporaryPassword);
+            mailService.sendEmail(recipientAddress, subject, textBody);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "mailError";
+        }
         String logMessageFormat = "[Action=%s][Status=%s][User=%s, Role=%s]";
         String logMessage = String.format(logMessageFormat, "updateUser", SUCCESS, user.getId(), roleName);
         logger.info(logMessage);
+        return SUCCESS;
 
-        return user;
     }
 
     @Override
