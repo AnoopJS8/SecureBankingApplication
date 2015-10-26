@@ -11,7 +11,7 @@
 		</div>
 		<div th:replace="fragment/common :: message"></div>
 		<div class="table-responsive">
-			<form id="addUser-form" action="#" th:action="@{/manager/addUserForm}"
+			<form id="addUser-form" th:action="@{/manager/addUserForm}"
 				th:object="${form}" method="post" class="form-horizontal">
 				<div class="form-group">
 					<label class="col-sm-2 control-label">Name</label>

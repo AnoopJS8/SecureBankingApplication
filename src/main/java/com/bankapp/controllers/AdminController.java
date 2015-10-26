@@ -1,7 +1,6 @@
 package com.bankapp.controllers;
 
 import java.security.Principal;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -92,10 +91,7 @@ public class AdminController implements Constants {
             RedirectAttributes attributes) {
         System.out.println(updatedManager.getId());
         userService.updateUser(updatedManager.getId(), updatedManager);
-        Map<String, String> message = new HashMap<String, String>();
-        message.put("status", "success");
-        message.put("msg", "Manager details have been updated");
-        attributes.addFlashAttribute("message", message);
+        attributes.addFlashAttribute("message", new Message("success", "Manager details have been updated"));
         String logMessage = String.format("[Action=%s, Method=%s, Role=%s][Status=%s][Message=%s]", "managers/update",
                 "POST", "admin", "success", "Manager details have been updated");
         LOGGER.info(logMessage);
@@ -106,14 +102,11 @@ public class AdminController implements Constants {
     public String deleteManager(@ModelAttribute("user") User user,
             BindingResult result, RedirectAttributes attributes) {
         userService.deleteUser(user);
-        Map<String, String> message = new HashMap<String, String>();
-        message.put("status", "success");
         String msg = String.format("Manager '%s' has been deleted",
                 user.getUsername());
-        message.put("msg", msg);
-        attributes.addFlashAttribute("message", message);
+        attributes.addFlashAttribute("message", new Message("success", msg));
         String logMessage = String.format("[Action=%s, Method=%s, Role=%s][Status=%s][Message=%s]", "managers/delete",
-                "POST", "admin", "success", message);
+                "POST", "admin", "success", msg);
         LOGGER.info(logMessage);
         return "redirect:/admin/managers";
     }
@@ -136,12 +129,9 @@ public class AdminController implements Constants {
             @ModelAttribute("user") User updatedUser, BindingResult result,
             RedirectAttributes attributes) {
         userService.updateUser(updatedUser.getId(), updatedUser);
-        Map<String, String> message = new HashMap<String, String>();
-        message.put("status", "success");
-        message.put("msg", "Employee details have been updated");
-        attributes.addFlashAttribute("message", message);
+        attributes.addFlashAttribute("message", new Message("success", "Employee details have been updated"));
         String logMessage = String.format("[Action=%s, Method=%s, Role=%s][Status=%s][Message=%s]", "Update details",
-                "POST", "admin", "success", message);
+                "POST", "admin", "success", "Employee details have been updated");
         LOGGER.info(logMessage);
         return "redirect:/admin/employees";
     }
@@ -150,14 +140,12 @@ public class AdminController implements Constants {
     public String deleteEmployee(@ModelAttribute("user") User user,
             BindingResult result, RedirectAttributes attributes) {
         userService.deleteUser(user);
-        Map<String, String> message = new HashMap<String, String>();
-        message.put("status", "success");
         String msg = String.format("Employee '%s' has been deleted",
                 user.getUsername());
-        message.put("msg", msg);
+        Message message = new Message("success", "Employee deleted successfully");
         attributes.addFlashAttribute("message", message);
         String logMessage = String.format("[Action=%s, Method=%s, Role=%s][Status=%s][Message=%s]", "delete employee",
-                "POST", "admin", "success", message);
+                "POST", "admin", "success", msg);
         LOGGER.info(logMessage);
         return "redirect:/admin/employees";
     }
@@ -214,8 +202,16 @@ public class AdminController implements Constants {
         user.setDateOfBirth(form.getDateOfBirth());
         Role role = form.getRole();
         try {
-            user = userService.addEmployee(user, role.getName());
-            attr.addFlashAttribute("message", new Message("success", "Employee has been created"));
+            String msg = userService.addEmployee(user, role.getName());
+            if(msg.equalsIgnoreCase("EmailExists")){
+                attr.addFlashAttribute("message", new Message("error", "Email already exists"));
+                return redirectFailureURL;
+            }
+            if(msg.equalsIgnoreCase("mailError")){
+                attr.addFlashAttribute("message", new Message("error", "Mail service dint work properly please try again"));
+                return redirectFailureURL;
+            }
+            attr.addFlashAttribute("message", new Message("success", "Internal user has been created"));
             logMessage = String.format("Action: %s, Message: %s",
                     "add", "Employee has been created");
             return redirectSuccessURL;
@@ -224,7 +220,6 @@ public class AdminController implements Constants {
                     "email_exists", e.getMessage());
             attr.addFlashAttribute("message", new Message("error", "Email already exists"));
             return redirectFailureURL;
-            
         } finally {
             LOGGER.info(logMessage);
         }

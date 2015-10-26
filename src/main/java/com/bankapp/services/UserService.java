@@ -12,6 +12,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.bankapp.constants.Constants;
 import com.bankapp.encryption.RSAKeyPair;
 import com.bankapp.exceptions.EmailExistsException;
 import com.bankapp.models.Account;
@@ -28,7 +29,7 @@ import com.bankapp.repositories.UserRepository;
 import com.bankapp.repositories.VerificationTokenRepository;
 
 @Service
-public class UserService implements IUserService {
+public class UserService implements IUserService, Constants {
     
     @Value("${com.bankapp.applet.url}")
     private String appletUrl;
@@ -299,14 +300,16 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public User addEmployee(User user, String roleName) throws EmailExistsException {
-
+    public String addEmployee(User user, String roleName) throws EmailExistsException {
+        try{
         String temporaryPassword = OneTimePassword.generateOTP();
         user.setPassword(passwordEncoder.encode(temporaryPassword));
         user.setRole(roleRepository.findByName(roleName));
         user.setEnabled(true);
-        userRepository.save(user);
-
+        if(!emailExist(user.getEmail()))
+            userRepository.save(user);
+        else
+            return "EmailExits";
         String userName = user.getUsername();
         String recipientAddress = user.getEmail();
         String subject = "My ASU Bank - New Account Creation";
@@ -323,8 +326,11 @@ public class UserService implements IUserService {
                 .format("Dear %s, <br /><br />You are now registered as %s. Here is your temporary password : %s<br />"
                         + "<br />Regards,<br />My ASU Bank", userName, role, temporaryPassword);
         mailService.sendEmail(recipientAddress, subject, textBody);
-
-        return user;
+        }catch(Exception e){
+            e.printStackTrace();
+            return "mailError";
+        }
+        return SUCCESS;
     }
 
     @Override

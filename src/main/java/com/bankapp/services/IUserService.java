@@ -10,7 +10,7 @@ import com.bankapp.models.VerificationToken;
 
 public interface IUserService {
 
-    public User addEmployee(User user, String roleName) throws EmailExistsException;
+    public String addEmployee(User user, String roleName) throws EmailExistsException;
 
     User registerNewUserAccount(User accountDto, String roleName) throws EmailExistsException;
 
