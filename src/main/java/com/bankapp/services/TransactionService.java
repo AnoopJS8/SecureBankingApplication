@@ -18,11 +18,7 @@ import com.bankapp.exceptions.TimeExpiredException;
 import com.bankapp.models.Account;
 import com.bankapp.models.Transaction;
 import com.bankapp.models.User;
-import com.bankapp.repositories.AccountRepository;
 import com.bankapp.repositories.TransactionRepository;
-
-//import apple.laf.JRSUIConstants.State;
-//import scala.annotation.meta.setter;
 
 @Service
 public class TransactionService implements ITransactionService, Constants {
@@ -66,6 +62,7 @@ public class TransactionService implements ITransactionService, Constants {
             String amount = decryptAmount(privateKeyBytes, transaction.getEncryptedAmount());
             Double parsedAmount = Double.parseDouble(amount);
             transaction.setAmount(parsedAmount);
+            System.out.println(transaction.getEncryptedAmount());
             transaction.setEncryptedAmount(null);
         } catch (UnsupportedEncodingException e) {
             return ERR_TRANS_DECODE;
@@ -78,7 +75,7 @@ public class TransactionService implements ITransactionService, Constants {
         } catch (Exception e) {
             return ERR_UNHANDLED;
         }
-
+        
         Account fromAccount = accountService.getAccountByUser(fromUser);
         Account toAccount = accountService.getAccountByUser(toUser);
         if (fromAccount == null || toAccount == null) {
@@ -302,42 +299,52 @@ public class TransactionService implements ITransactionService, Constants {
     @Override
     public String creditDebitTransaction(User user, String action, Transaction transaction) {
         try{
-            byte[] privateKeyBytes = user.getPublicKey();
-            try {
-                String amount = decryptAmount(privateKeyBytes, transaction.getEncryptedAmount());
-                Double parsedAmount = Double.parseDouble(amount);
-                transaction.setAmount(parsedAmount);
-                transaction.setEncryptedAmount(null);
-            } catch (UnsupportedEncodingException e) {
-                return ERR_TRANS_DECODE;
-            } catch (GeneralSecurityException e) {
-                return ERR_TRANS_DECRYPTION;
-            } catch (NumberFormatException e) {
-                return ERR_TRANS_INCORRECT_FORMAT;
-            } catch (TimeExpiredException e) {
-                return ERR_TRANS_EXPIRED;
-            } catch (Exception e) {
-                return ERR_UNHANDLED;
-            }
+            
             double amount = 0;
+            String status;
             if(action.equals(A_CREDIT)){
-                 amount = transaction.getToAccount().getBalance() + transaction.getAmount();
-                
+                amount = transaction.getToAccount().getBalance() + transaction.getAmount();
+                status = S_CREDIT_VERIFIED;
             } else{
                 if (transaction.getToAccount().getBalance() < transaction.getAmount()) {
                     transaction.setStatus(S_DECLINED);
                     transactionRepository.save(transaction);
                     return ERR_LESS_BALANCE;
                 }
+                status = S_DEBIT_VERIFIED;
                 amount = transaction.getToAccount().getBalance() - transaction.getAmount();
             }
             transaction.getToAccount().setBalance(amount);
-            transaction.setStatus(S_VERIFIED);
+            transaction.setTransferDate(new Date());
+            transaction.setComment("Bank "+status+" the amount");;
+            transaction.setStatus(status);
             accountService.saveAccount(transaction.getToAccount());
             transactionRepository.save(transaction);
-        }catch(Exception e){
+        } catch (Exception e) {
             return ERROR;
         }
         return SUCCESS;
     }
+    
+    @Transactional
+    @Override
+    public String executeTransaction(Transaction transaction) {
+        try {
+            transaction.setTransferDate(new Date());
+            if (transaction.getFromAccount().getBalance() < transaction.getAmount()) {
+                transaction.setStatus(S_DECLINED);
+                transactionRepository.save(transaction);
+                return ERR_LESS_BALANCE;
+            } else {
+                String message = accountService.updateBalance(transaction);
+                transaction.setStatus(S_OTP_VERIFIED);
+                transactionRepository.save(transaction);
+                return message;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ERROR;
+        }
+    }
+    
 }

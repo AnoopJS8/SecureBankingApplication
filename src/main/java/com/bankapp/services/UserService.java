@@ -7,6 +7,7 @@ import java.util.UUID;
 
 import org.apache.commons.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,6 +29,9 @@ import com.bankapp.repositories.VerificationTokenRepository;
 
 @Service
 public class UserService implements IUserService {
+    
+    @Value("${com.bankapp.applet.url}")
+    private String appletUrl;
 
     @Autowired
     private UserRepository userRepository;
@@ -150,11 +154,12 @@ public class UserService implements IUserService {
             String subject = "My ASU Bank - Security Feature";
             String textBody = String.format(
                     "Dear %s, <br /><br />As a valued customer, we respect your privacy "
-                    + "and ensure that your account is alwasy secured. <br /><br />"
+                    + "and ensure that your account is alwasy secured.<br /><br />"
                     + "Please download our transaction verifier, and use the below provided "
-                    + "PIN to encrypt your transactions.<br /><br />%s<br /><br />"
-                    + "Download the transaction verifier from: <a href='%s'>HERE</a>"
-                    + "<br />Regards,<br />My ASU Bank", userName, publicKey, "DUMMY");
+                    + "PIN to encrypt your transactions.<br /><br /><div style='max-width: 100%;"
+                    + "word-wrap: break-word;'>%s</div><br /><br />"
+                    + "Download the transaction encrypter from <strong><a href='%s'>this</a></strong> link."
+                    + "<br /><br />Regards,<br />My ASU Bank", userName, publicKey, appletUrl);
 
             mailService.sendEmail(recipientAddress, subject, textBody);
             userRepository.save(user);
@@ -201,14 +206,24 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public void updateUser(String existingUserId, User updatedUser) {
+    public String updateUser(String existingUserId, User updatedUser) {
+    	String message = "";
         User existingUser = userRepository.findById(existingUserId);
+        
+        try {
+        existingUser.setDateOfBirth(updatedUser.getDateOfBirth());
         existingUser.setUsername(updatedUser.getUsername());
         existingUser.setAddress(updatedUser.getAddress());
         existingUser.setPhoneNumber(updatedUser.getPhoneNumber());
-        existingUser.setDateOfBirth(updatedUser.getDateOfBirth());
         existingUser.setGender(updatedUser.getGender());
         userRepository.save(existingUser);
+        message = "success";
+        }catch (Exception e)
+        {
+        	message = "Invalid Date format";
+        }      
+      
+        return message;
     }
 
     @Override

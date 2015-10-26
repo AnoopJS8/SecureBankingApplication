@@ -30,6 +30,7 @@
 			<!--  User is anonymous -->
 			<div sec:authorize="isAnonymous()">
 				<ul class="nav navbar-nav navbar-right">
+					<li><a th:href="@{/app/MyASUBankApp.jar}">Download Applet</a></li>
 					<li th:class="${activeTab == 'login'} ? 'active' : null"><a
 						th:href="@{/}">Login</a></li>
 					<li th:class="${activeTab == 'signup'} ? 'active' : null"><a
@@ -39,6 +40,7 @@
 			<!-- User has logged in -->
 			<div sec:authorize="isAuthenticated()">
 				<ul class="nav navbar-nav navbar-right">
+					<li><a th:href="@{/app/MyASUBankApp.jar}">Download Applet</a></li>
 					<li><a th:href="@{/profile}">Profile</a></li>
 					<li sec:authorize="hasRole('ROLE_ADMIN')"><a
 						th:href="@{/admin/myaccount}">My Account</a></li>
@@ -60,15 +62,16 @@
 							<form id="logout-form" method="post" action="#" th:action="@{/logout}">
 								<button type="submit">Logout</button>
 							</form>
-						</noscript>
-					</li>
+						</noscript></li>
 				</ul>
 			</div>
 			<!-- /.navbar-top-links -->
 		</div>
 	</nav>
 	<div th:fragment="message">
-		<div th:if="${message}" th:object="${message}">
+		<div
+			th:if="${message != null and message.class.name != 'java.lang.String' and message.status != null}"
+			th:object="${message}">
 			<div
 				th:class="${message.status} == success ? 'alert alert-success alert-dismissible' : 'alert alert-danger alert-dismissible'"
 				role="alert">
@@ -78,10 +81,21 @@
 				<p th:text="${message.msg}"></p>
 			</div>
 		</div>
+		<div th:if="${message != null and message.class.name == 'java.lang.String'}"
+			th:object="${message}">
+			<div class="alert alert-warning alert-dismissible">
+				<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+				<p th:text="${message}"></p>
+			</div>
+		</div>
 	</div>
 	<footer th:fragment="footer" class="footer" id="center-footer">
 		<div class="container">
-			<p class="text-muted">MyASUBank&copy;</p>
+			<p class="text-muted text-center">
+				<strong>MyASUBank &copy; 2015</strong>
+			</p>
 		</div>
 	</footer>
 </body>

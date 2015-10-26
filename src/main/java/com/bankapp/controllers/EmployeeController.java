@@ -86,12 +86,20 @@ public class EmployeeController implements Constants {
             RedirectAttributes attributes) {
         ProfileRequest pRequest = profileRequestService.getRequestById(profileRequest.getrId());
         String serviceStatus = profileRequestService.authorizeRequest(pRequest);
+        String status="";
+        String message ;
         if (serviceStatus.equalsIgnoreCase(S_PROFILE_UPDATE_VERIFIED)) {
-            attributes.addFlashAttribute("message", new Message("success", "Request has been approved successfully"));
+            status = "success";
+            message= "Request has been approved successfully";
+            attributes.addFlashAttribute("message", new Message("success", message));
         } else {
+            status = "error";
+            message= "Request was not updated";
             attributes.addFlashAttribute("message", new Message("error", serviceStatus));
         }
-
+        String logMessage = String.format("[Action=%s, Method=%s, Role=%s][Status=%s][Message=%s]", "transactions Authorize",
+                "POST", "employee", status, message);
+        LOGGER.info(logMessage);
         return "redirect:/employee/requests";
     }
 
@@ -101,12 +109,21 @@ public class EmployeeController implements Constants {
             WebRequest request, Errors errors, RedirectAttributes attributes) {
         ProfileRequest pRequest = profileRequestService.getRequestById(profileRequest.getrId());
         String serviceStatus = profileRequestService.declineRequest(pRequest);
+        String status="";
+        String message ;
         if (serviceStatus.equalsIgnoreCase(S_PROFILE_UPDATE_DECLINED)) {
-            attributes.addFlashAttribute("message", new Message("success", "Request has been declined successfully"));
+            status="success";
+            message=  "Request has been declined successfully";
+            attributes.addFlashAttribute("message", new Message("success",message));
         } else {
-            attributes.addFlashAttribute("message", new Message("error", serviceStatus));
+            status="error";
+            message=  "Request not declined some error occured";
+            attributes.addFlashAttribute("message", new Message("error", message));
         }
 
+        String logMessage = String.format("[Action=%s, Method=%s, Role=%s][Status=%s][Message=%s]", "transactions Decline",
+                "POST", "employee", status, message);
+        LOGGER.info(logMessage);
         return "redirect:/employee/requests";
     }
 
@@ -123,18 +140,22 @@ public class EmployeeController implements Constants {
         Double FromAccountBalance = FromAccount.getBalance();
 
         String str = "";
-
+        String status ="";
         if (FromAccountBalance > AmountToBeSent) {
             managerService.reflectChangesToSender(FromAccount, FromAccountBalance, AmountToBeSent);
             Double ToAccountBalance = ToAccount.getBalance();
             managerService.reflectChangesToReceiver(ToAccount, ToAccountBalance, AmountToBeSent);
+            status = "success";
             str = managerService.approveTransaction(transaction);
             attributes.addFlashAttribute("message", new Message("success", str));
         } else {
+            status = "less balance";
             str = managerService.declineTransaction(transaction);
             attributes.addFlashAttribute("message", new Message("error", str));
         }
-
+        String logMessage = String.format("[Action=%s, Method=%s, Role=%s][Status=%s][Message=%s]", "transactions Authorize",
+                "POST", "employee", status, str);
+        LOGGER.info(logMessage);
         return "redirect:/employee/transactions";
     }
 
@@ -146,6 +167,9 @@ public class EmployeeController implements Constants {
         Transaction transaction = managerService.getTransactionById(txn.getTransactionId());
         String str = managerService.declineTransaction(transaction);
         attributes.addFlashAttribute("message", new Message("success", str));
+        String logMessage = String.format("[Action=%s, Method=%s, Role=%s][Status=%s][Message=%s]", "transactions Decline",
+                "POST", "employee", "success", "Decline transaction");
+        LOGGER.info(logMessage);
         return "redirect:/employee/transactions";
     }
 
@@ -165,6 +189,9 @@ public class EmployeeController implements Constants {
          */
         mv.addObject("transaction", transaction);
         mv.setViewName("employee/editTransactions");
+        String logMessage = String.format("[Action=%s, Method=%s, Role=%s][Status=%s][Message=%s]", "transactions modify",
+                "POST", "employee", "success", "modify transaction");
+        LOGGER.info(logMessage);
 
         return mv;
     }
@@ -187,11 +214,17 @@ public class EmployeeController implements Constants {
 
         Transaction transaction = transactionService.getTransactionsById(txn.getTransactionId());
         String str = transactionService.creditDebitTransaction(userService.getUserByEmail(activeUser.getUsername()), A_CREDIT, transaction);
+        String status;
         if(str.equals(SUCCESS)){
             attributes.addFlashAttribute("message", new Message("success", str));
+            status = "success";
         }else{
             attributes.addFlashAttribute("message", new Message("error", str));
+            status = "error";
         }
+        String logMessage = String.format("[Action=%s, Method=%s, Role=%s][Status=%s][Message=%s]", "credittransactions",
+                "POST", "employee", status, str);
+        LOGGER.info(logMessage);
         return "redirect:/employee/userscreditrequest";
     }
     
@@ -201,11 +234,17 @@ public class EmployeeController implements Constants {
 
         Transaction transaction = transactionService.getTransactionsById(txn.getTransactionId());
         String str = transactionService.creditDebitTransaction(userService.getUserByEmail(activeUser.getUsername()), A_DEBIT, transaction);
+        String status;
         if(str.equals(SUCCESS)){
+            status = "success";
             attributes.addFlashAttribute("message", new Message("success", str));
         }else{
+            status = "error";
             attributes.addFlashAttribute("message", new Message("error", str));
         }
+        String logMessage = String.format("[Action=%s, Method=%s, Role=%s][Status=%s][Message=%s]", "debittransactions",
+                "POST", "employee", status, str);
+        LOGGER.info(logMessage);
         return "redirect:/employee/userscreditrequest";
     }
 

@@ -21,6 +21,9 @@ public class DataSetup implements ApplicationListener<ContextRefreshedEvent> {
 
     @Value("${com.bankapp.data.doSetup}")
     private Boolean doDataSetup;
+    
+    @Value("${com.bankapp.data.roleSetup}")
+    private Boolean doRoleSetup;
 
     @Autowired
     private UserRepository userRepository;
@@ -34,13 +37,15 @@ public class DataSetup implements ApplicationListener<ContextRefreshedEvent> {
     @Override
     @Transactional
     public void onApplicationEvent(final ContextRefreshedEvent event) {
-        if (!doDataSetup) {
-            return;
+        if(doRoleSetup) {
+         // Create initial roles
+            for (Roles role : Roles.values()) {
+                createRoleIfNotFound(role.toString());
+            }
         }
 
-        // Create initial roles
-        for (Roles role : Roles.values()) {
-            createRoleIfNotFound(role.toString());
+        if (!doDataSetup) {
+            return;
         }
 
         final Role adminRole = roleRepository.findByName("ROLE_ADMIN");

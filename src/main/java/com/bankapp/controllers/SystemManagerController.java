@@ -45,6 +45,7 @@ import com.bankapp.models.Transaction;
 import com.bankapp.models.User;
 import com.bankapp.services.IProfileRequestService;
 import com.bankapp.services.ISystemManagerService;
+import com.bankapp.services.ITransactionService;
 import com.bankapp.services.IUserService;;;
 
 /**
@@ -71,12 +72,15 @@ public class SystemManagerController implements Constants {
 
     @Autowired
     private IProfileRequestService profileReq;
+    
+    @Autowired
+    private ITransactionService transactionService;
 
     private final Logger LOGGER = Logger.getLogger(SystemManagerController.class);
 
     @RequestMapping(value = "/manager/criticaltransaction", method = RequestMethod.GET)
     public ModelAndView getCriticalTransaction() {
-        List<Transaction> transactions = manager.getTransactionsByStatus(S_OTP_VERIFIED);
+        List<Transaction> transactions = manager.getTransactionsByStatus(S_OTP_PENDING);
         ModelAndView mv = new ModelAndView();
         mv.addObject("critical", transactions);
         mv.setViewName("/manager/viewTransaction");
@@ -87,7 +91,7 @@ public class SystemManagerController implements Constants {
     public ModelAndView getInitiatedTransaction() {
         List<Transaction> transactions = manager.getTransactionsByStatus(S_PENDING);
         ModelAndView mv = new ModelAndView();
-        mv.addObject("pending", transactions);
+        mv.addObject("transactions", transactions);
         mv.setViewName("/manager/viewPending");
         return mv;
     }
@@ -131,7 +135,6 @@ public class SystemManagerController implements Constants {
         String status = manager.approveProfileRequest(profile);
 
         mv.addObject("message", new Message(status, "Action Completed"));
-        // System.out.println("Done");
         mv.setViewName("/manager/profileRequests");
 
         return mv;
@@ -154,38 +157,36 @@ public class SystemManagerController implements Constants {
     }
 
     @RequestMapping(value = "/manager/approvetransaction", method = RequestMethod.POST)
-    public ModelAndView approvetransaction(@ModelAttribute("row") Transaction Id, BindingResult result,
-            WebRequest request, Errors errors, Principal principal) {
-        ModelAndView mv = new ModelAndView();
-        // //System.out.println("Entered Approve");
-        // //System.out.println("Transaction" + Id.getTransactionId());
-
-        Transaction transaction = manager.getTransactionById(Id.getTransactionId());
-
-        Account FromAccount = transaction.getFromAccount();
-        Account ToAccount = transaction.getToAccount();
-        Double AmountToBeSent = transaction.getAmount();
-        // System.out.println(AmountToBeSent);
-
-        Double FromAccountBalance = FromAccount.getBalance();
-        // System.out.println(FromAccountBalance);
-
-        String str = "";
-
-        if (FromAccountBalance > AmountToBeSent) {
-            manager.reflectChangesToSender(FromAccount, FromAccountBalance, AmountToBeSent);
-            Double ToAccountBalance = ToAccount.getBalance();
-            manager.reflectChangesToReceiver(ToAccount, ToAccountBalance, AmountToBeSent);
-            str = manager.approveTransaction(transaction);
-        } else {
-            str = "Unsuccessfull";
+    public String approvetransaction(@ModelAttribute("row") Transaction txn, BindingResult result,
+            WebRequest request, Errors errors, Principal principal, RedirectAttributes attributes) {
+        Transaction transaction = transactionService.getTransactionsById(txn.getTransactionId());
+        String serviceStatus = transactionService.executeTransaction(transaction);
+        String status;
+        String message;
+        String redirectUrl;
+        String logMessage;
+        String role="manager";
+        switch (serviceStatus) {
+        case SUCCESS:
+            status = "success";
+            message = "Money transfered successfully";
+            redirectUrl = "redirect:/" + role + "/criticaltransaction";
+            break;
+        default:
+            status = "error";
+            message = ERR_UNHANDLED;
+            redirectUrl = "redirect:/" + role + "/criticaltransaction";
+            break;
         }
-        // System.out.println(str);
-        mv.addObject("result1", str);
-        // System.out.println("Done");
-        mv.setViewName("/manager/viewTransaction");
 
-        return mv;
+        attributes.addFlashAttribute("message", new Message(status, message));
+        attributes.addFlashAttribute("role", role);
+
+        logMessage = String.format("[Action=%s, Method=%s, Role=%s][Status=%s][Message=%s]", "approve critical transaction", "POST",
+                role, serviceStatus, message);
+        LOGGER.info(logMessage);
+
+        return redirectUrl;
     }
 
     @RequestMapping(value = "/manager/addUserForm", method = RequestMethod.POST)
@@ -280,6 +281,9 @@ public class SystemManagerController implements Constants {
             // System.out.println(message);
             model.addObject("message", new Message(status, message));
             model.setViewName("/manager/viewUserByEmailForm");
+            String logMessage = String.format("[Action=%s, Method=%s, Role=%s][Status=%s][Message=%s]", "viewUserByEmailForm",
+                    "POST", "manager", "error",message);
+            LOGGER.info(logMessage);
             return model;
 
         }
@@ -312,17 +316,34 @@ public class SystemManagerController implements Constants {
         String msg = String.format("User '%s' has been deleted", user.getUsername());
         message.put("msg", msg);
         attributes.addFlashAttribute("message", message);
+        String logMessage = String.format("[Action=%s, Method=%s, Role=%s][Status=%s][Message=%s]", "deleteUsers",
+                "POST", "manager", "success",message);
+        LOGGER.info(logMessage);
         return "redirect:/manager/update";
     }
 
     @RequestMapping(value = "/manager/update", method = RequestMethod.POST)
     public String updateustomerAndMerchantDetails(@ModelAttribute("user") User updatedUser, BindingResult result,
             RedirectAttributes attributes) {
-        userService.updateUser(updatedUser.getId(), updatedUser);
+        String messageFromUpdate = userService.updateUser(updatedUser.getId(), updatedUser);
         Map<String, String> message = new HashMap<String, String>();
-        message.put("status", "success");
-        message.put("msg", "Details have been updated");
-        attributes.addFlashAttribute("message", message);
+        if(!messageFromUpdate.equals("success"))
+        {
+        	message.put("status", "error");
+            message.put("msg", messageFromUpdate);
+            attributes.addFlashAttribute("message", message);
+            String logMessage = String.format("[Action=%s, Method=%s, Role=%s][Status=%s][Message=%s]", "update",
+                    "POST", "manager", "success",message);
+            LOGGER.info(logMessage);
+        }
+        else{
+	        message.put("status", "success");
+	        message.put("msg", "Details have been updated");
+	        attributes.addFlashAttribute("message", message);
+	        String logMessage = String.format("[Action=%s, Method=%s, Role=%s][Status=%s][Message=%s]", "update",
+	                "POST", "manager", "success",message);
+	        LOGGER.info(logMessage);
+        }
         return "redirect:/manager/update";
     }
 
@@ -344,6 +365,9 @@ public class SystemManagerController implements Constants {
         String msg = String.format("Manager '%s' has been deleted", user.getUsername());
         message = new Message("succes", msg);
         attributes.addFlashAttribute("message", message);
+        String logMessage = String.format("[Action=%s, Method=%s, Role=%s][Status=%s][Message=%s]", "deleteUsers",
+                "POST", "manager", message,msg);
+        LOGGER.info(logMessage);
         return "redirect:/manager/deleteUsers";
     }
 
