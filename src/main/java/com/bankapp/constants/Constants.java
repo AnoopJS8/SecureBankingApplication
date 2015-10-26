@@ -36,6 +36,8 @@ public interface Constants {
 	public String S_PII_REQUEST_DONE = "PIIRD";//pii request pending
 	public String A_CREDIT = "ACR";
 	public String A_DEBIT = "ADT";
+	public String S_CREDIT_VERIFIED = "CREDIT_V"; //credit
+	public String S_DEBIT_VERIFIED = "DEBIT_V"; //debit
 	
 	
 	//OTP Resource Name

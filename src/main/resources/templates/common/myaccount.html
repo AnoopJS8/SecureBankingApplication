@@ -97,6 +97,12 @@
 						<td th:if="${transaction.status.equalsIgnoreCase('ADT')}">
 							Pending Debit
 						</td>
+						<td th:if="${transaction.status.equalsIgnoreCase('CREDIT_V')}">
+							Credited
+						</td>
+						<td th:if="${transaction.status.equalsIgnoreCase('DEBIT_V')}">
+							Debited
+						</td>
 						<td th:if="${transaction.status.equalsIgnoreCase('ACR')}">
 							Pending Credit
 						</td>

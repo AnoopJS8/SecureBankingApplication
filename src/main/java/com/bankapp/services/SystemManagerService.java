@@ -62,16 +62,14 @@ public class SystemManagerService implements ISystemManagerService, Constants {
     public String approveTransaction(Transaction transaction) {
 
         String result = "";
-        transaction.setStatus(S_VERIFIED);
-
+        transaction.setStatus(S_OTP_VERIFIED);
         try {
             TransRepo.save(transaction);
-            result = "Successull";
+            result = SUCCESS;
             //System.out.println("Done approve");
         } catch (Exception e) {
-            result = "unsuccessull";
+            result = ERROR;
         }
-
         return result;
     }
 

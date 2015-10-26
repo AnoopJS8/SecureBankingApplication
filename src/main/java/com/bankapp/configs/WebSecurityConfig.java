@@ -54,7 +54,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	            .maximumSessions(1);
 		
 		http.addFilterBefore(new CrossScriptingFilter(), BasicAuthenticationFilter.class);
-		http.addFilterBefore(new CrossScriptingFilter(), BasicAuthenticationFilter.class);
 			     
 	}
 
