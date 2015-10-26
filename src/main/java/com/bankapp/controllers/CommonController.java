@@ -75,7 +75,6 @@ public class CommonController implements Constants {
         User loggedInUser = userService.getUserFromSession(principal);
         Account account = accountService.getAccountByUser(loggedInUser);
         List<Transaction> transactions = transactionService.getTransactionsByAccount(account, account);
-        System.out.println(transactions);
         mv.addObject("accounts", account);
         mv.addObject("transactions", transactions);
         mv.addObject("role", role);
@@ -145,6 +144,7 @@ public class CommonController implements Constants {
         case ERR_TRANS_DECRYPTION:
         case ERR_TRANS_INCORRECT_FORMAT:
         case ERR_TRANS_EXPIRED:
+        case ERR_TRANS_LIMIT:
         case ERR_LESS_BALANCE:
         case ERR_ACCOUNT_NOT_EXISTS:
         case ERR_SAME_USER:
@@ -238,6 +238,7 @@ public class CommonController implements Constants {
         case ERR_TRANS_DECRYPTION:
         case ERR_TRANS_INCORRECT_FORMAT:
         case ERR_TRANS_EXPIRED:
+        case ERR_TRANS_LIMIT:
         case ERR_LESS_BALANCE:
         case ERR_ACCOUNT_NOT_EXISTS:
         case ERR_SAME_USER:
@@ -273,8 +274,7 @@ public class CommonController implements Constants {
         return redirectUrl;
     }
 
-    @RequestMapping(value = { "/customer/creditdebit",
-            "/merchant/creditdebit" }, method = RequestMethod.GET)
+    @RequestMapping(value = { "/customer/creditdebit", "/merchant/creditdebit" }, method = RequestMethod.GET)
     public ModelAndView creditDebit(HttpServletRequest request) {
         String role;
 
@@ -294,11 +294,10 @@ public class CommonController implements Constants {
         return mv;
     }
 
-    @RequestMapping(value = { "/customer/creditdebit",
-            "/merchant/creditdebit" }, method = RequestMethod.POST)
+    @RequestMapping(value = { "/customer/creditdebit", "/merchant/creditdebit" }, method = RequestMethod.POST)
     public String creditDebit(@AuthenticationPrincipal UserDetails activeUser, final ModelMap model,
-            @ModelAttribute("form") @Valid CreditDebitForm form, BindingResult result,
-            HttpServletRequest request, RedirectAttributes attributes) {
+            @ModelAttribute("form") @Valid CreditDebitForm form, BindingResult result, HttpServletRequest request,
+            RedirectAttributes attributes) {
 
         String status;
         String message;
@@ -321,7 +320,7 @@ public class CommonController implements Constants {
         Transaction transaction = new Transaction();
         transaction.setEncryptedAmount(form.getAmount());
         transaction.setStatus(form.getStatus());
-        
+
         String serviceStatus = transactionService.creditDebit(Email, transaction);
 
         switch (serviceStatus) {
@@ -330,6 +329,7 @@ public class CommonController implements Constants {
         case ERR_TRANS_DECRYPTION:
         case ERR_TRANS_INCORRECT_FORMAT:
         case ERR_TRANS_EXPIRED:
+        case ERR_TRANS_LIMIT:
         case ERR_LESS_BALANCE:
         case ERR_ACCOUNT_NOT_EXISTS:
         case ERR_UNHANDLED:
@@ -352,13 +352,11 @@ public class CommonController implements Constants {
         attributes.addFlashAttribute("message", new Message(status, message));
         attributes.addFlashAttribute("role", role);
 
-        logMessage = String.format("[Action=%s, Method=%s, Role=%s][Status=%s][Message=%s]", "creditdebit",
-                "POST", role, serviceStatus, message);
+        logMessage = String.format("[Action=%s, Method=%s, Role=%s][Status=%s][Message=%s]", "creditdebit", "POST",
+                role, serviceStatus, message);
         LOGGER.info(logMessage);
 
         return redirectUrl;
     }
-    
-    
 
 }

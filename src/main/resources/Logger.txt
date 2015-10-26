@@ -1,5 +1,0 @@
-2015-10-20 22:11:09 INFO  TomcatEmbeddedServletContainer:159 - Tomcat started on port(s): 8443 (https) 8081 (http)
-2015-10-20 22:11:09 INFO  MyAsuBankApplication:56 - Started MyAsuBankApplication in 21.718 seconds (JVM running for 23.531)
-2015-10-20 22:13:46 INFO  [/]:180 - Initializing Spring FrameworkServlet 'dispatcherServlet'
-2015-10-20 22:13:46 INFO  DispatcherServlet:485 - FrameworkServlet 'dispatcherServlet': initialization started
-2015-10-20 22:13:46 INFO  DispatcherServlet:504 - FrameworkServlet 'dispatcherServlet': initialization completed in 237 ms

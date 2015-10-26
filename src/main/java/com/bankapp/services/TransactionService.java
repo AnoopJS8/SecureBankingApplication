@@ -8,6 +8,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.List;
 
+import javax.persistence.RollbackException;
+
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -80,7 +82,6 @@ public class TransactionService implements ITransactionService, Constants {
             String amount = decryptAmount(privateKeyBytes, transaction.getEncryptedAmount());
             Double parsedAmount = Double.parseDouble(amount);
             transaction.setAmount(parsedAmount);
-            System.out.println(transaction.getEncryptedAmount());
             transaction.setEncryptedAmount(null);
         } catch (UnsupportedEncodingException e) {
             String logMessageFormat = "[Action=%s][Status=%s][FromEmail=%s, ToEmail=%s]";
@@ -128,6 +129,10 @@ public class TransactionService implements ITransactionService, Constants {
             logger.info(logMessage);
 
             return ERR_ACCOUNT_NOT_EXISTS;
+        }
+
+        if (transaction.getAmount() < 0 || transaction.getAmount() > 100000) {
+            return ERR_TRANS_LIMIT;
         }
 
         transaction.setFromAccount(fromAccount);
@@ -201,7 +206,6 @@ public class TransactionService implements ITransactionService, Constants {
                 String amount = decryptAmount(privateKeyBytes, transaction.getEncryptedAmount());
                 Double parsedAmount = Double.parseDouble(amount);
                 transaction.setAmount(parsedAmount);
-                System.out.println(transaction.getEncryptedAmount());
                 transaction.setEncryptedAmount(null);
             } catch (UnsupportedEncodingException e) {
                 String logMessageFormat = "[Action=%s][Status=%s][FromEmail=%s, ToEmail=%s]";
@@ -242,6 +246,10 @@ public class TransactionService implements ITransactionService, Constants {
 
             Account fromAccount = accountService.getAccountByUser(fromUser);
             Account toAccount = accountService.getAccountByUser(toUser);
+
+            if (transaction.getAmount() < 0 || transaction.getAmount() > 100000) {
+                return ERR_TRANS_LIMIT;
+            }
 
             transaction.setFromAccount(fromAccount);
             transaction.setToAccount(toAccount);
@@ -346,6 +354,10 @@ public class TransactionService implements ITransactionService, Constants {
                 return ERR_ACCOUNT_NOT_EXISTS;
             }
 
+            if (transaction.getAmount() < 0 || transaction.getAmount() > 100000) {
+                return ERR_TRANS_LIMIT;
+            }
+
             transaction.setFromAccount(fromAccount);
             transaction.setToAccount(toAccount);
             transaction.setStatus(S_PENDING);
@@ -382,15 +394,6 @@ public class TransactionService implements ITransactionService, Constants {
                 logger.info(logMessage);
 
                 return ERR_ACCOUNT_NOT_EXISTS;
-            }
-
-            if (fromUser.equals(toUser)) {
-                String logMessageFormat = "[Action=%s][Status=%s][Email=%s, Transaction=%s]";
-                String logMessage = String.format(logMessageFormat, "creditDebit", ERR_SAME_USER, email,
-                        transaction.getTransactionId());
-                logger.info(logMessage);
-
-                return ERR_SAME_USER;
             }
 
             byte[] privateKeyBytes = fromUser.getPublicKey();
@@ -437,6 +440,10 @@ public class TransactionService implements ITransactionService, Constants {
                 return ERR_UNHANDLED;
             }
 
+            if (transaction.getAmount() < 0 || transaction.getAmount() > 100000) {
+                return ERR_TRANS_LIMIT;
+            }
+
             Account fromAccount = accountService.getAccountByUser(fromUser);
             Account toAccount = fromAccount;
 
@@ -459,7 +466,8 @@ public class TransactionService implements ITransactionService, Constants {
 
             transaction.setFromAccount(fromAccount);
             transaction.setToAccount(toAccount);
-            transactionRepository.save(transaction);
+
+            transactionRepository.saveAndFlush(transaction);
 
             String logMessageFormat = "[Action=%s][Status=%s][Email=%s, Transaction=%s]";
             String logMessage = String.format(logMessageFormat, "creditDebit", SUCCESS, email,
@@ -467,6 +475,8 @@ public class TransactionService implements ITransactionService, Constants {
             logger.info(logMessage);
 
             return SUCCESS;
+        } catch (RollbackException cve) {
+            return ERROR;
         } catch (Exception e) {
             String logMessageFormat = "[Action=%s][Status=%s][Email=%s, Transaction=%s, ErrorMessage=%s]";
             String logMessage = String.format(logMessageFormat, "creditDebit", ERROR, email,
@@ -474,6 +484,7 @@ public class TransactionService implements ITransactionService, Constants {
             logger.error(logMessage);
             return ERROR;
         }
+
     }
 
     @Override
@@ -579,10 +590,14 @@ public class TransactionService implements ITransactionService, Constants {
                 status = S_DEBIT_VERIFIED;
                 amount = transaction.getToAccount().getBalance() - transaction.getAmount();
             }
+
+            if (transaction.getAmount() < 0 || transaction.getAmount() > 100000) {
+                return ERR_TRANS_LIMIT;
+            }
+
             transaction.getToAccount().setBalance(amount);
             transaction.setTransferDate(new Date());
             transaction.setComment("Bank " + status + " the amount");
-            ;
             transaction.setStatus(status);
             accountService.saveAccount(transaction.getToAccount());
             transactionRepository.save(transaction);
@@ -618,6 +633,8 @@ public class TransactionService implements ITransactionService, Constants {
                 logger.info(logMessage);
 
                 return ERR_LESS_BALANCE;
+            } else if (transaction.getAmount() < 0 || transaction.getAmount() > 100000) {
+                return ERR_TRANS_LIMIT;
             } else {
                 String message = accountService.updateBalance(transaction);
                 transaction.setStatus(S_OTP_VERIFIED);
