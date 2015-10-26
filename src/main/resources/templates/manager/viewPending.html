@@ -13,29 +13,26 @@
 			<table class="table table-bordered table-hover">
 				<thead>
 					<tr>
-						<th>Created Date</th>
+						<th>Transfer Date</th>
 						<th>From</th>
 						<th>To</th>
 						<th>Amount</th>
 						<th>Status</th>
 						<th>Comment</th>
-						<th></th>
 					</tr>
 				</thead>
 				<tbody>
-					<tr th:each="row : ${pending}">
+					<tr th:if="${transactions.size()} == 0">
+						<td colspan="7">There are no transactions</td>
+					</tr>
+					<tr th:each="row : ${transactions}">
 						<td>
-							<div th:if="*{created} != null">
-								<span th:text="*{#dates.format(created, 'MM/dd/yyyy')}"></span>
-							</div>
-							<div th:if="*{created} == null">
-								<span>No creation date</span>
-							</div>
+							<span th:text="*{#dates.format(row.transferDate, 'MM/dd/yyyy')}"></span>
 						</td>
 						<td><span th:text="${row.fromAccount.user.username}"></span></td>
 						<td><span th:text="${row.toAccount.user.username}"></span></td>
 						<td><span th:text="${row.amount}"></span></td>
-						<td><span th:text="${row.status}"></span></td>
+						<td><span th:text="Pending"></span></td>
 						<td><span th:text="${row.comment}"></span></td>
 					</tr>
 				</tbody>

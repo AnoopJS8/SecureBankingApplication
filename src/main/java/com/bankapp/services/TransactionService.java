@@ -325,4 +325,26 @@ public class TransactionService implements ITransactionService, Constants {
         }
         return SUCCESS;
     }
+    
+    @Transactional
+    @Override
+    public String executeTransaction(Transaction transaction) {
+        try {
+            transaction.setTransferDate(new Date());
+            if (transaction.getFromAccount().getBalance() < transaction.getAmount()) {
+                transaction.setStatus(S_DECLINED);
+                transactionRepository.save(transaction);
+                return ERR_LESS_BALANCE;
+            } else {
+                String message = accountService.updateBalance(transaction);
+                transaction.setStatus(S_OTP_VERIFIED);
+                transactionRepository.save(transaction);
+                return message;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ERROR;
+        }
+    }
+    
 }
