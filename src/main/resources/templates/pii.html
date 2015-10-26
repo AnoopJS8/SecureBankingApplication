@@ -7,6 +7,7 @@
 	<div class="container">
 		<div th:replace="fragment/common :: top-nav(pii)"></div>
 		<div th:replace="fragment/roleheader :: role-header(${role})"></div>
+		<div th:text="${message}"></div>
 		<form id="profile-form" class="form-horizontal" role="form"
 			th:action="pii" th:object="${pii}" method="post">
 			<div class="form-group">

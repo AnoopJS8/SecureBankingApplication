@@ -1,13 +1,12 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml"
-	xmlns:th="http://www.thymeleaf.org"
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
 	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
 <head th:include="fragment/common :: headerFragment" />
 <body>
 	<div class="container">
-		<div th:replace="fragment/common :: top-nav(myaccount)"></div>	
+		<div th:replace="fragment/common :: top-nav(myaccount)"></div>
 		<div th:replace="fragment/manager :: manager-header"></div>
-		<div >
+		<div>
 			<h3>Critical Transactions</h3>
 		</div>
 		<div class="table-responsive">
@@ -15,11 +14,9 @@
 				<thead>
 					<tr>
 						<th>Created Date</th>
-						
 						<th>From</th>
 						<th>To</th>
 						<th>Amount</th>
-						
 						<th>Status</th>
 						<th>Comment</th>
 						<th></th>
@@ -27,25 +24,28 @@
 				</thead>
 				<tbody>
 					<tr th:each="row : ${critical}">
-
-						<form  th:action="@{/manager/approvetransaction}" th:object="${row}" method="post">
-						<td><span th:text="*{#dates.format(transferDate,'MM/dd/yyyy')}"></span></td>
-						<td><span th:text="*{fromAccount.user.username}"></span></td>
-						<td><span th:text="*{toAccount.user.username}"></span></td>
-						<td><span th:text="*{amount}"></span></td>
-						<td><span th:text="*{status}"></span></td>						
-						<td><span th:text="*{comment}"></span></td>
-						
-                        <td>
-                        <input type="hidden" name="transactionId" th:value="*{transactionId}" />
-                        <input type = "submit" /></td>
-                        </form>
+						<form th:action="@{/manager/approvetransaction}" th:object="${row}"
+							method="post">
+							<td>
+								<div th:if="*{dateOfBirth} != null">
+									<span th:text="*{#dates.format(dateOfBirth,'MM/dd/yyyy')}"></span>
+								</div>
+								<div th:if="*{dateOfBirth} == null">
+									<span th:text="*{dateOfBirth}"></span>
+								</div>
+							</td>
+							<td><span th:text="*{fromAccount.user.username}"></span></td>
+							<td><span th:text="*{toAccount.user.username}"></span></td>
+							<td><span th:text="*{amount}"></span></td>
+							<td><span th:text="*{status}"></span></td>
+							<td><span th:text="*{comment}"></span></td>
+							<td><input type="hidden" name="transactionId"
+								th:value="*{transactionId}" /> <input type="submit" /></td>
+						</form>
 					</tr>
 				</tbody>
 			</table>
 		</div>
-		
-	
 	</div>
 </body>
 </html>

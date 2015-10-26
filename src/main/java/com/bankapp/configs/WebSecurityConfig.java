@@ -12,6 +12,7 @@ import org.springframework.security.config.annotation.web.servlet.configuration.
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
 @Configuration
 @EnableWebMvcSecurity
@@ -48,6 +49,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 		        .logoutSuccessUrl("/").and()
 	        .sessionManagement()
 	            .maximumSessions(1);
+		
+		http.addFilterBefore(new CrossScriptingFilter(), BasicAuthenticationFilter.class);
+		http.addFilterBefore(new CrossScriptingFilter(), BasicAuthenticationFilter.class);
+			     
 	}
 
 	@Override

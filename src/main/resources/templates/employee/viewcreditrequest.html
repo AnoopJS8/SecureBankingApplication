@@ -37,16 +37,16 @@
 						<td><span th:text="${transaction.toAccount.user.username}"></span></td>
 						<td><span th:text="${transaction.amount}"></span></td>
 						<td><span th:text="${transaction.comment}"></span></td>
-						<td>
-							<form action="#" th:object="${transaction}" th:action="@{/customer/approverequest}" method="POST">
+						<td th:if="${transactions.status=='ACR'}">
+							<form action="#" th:object="${transaction}" th:action="@{/employee/credittransactions}" method="POST">
 								<input type="hidden" name="transactionId" th:value="*{transactionId}" />
-								<button type="submit" class="btn btn-success">Authorize</button>
+								<button type="submit" class="btn btn-success">Credit</button>
 							</form>
 						</td>
-						<td>
-							<form action="#" th:object="${transaction}" th:action="@{/customer/declinerequest}" method="POST">
+						<td th:if="${transactions.status == 'ADT'}">
+							<form action="#" th:object="${transaction}" th:action="@{/employee/debittransactions}" method="POST">
 								<input type="hidden" name="transactionId" th:value="*{transactionId}" />
-								<button type="submit" class="btn btn-danger">Decline</button>
+								<button type="submit" class="btn btn-danger">Debit</button>
 							</form>
 						</td>
 					</tr>

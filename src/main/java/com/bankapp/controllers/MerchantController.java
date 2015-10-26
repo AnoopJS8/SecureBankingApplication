@@ -2,6 +2,7 @@
 package com.bankapp.controllers;
 
 import java.security.Principal;
+import java.util.Date;
 
 import javax.validation.Valid;
 
@@ -73,6 +74,7 @@ public class MerchantController implements Constants {
         transaction.setAmount(form.getAmount());
         transaction.setFromAccount(fromAccount);
         transaction.setComment(form.getComment());
+        transaction.setTransferDate(new Date());
         String serviceStatus = transactionService.askCustomerPayment(transaction, user);
 
         if (serviceStatus.equalsIgnoreCase(SUCCESS)) {

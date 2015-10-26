@@ -1,18 +1,20 @@
 package com.bankapp.services;
 
+import java.security.GeneralSecurityException;
 import java.security.Principal;
 import java.util.List;
 import java.util.UUID;
 
+import org.apache.commons.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.bankapp.encryption.RSAKeyPair;
 import com.bankapp.exceptions.EmailExistsException;
 import com.bankapp.models.Account;
 import com.bankapp.models.OneTimePassword;
-
 import com.bankapp.models.Role;
 import com.bankapp.models.Transaction;
 import com.bankapp.models.User;
@@ -116,13 +118,50 @@ public class UserService implements IUserService {
     }
 
     @Override
+    public boolean hasMissingFields(Principal principal) {
+        if (principal != null) {
+            String email = principal.getName();
+            if (email != null) {
+                User user = userRepository.findByEmail(email);
+                if (user.getSecurityAnswer() == null || user.getSecurityQuestion() == null) {
+                    return true;
+                }
+                return false;
+            } else {
+                return false;
+            }
+        }
+        return false;
+    }
+
+    @Override
     public VerificationToken getVerificationToken(String VerificationToken) {
         return tokenRepository.findByToken(VerificationToken);
     }
 
     @Override
     public void saveRegisteredUser(User user) {
-        userRepository.save(user);
+        try {
+            RSAKeyPair keyPair = new RSAKeyPair(2048);
+            user.setPublicKey(keyPair.getPrivateKey());
+            String publicKey = new String(Base64.encodeBase64(keyPair.getPublicKey()));
+            String userName = user.getUsername();
+            String recipientAddress = user.getEmail();
+            String subject = "My ASU Bank - Security Feature";
+            String textBody = String.format(
+                    "Dear %s, <br /><br />As a valued customer, we respect your privacy "
+                    + "and ensure that your account is alwasy secured. <br /><br />"
+                    + "Please download our transaction verifier, and use the below provided "
+                    + "PIN to encrypt your transactions.<br /><br />%s<br /><br />"
+                    + "Download the transaction verifier from: <a href='%s'>HERE</a>"
+                    + "<br />Regards,<br />My ASU Bank", userName, publicKey, "DUMMY");
+
+            mailService.sendEmail(recipientAddress, subject, textBody);
+            userRepository.save(user);
+        } catch (GeneralSecurityException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -188,13 +227,13 @@ public class UserService implements IUserService {
         Role employeeRole = roleRepository.findByName("ROLE_EMPLOYEE");
         return userRepository.findByRole(employeeRole);
     }
-    
+
     @Override
     public List<User> getCustomers() {
         Role role = roleRepository.findByName("ROLE_CUSTOMER");
         return userRepository.findByRole(role);
     }
-    
+
     @Override
     public List<User> getMerchants() {
         Role role = roleRepository.findByName("ROLE_MERCHANT");

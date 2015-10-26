@@ -1,6 +1,5 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml"
-	xmlns:th="http://www.thymeleaf.org">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
 <head th:include="fragment/common :: headerFragment" />
 <body>
 	<div class="container">
@@ -17,19 +16,26 @@
 					Customer Login <small><a th:href="@{/signup}">New User?</a></small>
 				</h3>
 				<hr />
-				<div th:if="${param.error}">
-					<div class="alert alert-danger" role="alert">
-						<p>Invalid username and password</p>
+				<div th:if="${param.logout}">You have been logged out.</div>
+				<div class="error" th:if="${param.error} and ${session['SPRING_SECURITY_LAST_EXCEPTION']}"
+					th:with="errorMsg=${session['SPRING_SECURITY_LAST_EXCEPTION'].message}">
+					<div th:if="${errorMsg} == 'Bad credentials'">
+						<div class="alert alert-danger" role="alert">
+							<p>Invalid username and password</p>
+						</div>
+					</div>
+					<div th:if="${errorMsg} == 'blocked'">
+						<div class="alert alert-danger" role="alert">
+							<p>Too many failed login attempts. You have been banned for a day!</p>
+						</div>
 					</div>
 				</div>
-				<div th:if="${param.logout}">You have been logged out.</div>
-				<form th:action="@{/}" method="post" class="form-horizontal"
-					id="login-form">
+				<form th:action="@{/}" method="post" class="form-horizontal" id="login-form">
 					<div class="form-group">
 						<label class="control-label col-sm-5" for="email">Email</label>
 						<div class="col-sm-7">
-							<input id="email" type="email" name="m_email"
-								class="form-control" placeholder="Email" />
+							<input id="email" type="email" name="m_email" class="form-control"
+								placeholder="Email" />
 						</div>
 					</div>
 					<div class="form-group">
@@ -41,8 +47,8 @@
 					</div>
 					<div class="form-group">
 						<div class="col-sm-5">
-							<small class="pull-right"> <a
-								th:href="@{/login/identify}">Forgot password?</a>
+							<small class="pull-right"> <a th:href="@{/login/identify}">Forgot
+									password?</a>
 							</small>
 						</div>
 						<div class="col-sm-7">
@@ -62,21 +68,16 @@
 					<div class="panel-body">
 						<ul class="nav nav-pills nav-stacked">
 							<li><a th:href="@{/profile}">Profile</a></li>
-							<li sec:authorize="hasRole('ROLE_ADMIN')">
-								<a th:href="@{/admin/myaccount}">My Account</a>
-							</li>
-							<li sec:authorize="hasRole('ROLE_MANAGER')">
-								<a th:href="@{/manager/myaccount}">My Account</a>
-							</li>
-							<li sec:authorize="hasRole('ROLE_EMPLOYEE')">
-								<a th:href="@{/employee/myaccount}">My Account</a>
-							</li>
-							<li sec:authorize="hasRole('ROLE_CUSTOMER')">
-								<a th:href="@{/customer/myaccount}">My Account</a>
-							</li>
-							<li sec:authorize="hasRole('ROLE_MERCHANT')">
-								<a th:href="@{/merchant/myaccount}">My Account</a>
-							</li>
+							<li sec:authorize="hasRole('ROLE_ADMIN')"><a
+								th:href="@{/admin/myaccount}">My Account</a></li>
+							<li sec:authorize="hasRole('ROLE_MANAGER')"><a
+								th:href="@{/manager/myaccount}">My Account</a></li>
+							<li sec:authorize="hasRole('ROLE_EMPLOYEE')"><a
+								th:href="@{/employee/myaccount}">My Account</a></li>
+							<li sec:authorize="hasRole('ROLE_CUSTOMER')"><a
+								th:href="@{/customer/myaccount}">My Account</a></li>
+							<li sec:authorize="hasRole('ROLE_MERCHANT')"><a
+								th:href="@{/merchant/myaccount}">My Account</a></li>
 							<li class="disabled"><a href="#">Last logged in at <strong
 									th:text="${lastLoginDate}"></strong></a></li>
 							<li class="disabled"><a href="#">Last login IP <strong
@@ -88,8 +89,7 @@
 		</div>
 		<div th:replace="fragment/common :: [//footer]"></div>
 	</div>
-	<script
-		th:src="@{/webjars/jquery-validation/1.14.0/jquery.validate.min.js}"></script>
+	<script th:src="@{/webjars/jquery-validation/1.14.0/jquery.validate.min.js}"></script>
 	<script type="text/javascript" th:src="@{/js/login.js}"></script>
 </body>
 </html>

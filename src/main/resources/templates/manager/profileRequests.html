@@ -1,60 +1,59 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml"
-	xmlns:th="http://www.thymeleaf.org"
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
 	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
 <head th:include="fragment/common :: headerFragment" />
 <body>
 	<div class="container">
-		<div th:replace="fragment/common :: top-nav(myaccount)"></div>	
+		<div th:replace="fragment/common :: top-nav(myaccount)"></div>
 		<div th:replace="fragment/manager :: manager-header"></div>
-		<div >
+		<div>
 			<h3>Profile Change Requests</h3>
 			<div th:if="${message}" th:object="${message}">
-			<div
-				th:class="*{status} == success ? 'alert alert-success alert-dismissible' : 'alert alert-danger alert-dismissible'"
-				role="alert">
-				<button type="button" class="close" data-dismiss="alert" aria-label="Close">
-					<span aria-hidden="true">&times;</span>
-				</button>
-				<p th:text="*{msg}"></p>
+				<div
+					th:class="*{status} == success ? 'alert alert-success alert-dismissible' : 'alert alert-danger alert-dismissible'"
+					role="alert">
+					<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+					<p th:text="*{msg}"></p>
+				</div>
 			</div>
-		</div>
 		</div>
 		<div class="table-responsive">
 			<table class="table table-bordered table-hover">
 				<thead>
 					<tr>
 						<th>Address</th>
-						
 						<th>Date Of Birth</th>
 						<th>Phone Number</th>
 						<th>Role</th>
-						
 						<th>Status</th>
-						
 						<th></th>
 					</tr>
 				</thead>
 				<tbody>
 					<tr th:each="row : ${profileRequests}">
-						<form  th:action="@{/manager/approveprofilerequest}" th:object="${row}" method="post">
-						<td><span th:text="*{address}"></span></td>
-						<td><span th:text="*{dateOfBirth}"></span></td>
+						<form th:action="@{/manager/approveprofilerequest}" th:object="${row}"
+							method="post">
+							<td><span th:text="*{address}"></span></td>
+							<td>
+								<div th:if="*{dateOfBirth} != null">
+									<span th:text="*{#dates.format(dateOfBirth, 'MM/dd/yyyy')}"></span>
+								</div>
+								<div th:if="*{dateOfBirth} == null">
+									<span th:text="*{dateOfBirth}"></span>
+								</div>
+							</td>
 						<td><span th:text="*{phoneNumber}"></span></td>
 						<td><span th:text="*{role.name}"></span></td>
-						<td><span th:text="*{status}"></span></td>						
-						
-						
-                        <td>
-                        <input type="hidden" name="rId" th:value="*{rId}" />
-                        <input type = "submit" /></td>
-                        </form>
+						<td><span th:text="*{status}"></span></td>
+						<td><input type="hidden" name="rId" th:value="*{rId}" /> <input
+							type="submit" /></td>
+						</form>
 					</tr>
 				</tbody>
 			</table>
 		</div>
-		
-	
 	</div>
 </body>
 </html>

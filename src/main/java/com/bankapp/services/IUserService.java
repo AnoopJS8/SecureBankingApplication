@@ -22,6 +22,8 @@ public interface IUserService {
 
     User getUserFromSession(Principal principal);
 
+    public boolean hasMissingFields(Principal principal);
+
     void saveRegisteredUser(User user);
 
     void createVerificationToken(User user, String token);
@@ -37,23 +39,22 @@ public interface IUserService {
     List<User> getManagers();
 
     List<User> getEmployees();
-    
+
     List<User> getCustomers();
-    
+
     List<User> getMerchants();
 
     void generateTemporaryPassword(User user);
 
     boolean changePassword(User user);
-    
+
     boolean emailExist(String email);
-    
+
     boolean idExist(String id);
 
     public boolean verifyPassword(User user, String currentPassword);
-    
-    public void deleteExternalUser(User user);
 
+    public void deleteExternalUser(User user);
 
     // OTP Section
     OneTimePassword generateOTP(String resourceId, String resourceName);
@@ -62,8 +63,6 @@ public interface IUserService {
 
     boolean verifyOTP(String otp, String id, String name);
 
-	List<User> displayDeleteUsers();
-
-	
+    List<User> displayDeleteUsers();
 
 }
