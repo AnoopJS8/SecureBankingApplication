@@ -21,8 +21,7 @@ import com.bankapp.models.User;
 import com.bankapp.repositories.AccountRepository;
 import com.bankapp.repositories.TransactionRepository;
 
-import apple.laf.JRSUIConstants.State;
-import scala.annotation.meta.setter;
+
 
 @Service
 public class TransactionService implements ITransactionService, Constants {
