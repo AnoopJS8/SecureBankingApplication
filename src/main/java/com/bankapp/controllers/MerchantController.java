@@ -76,6 +76,7 @@ public class MerchantController implements Constants {
         case ERR_TRANS_DECRYPTION:
         case ERR_TRANS_INCORRECT_FORMAT:
         case ERR_TRANS_EXPIRED:
+        case ERR_TRANS_LIMIT:
         case ERR_LESS_BALANCE:
         case ERR_ACCOUNT_NOT_EXISTS:
         case ERR_SAME_USER:

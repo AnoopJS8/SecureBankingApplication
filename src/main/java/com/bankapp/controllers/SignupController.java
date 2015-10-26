@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.bankapp.constants.Message;
 import com.bankapp.exceptions.EmailExistsException;
@@ -137,15 +138,16 @@ public class SignupController {
     }
 
     @RequestMapping(value = "/registrationConfirm", method = RequestMethod.GET)
-    public ModelAndView confirmRegistration(HttpServletRequest request, Model model,
-            @RequestParam("token") String token) {
+    public String confirmRegistration(HttpServletRequest request, Model model, @RequestParam("token") String token,
+            RedirectAttributes attributes) {
         String logMessage = String.format("Verifying user account with information: {token = %s}", token);
         LOGGER.info(logMessage);
 
         VerificationToken verificationToken = userService.getVerificationToken(token);
         if (verificationToken == null) {
             String message = String.format("The token is invalid, please register again!");
-            return new ModelAndView("registration/activationFailed", "message", new Message("error", message));
+            attributes.addFlashAttribute("message", new Message("error", message));
+            return "redirect:/";
         }
 
         User user = verificationToken.getUser();
@@ -153,23 +155,32 @@ public class SignupController {
         if ((verificationToken.getExpiryDate().getTime() - cal.getTime().getTime()) <= 0) {
             String message = String.format("The verification token has expired. Please register again!");
             String url = getAppUrl(request) + "/resendRegistrationToken?token=" + token;
-            ModelAndView mv = new ModelAndView("registration/activationFailed");
-            mv.addObject("message", new Message("error", message));
-            mv.addObject("url", url);
-            return mv;
+            attributes.addFlashAttribute("message", new Message("error", message));
+            attributes.addFlashAttribute("url", url);
+            return "registration/activationFailed";
         }
 
-        user.setEnabled(true);
-        userService.saveRegisteredUser(user);
+        // Check if user is enabled
+        if (!user.isEnabled()) {
+            user.setEnabled(true);
+            userService.saveRegisteredUser(user);
 
-        // Create user account
-        Account userAccount = new Account(user, defaultBalance, defaultCriticalLimit);
-        accountService.saveAccount(userAccount);
+            // Create user account
+            Account userAccount = new Account(user, defaultBalance, defaultCriticalLimit);
+            accountService.saveAccount(userAccount);
 
-        logMessage = String.format("User %s has been verified, created new account [%s]", user.getId(), userAccount);
-        LOGGER.info(logMessage);
+            logMessage = String.format("User %s has been verified, created new account [%s]", user.getId(),
+                    userAccount);
+            LOGGER.info(logMessage);
 
-        return new ModelAndView("registration/activationSuccess");
+            attributes.addFlashAttribute("message",
+                    new Message("success", "Your account has been verified and enabled!"));
+
+        } else {
+            attributes.addFlashAttribute("message", new Message("error", "Your account has already been verified!"));
+        }
+
+        return "redirect:/";
     }
 
     @RequestMapping(value = "/resendRegistrationToken", method = RequestMethod.GET)
