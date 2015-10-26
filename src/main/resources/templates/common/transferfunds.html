@@ -25,10 +25,10 @@
 				</div>
 			</div>
 			<div class="form-group">
-				<label class="col-md-3 control-label">Amount : </label>
+				<label class="col-md-3 control-label">Encrypted Amount : </label>
 				<div class="col-md-5">
-					<input type="text" class="form-control" name="amount" id="amount"
-						th:field="*{amount}"></input><label th:if="${#fields.hasErrors('amount')}"
+					<textarea class="form-control" name="amount" id="amount"
+						th:field="*{amount}"></textarea><label th:if="${#fields.hasErrors('amount')}"
 						th:errors="*{amount}"></label>
 				</div>
 			</div>
