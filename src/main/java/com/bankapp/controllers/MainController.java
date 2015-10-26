@@ -314,6 +314,13 @@ public class MainController implements Constants {
     public ModelAndView savePII(@ModelAttribute("pii") @Valid PersonalIdentificationInfo pii, BindingResult result,
             WebRequest request, Errors errors, Principal principal) {
         ModelAndView mv = new ModelAndView();
+        
+        if(result.hasErrors()){
+            mv.addObject("message", new Message("error", "Error in adding the pii please try again"));
+            mv.setViewName("error");
+            return mv;
+        }
+        
         User loggedInUser = userService.getUserFromSession(principal);
         pii.setEmail(loggedInUser.getEmail());
         pii.setStatus(S_PII_PENDING);

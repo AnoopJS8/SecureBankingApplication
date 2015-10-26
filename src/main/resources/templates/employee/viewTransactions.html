@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org">
 <head th:include="fragment/common :: headerFragment" />
 <body>
 	<div class="container">
@@ -40,10 +41,11 @@
 							<td><span th:text="*{comment}"></span></td>
 							<td><input type="hidden" name="transactionId"
 								th:value="*{transactionId}" />
-								<button class="btn btn-sm btn-success" type="Submit" name="action" value="Authorize">Authorize
-								</button>
-								<button class="btn btn-sm btn-danger" type="Submit" name="action" value="Decline">Decline</button>
-								<button class="btn btn-sm btn-primary" type="Submit" name="action" value="Modify">Modify</button></td>
+								<button class="btn btn-sm btn-success" type="Submit"
+									name="action" value="Authorize">Authorize</button>
+								<button class="btn btn-sm btn-danger" type="Submit"
+									name="action" value="Decline">Decline</button>
+							</td>
 						</form>
 					</tr>
 				</tbody>
