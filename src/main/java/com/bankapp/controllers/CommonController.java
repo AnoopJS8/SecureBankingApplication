@@ -75,6 +75,7 @@ public class CommonController implements Constants {
         User loggedInUser = userService.getUserFromSession(principal);
         Account account = accountService.getAccountByUser(loggedInUser);
         List<Transaction> transactions = transactionService.getTransactionsByAccount(account, account);
+        System.out.println(transactions);
         mv.addObject("accounts", account);
         mv.addObject("transactions", transactions);
         mv.addObject("role", role);

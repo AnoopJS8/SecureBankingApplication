@@ -33,6 +33,9 @@ public class CustomerController implements Constants {
         mv.addObject("role", "customer");
         List<Transaction> transactions = transactionService.getMerchantRequests(S_PENDING_CUSTOMER_VERIFICATION);
         mv.addObject("transactions", transactions);
+        String logMessage = String.format("[Action=%s, Method=%s, Role=%s][Status=%s][Message=%s]", "authorize merchant",
+                "GET", "Customer", "success", "view authorized merchant");
+        LOGGER.info(logMessage);
         return mv;
     }
 
@@ -41,14 +44,21 @@ public class CustomerController implements Constants {
             RedirectAttributes attributes) {
         Message message;
         String msg = transactionService.actionOnRequest(transaction.getTransactionId(), S_CUSTOMER_VERIFIED);
+        String status;
         if (msg.equals(SUCCESS)) {
             message = new Message("success", "Request has been approved ");
+            status= "success";
         } else if(msg.equals(ERR_LESS_BALANCE)){
             message = new Message("error", "You have insufficient balance. ");
+            status= "less balance";
         }else {
             message = new Message("error", "error please try again");
+            status= "error";
         }
         attributes.addFlashAttribute("message", message);
+        String logMessage = String.format("[Action=%s, Method=%s, Role=%s][Status=%s][Message=%s]", "approve request",
+                "POST", "Custtomer", status, message);
+        LOGGER.info(logMessage);
         return "redirect:/customer/authorizemerchant";
     }
 
@@ -56,13 +66,19 @@ public class CustomerController implements Constants {
     public String declineRequest(@ModelAttribute("transaction") Transaction transaction, BindingResult result,
             RedirectAttributes attributes) {
         Message message;
+        String status;
         String msg = transactionService.actionOnRequest(transaction.getTransactionId(), S_CUSTOMER_DECLINED);
         if (msg.equals(SUCCESS)) {
+            status = "success";
             message = new Message("success", "Request has been declined ");
         } else {
+            status = "error";
             message = new Message("error", "error please try again");
         }
         attributes.addFlashAttribute("message", message);
+        String logMessage = String.format("[Action=%s, Method=%s, Role=%s][Status=%s][Message=%s]", "declinerequest",
+                "POST", "Custtomer", status, message);
+        LOGGER.info(logMessage);
         return "redirect:/customer/authorizemerchant";
     }
 }

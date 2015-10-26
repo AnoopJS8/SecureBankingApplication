@@ -40,7 +40,7 @@ import com.bankapp.services.IUserService;
 public class AdminController implements Constants {
 
     private final Logger LOGGER = Logger
-            .getLogger(SystemManagerController.class);
+            .getLogger(AdminController.class);
 
     @Autowired
     IUserService userService;
@@ -60,10 +60,16 @@ public class AdminController implements Constants {
     @RequestMapping(value = "/admin/myaccount", method = RequestMethod.GET)
     public ModelAndView AdminDetails(Principal principal) {
         ModelAndView mv = new ModelAndView("/admin/myaccount");
+        String logMessage="";
         if(userService.hasMissingFields(principal)) {
             mv.addObject("message",
                     new Message("error", "You are missing important details. Please update your profile urgently"));
+           logMessage  = String.format("[Action=%s, Method=%s, Role=%s][Status=%s][Message=%s]", "myaccount",
+                    "GET", "admin", "error", "You are missing important details. Please update your profile urgently");
         }
+         logMessage = String.format("[Action=%s, Method=%s, Role=%s][Status=%s][Message=%s]", "myaccount",
+                "GET", "admin", "success", "My Account");
+        LOGGER.info(logMessage);
         return mv;
     }
 
@@ -74,6 +80,9 @@ public class AdminController implements Constants {
         UpdateUsersForm form = new UpdateUsersForm();
         form.setUsers(managers);
         mv.addObject("form", form);
+        String logMessage = String.format("[Action=%s, Method=%s, Role=%s][Status=%s][Message=%s]", "managerDetails",
+                "GET", "admin", "success", "My Account");
+        LOGGER.info(logMessage);
         return mv;
     }
 
@@ -87,6 +96,9 @@ public class AdminController implements Constants {
         message.put("status", "success");
         message.put("msg", "Manager details have been updated");
         attributes.addFlashAttribute("message", message);
+        String logMessage = String.format("[Action=%s, Method=%s, Role=%s][Status=%s][Message=%s]", "managers/update",
+                "POST", "admin", "success", "Manager details have been updated");
+        LOGGER.info(logMessage);
         return "redirect:/admin/managers";
     }
 
@@ -100,6 +112,9 @@ public class AdminController implements Constants {
                 user.getUsername());
         message.put("msg", msg);
         attributes.addFlashAttribute("message", message);
+        String logMessage = String.format("[Action=%s, Method=%s, Role=%s][Status=%s][Message=%s]", "managers/delete",
+                "POST", "admin", "success", message);
+        LOGGER.info(logMessage);
         return "redirect:/admin/managers";
     }
 
@@ -110,6 +125,9 @@ public class AdminController implements Constants {
         UpdateUsersForm form = new UpdateUsersForm();
         form.setUsers(employees);
         mv.addObject("form", form);
+        String logMessage = String.format("[Action=%s, Method=%s, Role=%s][Status=%s][Message=%s]", "employee details",
+                "GET", "admin", "success", "details");
+        LOGGER.info(logMessage);
         return mv;
     }
 
@@ -122,6 +140,9 @@ public class AdminController implements Constants {
         message.put("status", "success");
         message.put("msg", "Employee details have been updated");
         attributes.addFlashAttribute("message", message);
+        String logMessage = String.format("[Action=%s, Method=%s, Role=%s][Status=%s][Message=%s]", "Update details",
+                "POST", "admin", "success", message);
+        LOGGER.info(logMessage);
         return "redirect:/admin/employees";
     }
 
@@ -135,6 +156,9 @@ public class AdminController implements Constants {
                 user.getUsername());
         message.put("msg", msg);
         attributes.addFlashAttribute("message", message);
+        String logMessage = String.format("[Action=%s, Method=%s, Role=%s][Status=%s][Message=%s]", "delete employee",
+                "POST", "admin", "success", message);
+        LOGGER.info(logMessage);
         return "redirect:/admin/employees";
     }
 
@@ -143,6 +167,9 @@ public class AdminController implements Constants {
         ModelAndView mv = new ModelAndView("/admin/profileRequest");
         List<ProfileRequest> requests = profileService.getPendingRequests();
         mv.addObject("requests", requests);
+        String logMessage = String.format("[Action=%s, Method=%s, Role=%s][Status=%s][Message=%s]", "Profile Requests",
+                "GET", "admin", "success", "profile request");
+        LOGGER.info(logMessage);
         return mv;
     }
 
@@ -153,6 +180,9 @@ public class AdminController implements Constants {
         profileService.authorizeRequest(profileRequest);
         message = new Message("succes", "Request has been approved");
         attributes.addFlashAttribute("message", message);
+        String logMessage = String.format("[Action=%s, Method=%s, Role=%s][Status=%s][Message=%s]", "approve Profile Request",
+                "POST", "admin", "success", message);
+        LOGGER.info(logMessage);
         return "redirect:/admin/requests";
     }
 
@@ -186,12 +216,15 @@ public class AdminController implements Constants {
         try {
             user = userService.addEmployee(user, role.getName());
             attr.addFlashAttribute("message", new Message("success", "Employee has been created"));
+            logMessage = String.format("Action: %s, Message: %s",
+                    "add", "Employee has been created");
             return redirectSuccessURL;
         } catch (EmailExistsException e) {
             logMessage = String.format("Action: %s, Message: %s",
                     "email_exists", e.getMessage());
             attr.addFlashAttribute("message", new Message("error", "Email already exists"));
             return redirectFailureURL;
+            
         } finally {
             LOGGER.info(logMessage);
         }
@@ -204,6 +237,9 @@ public class AdminController implements Constants {
         profileService.declineRequest(profileRequest);
         message = new Message("success", "Request has been declined");
         attributes.addFlashAttribute("message", message);
+        String logMessage = String.format("[Action=%s, Method=%s, Role=%s][Status=%s][Message=%s]", "declineProfileRequest",
+                "POST", "admin", "success", "Declined Profile Request");
+        LOGGER.info(logMessage);
         return "redirect:/admin/requests";
 
     }
@@ -214,6 +250,9 @@ public class AdminController implements Constants {
         mv.addObject("role", "admin");
         PiiRequest piiRequest = new PiiRequest();
         mv.addObject("piirequest", piiRequest);
+        String logMessage = String.format("[Action=%s, Method=%s, Role=%s][Status=%s][Message=%s]", "piirequest",
+                "GET", "admin", "success", "Pii details");
+        LOGGER.info(logMessage);
         return mv;
     }
 
@@ -223,14 +262,21 @@ public class AdminController implements Constants {
 
         Message message;
         String msg = piiRequestService.saveRequest(piiRequest);
+        String status = "";
         if (msg.equals(SUCCESS)) {
             message = new Message("success", "Request has been forwarded to agency ");
+            status = "sucesss";
         } else if(msg.equals(ERR_EMAIL_NOT_EXISTS)){
             message = new Message("error", "Email does not exist");
+            status = "error";
         }else {
             message = new Message("error", "error please try again");
+            status = "error";
         }
         attributes.addFlashAttribute("message", message);
+        String logMessage = String.format("[Action=%s, Method=%s, Role=%s][Status=%s][Message=%s]", "piirequest",
+                "POST", "admin", status, message);
+        LOGGER.info(logMessage);
         return "redirect:/admin/piirequest";
 
     }
@@ -241,6 +287,9 @@ public class AdminController implements Constants {
         mv.addObject("role", "admin");
         List<PersonalIdentificationInfo> piiList = piiService.getAuthorizedPII();
         mv.addObject("piiInfo", piiList);
+        String logMessage = String.format("[Action=%s, Method=%s, Role=%s][Status=%s][Message=%s]", "piidetails",
+                "GET", "admin", "success", "Pii details");
+        LOGGER.info(logMessage);
         return mv;
     }
 }
