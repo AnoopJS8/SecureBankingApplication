@@ -26,10 +26,10 @@ $(document).ready(function() {
 				email: "Recipient email address is not a valid email"
 			},
 			'amount' : {
-				required : "Transfer amount cannot be NULL"
+				required : "Transfer amount cannot be empty"
 			},
 			'transferDate' : {
-				required : "Transfer date cannot be NULL",
+				required : "Transfer date cannot be empty",
 				dateFA : "Please enter Data in MM/dd/yyyy format",
 				minDate : "Please enter future date",
 				maxDate : "Please enter a future date in this century"

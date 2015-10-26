@@ -21,11 +21,7 @@ $(document).ready(function() {
 				email: "Recipient email address is not a valid email"
 			},
 			'amount' : {
-				required : "Recepient Account number cannot be NULL"
-			},
-			'amount' : {
-				required : "Transfer amount cannot be NULL",
-				digits : "Please enter valid amount"
+				required : "Recepient Account number cannot be empty"
 			}
 		},
 
