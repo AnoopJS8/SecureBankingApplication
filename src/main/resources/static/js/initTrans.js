@@ -2,8 +2,9 @@ $(document).ready(function() {
 	$('#init-form').validate({
 		errorClass : 'error',
 		rules : {
-			'accountId' : {
-				required : true
+			'email' : {
+				required : true,
+				email: true
 			},
 			'amount' : {
 				required : true
@@ -20,8 +21,9 @@ $(document).ready(function() {
 		},
 		// Specify the validation error messages
 		messages : {
-			'accountId' : {
-				required : "Recepient Account number cannot be NULL"
+			'email' : {
+				required : "Recipient email address cannot be empty",
+				email: "Recipient email address is not a valid email"
 			},
 			'amount' : {
 				required : "Transfer amount cannot be NULL"

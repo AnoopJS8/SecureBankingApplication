@@ -2,9 +2,9 @@ $(document).ready(function() {
 	$('#tF-form').validate({
 		errorClass : 'error',
 		rules : {
-			'accountId' : {
+			'email' : {
 				required : true,
-				digits : true
+				email : true
 			},
 			'amount' : {
 				required : true
@@ -16,8 +16,12 @@ $(document).ready(function() {
 		},
 		// Specify the validation error messages
 		messages : {
+			'email' : {
+				required : "Recipient email address cannot be empty",
+				email: "Recipient email address is not a valid email"
+			},
 			'amount' : {
-				required : "Recepient Account number cannot be NULL
+				required : "Recepient Account number cannot be NULL"
 			},
 			'amount' : {
 				required : "Transfer amount cannot be NULL",
