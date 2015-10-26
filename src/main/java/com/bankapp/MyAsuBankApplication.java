@@ -10,8 +10,11 @@ import org.apache.tomcat.util.descriptor.web.SecurityConstraint;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.ServerProperties;
+import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
+import org.springframework.boot.context.web.SpringBootServletInitializer;
 import org.springframework.boot.orm.jpa.EntityScan;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -20,11 +23,13 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.i18n.SessionLocaleResolver;
 
+import com.bankapp.configs.ServerCustomization;
+
 @ComponentScan
 @EnableAutoConfiguration
 @EnableJpaRepositories(basePackages = "com.bankapp.repositories")
 @EntityScan(basePackages = "com.bankapp.models")
-public class MyAsuBankApplication {
+public class MyAsuBankApplication extends SpringBootServletInitializer {
 
     @Value("${com.bankapp.server.http.port}")
     private int httpPort;
@@ -59,17 +64,18 @@ public class MyAsuBankApplication {
         return connector;
     }
 
-    public static void main(String[] args) {
-        SpringApplication.run(MyAsuBankApplication.class, args);
+    @Bean
+    public ServerProperties getServerProperties() {
+        return new ServerCustomization();
     }
-    
+
     @Bean
     public LocaleResolver localeResolver() {
         SessionLocaleResolver slr = new SessionLocaleResolver();
         slr.setDefaultLocale(Locale.US);
         return slr;
     }
-    
+
     @Bean
     public ReloadableResourceBundleMessageSource messageSource() {
         ReloadableResourceBundleMessageSource messageSource = new ReloadableResourceBundleMessageSource();
@@ -77,4 +83,14 @@ public class MyAsuBankApplication {
         messageSource.setCacheSeconds(3600);
         return messageSource;
     }
+
+    @Override
+    protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
+        return application.sources(MyAsuBankApplication.class);
+    }
+
+    public static void main(String[] args) throws Exception {
+        SpringApplication.run(MyAsuBankApplication.class, args);
+    }
+
 }

@@ -25,6 +25,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	protected void configure(HttpSecurity http) throws Exception {
 		http.authorizeRequests().antMatchers(
 		        "/", 
+		        "/404",
+		        "/500",
 		        "/home", 
 		        "/login/identify", 
 		        "/login/verifyIdentity", 
@@ -35,7 +37,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 		        // Resources
 		        "/webjars/**",
 		        "/css/**", 
-		        "/js/**"
+		        "/js/**",
+		        "/app/**"
 		).permitAll().anyRequest().authenticated().and()
 		    .formLogin()
 		        .loginPage("/")
