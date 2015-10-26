@@ -25,7 +25,7 @@
 				</thead>
 				<tbody>
 					<tr th:each="row : ${transactions}">
-						<form action="#" th:action="@{/employee_transactions}" th:object="${row}"
+						<form action="#" th:action="@{/employee/transactions}" th:object="${row}"
 							method="post">
 							<td>
 								<div th:if="*{transferDate} != null">

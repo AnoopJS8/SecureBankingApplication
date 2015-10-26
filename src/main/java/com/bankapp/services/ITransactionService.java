@@ -18,7 +18,7 @@ public interface ITransactionService {
 
     public Transaction getTransactionsById(String id);
 
-    public String askCustomerPayment(Transaction transaction, User user);
+    public String askCustomerPayment(String fromEmail, String toEmail, Transaction transaction);
 
     public List<Transaction> getMerchantRequests(String status);
 

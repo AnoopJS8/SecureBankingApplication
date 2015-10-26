@@ -176,7 +176,7 @@ public class SignupController {
     public ModelAndView resendRegistrationToken(HttpServletRequest request,
             @RequestParam("token") String existingToken) {
         String newToken = userService.generateNewVerificationToken(existingToken).getToken();
-        User user = userService.getUser(newToken);
+        User user = userService.getUserByVerificationToken(newToken);
 
         String recipientAddress = user.getEmail();
         String userName = user.getUsername();

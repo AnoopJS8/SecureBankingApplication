@@ -18,7 +18,7 @@ public interface IUserService {
 
     User getUserByEmail(String email);
 
-    User getUser(String verificationToken);
+    User getUserByVerificationToken(String verificationToken);
 
     User getUserFromSession(Principal principal);
 

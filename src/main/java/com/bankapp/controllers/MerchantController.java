@@ -9,6 +9,8 @@ import javax.validation.Valid;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.web.bind.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
@@ -23,12 +25,8 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.bankapp.constants.Constants;
 import com.bankapp.constants.Message;
 import com.bankapp.forms.UserPaymentForm;
-import com.bankapp.models.Account;
 import com.bankapp.models.Transaction;
-import com.bankapp.models.User;
-import com.bankapp.services.IAccountService;
 import com.bankapp.services.ITransactionService;
-import com.bankapp.services.IUserService;
 
 @Controller
 @Secured("ROLE_MERCHANT")
@@ -37,13 +35,8 @@ public class MerchantController implements Constants {
     private final Logger LOGGER = Logger.getLogger(MerchantController.class);
 
     @Autowired
-    private IAccountService accountService;
-
-    @Autowired
     private ITransactionService transactionService;
 
-    @Autowired
-    private IUserService userService;
     @RequestMapping(value = "/merchant/userpayment", method = RequestMethod.GET)
     public ModelAndView askUserPayment() {
         ModelAndView mv = new ModelAndView();
@@ -54,9 +47,9 @@ public class MerchantController implements Constants {
     }
 
     @RequestMapping(value = "/merchant/userpayment", method = RequestMethod.POST)
-    public String askUserPayment(final ModelMap model, @ModelAttribute("form") @Valid UserPaymentForm form,
-            BindingResult result, WebRequest request, Errors errors, Principal principal,
-            RedirectAttributes attributes) {
+    public String askUserPayment(@AuthenticationPrincipal UserDetails activeUser, final ModelMap model,
+            @ModelAttribute("form") @Valid UserPaymentForm form, BindingResult result, WebRequest request,
+            Errors errors, Principal principal, RedirectAttributes attributes) {
 
         String status;
         String message;
@@ -68,26 +61,39 @@ public class MerchantController implements Constants {
             return "merchant/userpayment";
         }
 
-        User user = userService.getUserFromSession(principal);
+        String toEmail = activeUser.getUsername();
+        String fromEmail = form.getEmail();
+
         Transaction transaction = new Transaction();
-        Account fromAccount = accountService.getAccountByUser(userService.getUserByEmail(form.getEmail()));
-        transaction.setAmount(form.getAmount());
-        transaction.setFromAccount(fromAccount);
+        transaction.setEncryptedAmount(form.getAmount());
         transaction.setComment(form.getComment());
         transaction.setTransferDate(new Date());
-        String serviceStatus = transactionService.askCustomerPayment(transaction, user);
+        String serviceStatus = transactionService.askCustomerPayment(fromEmail, toEmail, transaction);
 
-        if (serviceStatus.equalsIgnoreCase(SUCCESS)) {
+        switch (serviceStatus) {
+
+        case ERR_TRANS_DECODE:
+        case ERR_TRANS_DECRYPTION:
+        case ERR_TRANS_INCORRECT_FORMAT:
+        case ERR_TRANS_EXPIRED:
+        case ERR_LESS_BALANCE:
+        case ERR_ACCOUNT_NOT_EXISTS:
+        case ERR_SAME_USER:
+        case ERR_UNHANDLED:
+            status = "error";
+            message = serviceStatus;
+            redirectUrl = "redirect:/merchant/userpayment";
+            break;
+        case SUCCESS:
             status = "success";
             message = "Notified the user for approval and transaction is in pending state till customers approval";
-        } else if (serviceStatus.equalsIgnoreCase(ERR_ACCOUNT_NOT_EXISTS)) {
+            redirectUrl = "redirect:/merchant/myaccount";
+            break;
+        default:
             status = "error";
-            message = ERR_ACCOUNT_NOT_EXISTS;
+            message = ERR_UNHANDLED;
             redirectUrl = "redirect:/merchant/userpayment";
-        } else {
-            status = "error";
-            message = "An unhandled error occurred. Please contact the administrator";
-            redirectUrl = "redirect:/merchant/userpayment";
+            break;
         }
 
         attributes.addFlashAttribute("message", new Message(status, message));

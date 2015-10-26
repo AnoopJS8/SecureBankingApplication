@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.UUID;
 
 import org.apache.commons.codec.binary.Base64;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -30,7 +31,9 @@ import com.bankapp.repositories.VerificationTokenRepository;
 
 @Service
 public class UserService implements IUserService, Constants {
-    
+
+    private final Logger logger = Logger.getLogger(UserService.class);
+
     @Value("${com.bankapp.applet.url}")
     private String appletUrl;
 
@@ -62,6 +65,10 @@ public class UserService implements IUserService, Constants {
     @Override
     public User registerNewUserAccount(final User user, String roleName) throws EmailExistsException {
         if (emailExist(user.getEmail())) {
+            String logMessageFormat = "[Action=%s][User=%s, Role=%s]";
+            String logMessage = String.format(logMessageFormat, "registerNewUserAccount", user.getId(), roleName);
+            logger.error(logMessage);
+
             throw new EmailExistsException("There is an account with that email adress: " + user.getEmail());
         }
         final User newUser = new User();
@@ -77,9 +84,14 @@ public class UserService implements IUserService, Constants {
         newUser.setSecurityAnswer(user.getSecurityAnswer());
         newUser.setRole(roleRepository.findByName(roleName));
 
+        String logMessageFormat = "[Action=%s][User=%s, Role=%s]";
+        String logMessage = String.format(logMessageFormat, "registerNewUserAccount", user.getId(), roleName);
+        logger.info(logMessage);
+
         return userRepository.save(newUser);
     }
 
+    @Override
     public boolean emailExist(String email) {
         User user = userRepository.findByEmail(email);
         if (user != null) {
@@ -88,6 +100,7 @@ public class UserService implements IUserService, Constants {
         return false;
     }
 
+    @Override
     public boolean idExist(String id) {
         User user = userRepository.findById(id);
         if (user != null) {
@@ -99,12 +112,23 @@ public class UserService implements IUserService, Constants {
     @Override
     public User getUserById(String id) {
         User user = userRepository.findById(id);
+
+        String logMessageFormat = "[Action=%s][ID=%s, User=%s]";
+        String logMessage = String.format(logMessageFormat, "getUserById", id, user.getId());
+        logger.info(logMessage);
+
         return user;
     }
 
     @Override
-    public User getUser(String verificationToken) {
+    public User getUserByVerificationToken(String verificationToken) {
         User user = tokenRepository.findByToken(verificationToken).getUser();
+
+        String logMessageFormat = "[Action=%s][VToken=%s, User=%s]";
+        String logMessage = String.format(logMessageFormat, "getUserByVerificationToken", verificationToken,
+                user.getId());
+        logger.info(logMessage);
+
         return user;
     }
 
@@ -153,20 +177,26 @@ public class UserService implements IUserService, Constants {
             String userName = user.getUsername();
             String recipientAddress = user.getEmail();
             String subject = "My ASU Bank - Security Feature";
-            String textBody = String.format(
-                    "Dear %s, <br /><br />As a valued customer, we respect your privacy "
+            String textBody = String.format("Dear %s, <br /><br />As a valued customer, we respect your privacy "
                     + "and ensure that your account is alwasy secured.<br /><br />"
                     + "Please download our transaction verifier, and use the below provided "
-                    + "PIN to encrypt your transactions.<br /><br /><div style='max-width: 100%;"
+                    + "PIN to encrypt your transactions.<br /><br /><div style='max-width: 100%%;"
                     + "word-wrap: break-word;'>%s</div><br /><br />"
                     + "Download the transaction encrypter from <strong><a href='%s'>this</a></strong> link."
                     + "<br /><br />Regards,<br />My ASU Bank", userName, publicKey, appletUrl);
 
             mailService.sendEmail(recipientAddress, subject, textBody);
             userRepository.save(user);
+
+            String logMessageFormat = "[Action=%s][Status=%s][User=%s]";
+            String logMessage = String.format(logMessageFormat, "saveRegisteredUser", SUCCESS, user.getId());
+            logger.info(logMessage);
+
         } catch (GeneralSecurityException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            String logMessageFormat = "[Action=%s][Status=%s][User=%s, ErrorMessage=%s]";
+            String logMessage = String.format(logMessageFormat, "saveRegisteredUser", ERROR, user.getId(),
+                    e.getMessage());
+            logger.error(logMessage);
         }
     }
 
@@ -204,6 +234,10 @@ public class UserService implements IUserService, Constants {
                 .format("Dear %s, <br /><br />Here is your temporary password for your account: %s<br />"
                         + "<br />Regards,<br />My ASU Bank", userName, temporaryPassword);
         mailService.sendEmail(recipientAddress, subject, textBody);
+
+        String logMessageFormat = "[Action=%s][Status=%s][User=%s]";
+        String logMessage = String.format(logMessageFormat, "generateTemporaryPassword", SUCCESS, user.getId());
+        logger.info(logMessage);
     }
 
     @Override
@@ -215,6 +249,10 @@ public class UserService implements IUserService, Constants {
         existingUser.setDateOfBirth(updatedUser.getDateOfBirth());
         existingUser.setGender(updatedUser.getGender());
         userRepository.save(existingUser);
+
+        String logMessageFormat = "[Action=%s][Status=%s][User=%s]";
+        String logMessage = String.format(logMessageFormat, "updateUser", SUCCESS, existingUserId);
+        logger.info(logMessage);
     }
 
     @Override
@@ -285,7 +323,6 @@ public class UserService implements IUserService, Constants {
         existingOTP.setValue(temp);
         existingOTP = oTPRepository.save(existingOTP);
         return existingOTP;
-
     }
 
     @Override
@@ -301,36 +338,40 @@ public class UserService implements IUserService, Constants {
 
     @Override
     public String addEmployee(User user, String roleName) throws EmailExistsException {
-        try{
-        String temporaryPassword = OneTimePassword.generateOTP();
-        user.setPassword(passwordEncoder.encode(temporaryPassword));
-        user.setRole(roleRepository.findByName(roleName));
-        user.setEnabled(true);
-        if(!emailExist(user.getEmail()))
-            userRepository.save(user);
-        else
-            return "EmailExits";
-        String userName = user.getUsername();
-        String recipientAddress = user.getEmail();
-        String subject = "My ASU Bank - New Account Creation";
-        String role = user.getRole().getName();
+        try {
+            String temporaryPassword = OneTimePassword.generateOTP();
+            user.setPassword(passwordEncoder.encode(temporaryPassword));
+            user.setRole(roleRepository.findByName(roleName));
+            user.setEnabled(true);
+            if (!emailExist(user.getEmail()))
+                userRepository.save(user);
+            else
+                return "EmailExits";
+            String userName = user.getUsername();
+            String recipientAddress = user.getEmail();
+            String subject = "My ASU Bank - New Account Creation";
+            String role = user.getRole().getName();
 
-        if (role.equalsIgnoreCase("ROLE_MANAGER"))
-            role = "MANAGER";
-        else if (role.equalsIgnoreCase("ROLE_ADMIN"))
-            role = "ADMIN";
-        else
-            role = "EMPLOYEE";
+            if (role.equalsIgnoreCase("ROLE_MANAGER"))
+                role = "MANAGER";
+            else if (role.equalsIgnoreCase("ROLE_ADMIN"))
+                role = "ADMIN";
+            else
+                role = "EMPLOYEE";
 
-        String textBody = String
-                .format("Dear %s, <br /><br />You are now registered as %s. Here is your temporary password : %s<br />"
-                        + "<br />Regards,<br />My ASU Bank", userName, role, temporaryPassword);
-        mailService.sendEmail(recipientAddress, subject, textBody);
-        }catch(Exception e){
+            String textBody = String
+                    .format("Dear %s, <br /><br />You are now registered as %s. Here is your temporary password : %s<br />"
+                            + "<br />Regards,<br />My ASU Bank", userName, role, temporaryPassword);
+            mailService.sendEmail(recipientAddress, subject, textBody);
+        } catch (Exception e) {
             e.printStackTrace();
             return "mailError";
         }
+        String logMessageFormat = "[Action=%s][Status=%s][User=%s, Role=%s]";
+        String logMessage = String.format(logMessageFormat, "updateUser", SUCCESS, user.getId(), roleName);
+        logger.info(logMessage);
         return SUCCESS;
+
     }
 
     @Override
@@ -362,9 +403,20 @@ public class UserService implements IUserService, Constants {
             }
 
             accountRepository.delete(account);
+
+            String logMessageFormat = "[Action=%s][Status=%s][User=%s, Action=%s]";
+            String logMessage = String.format(logMessageFormat, "deleteExternalUser", SUCCESS, user.getId(),
+                    "Deleted Account");
+            logger.info(logMessage);
+
         }
 
         userRepository.delete(user);
+
+        String logMessageFormat = "[Action=%s][Status=%s][User=%s]";
+        String logMessage = String.format(logMessageFormat, "deleteExternalUser", SUCCESS, user.getId(),
+                "Deleted User");
+        logger.info(logMessage);
 
     }
 
