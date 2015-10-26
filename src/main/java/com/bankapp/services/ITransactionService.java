@@ -11,6 +11,8 @@ public interface ITransactionService {
     public List<Transaction> getTransactionsByAccount(Account fromAccount, Account toAccount);
 
     public String saveTransaction(String fromEmail, String toEmail, Transaction transaction);
+    
+    public String creditDebitTransaction(User user, String action, Transaction transaction);
 
     public String initiateTransaction(String fromEmail, String toEmail, Transaction transaction);
 
@@ -25,5 +27,7 @@ public interface ITransactionService {
     public List<Transaction> getPendingTransactions();
     
     public String creditDebit(String Email, Transaction transaction);
+    
+    public List<Transaction> getCreditDebitRequest();
 
 }

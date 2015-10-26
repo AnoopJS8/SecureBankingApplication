@@ -81,6 +81,7 @@ public class AdminController implements Constants {
     public String updateManagerDetails(
             @ModelAttribute("user") User updatedManager, BindingResult result,
             RedirectAttributes attributes) {
+        System.out.println(updatedManager.getId());
         userService.updateUser(updatedManager.getId(), updatedManager);
         Map<String, String> message = new HashMap<String, String>();
         message.put("status", "success");

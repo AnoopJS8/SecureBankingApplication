@@ -3,8 +3,13 @@ package com.bankapp.controllers;
 import java.security.Principal;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.web.bind.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.Errors;
@@ -17,6 +22,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.bankapp.constants.Constants;
 import com.bankapp.constants.Message;
+import com.bankapp.forms.CreditDebitForm;
 import com.bankapp.models.Account;
 import com.bankapp.models.ProfileRequest;
 import com.bankapp.models.Transaction;
@@ -40,6 +46,8 @@ public class EmployeeController implements Constants {
 
     @Autowired
     private IUserService userService;
+    
+    private final Logger LOGGER = Logger.getLogger(EmployeeController.class);
 
     // VIEW TRANSACTIONS
     @RequestMapping(value = "/employee/myaccount", method = RequestMethod.GET)
@@ -104,11 +112,9 @@ public class EmployeeController implements Constants {
 
     // EMPLOYEE AUTHORIZE TRANSACTION
     @RequestMapping(value = "/employee/transactions", method = RequestMethod.POST, params = "action=Authorize")
-    public ModelAndView approvetransaction(@ModelAttribute("row") Transaction Id, BindingResult result,
-            WebRequest request, Errors errors) {
-        ModelAndView mv = new ModelAndView();
-
-        Transaction transaction = managerService.getTransactionById(Id.getTransactionId());
+    public String approvetransaction(@ModelAttribute("row") Transaction txn, BindingResult result, WebRequest request,
+            Errors errors, RedirectAttributes attributes) {
+        Transaction transaction = managerService.getTransactionById(txn.getTransactionId());
 
         Account FromAccount = transaction.getFromAccount();
         Account ToAccount = transaction.getToAccount();
@@ -123,30 +129,24 @@ public class EmployeeController implements Constants {
             Double ToAccountBalance = ToAccount.getBalance();
             managerService.reflectChangesToReceiver(ToAccount, ToAccountBalance, AmountToBeSent);
             str = managerService.approveTransaction(transaction);
+            attributes.addFlashAttribute("message", new Message("success", str));
         } else {
             str = managerService.declineTransaction(transaction);
+            attributes.addFlashAttribute("message", new Message("error", str));
         }
 
-        mv.addObject("result1", str);
-        mv.setViewName("employee/viewTransactions");
-
-        return mv;
+        return "redirect:/employee/transactions";
     }
 
     // EMPLOYEE DECLINE TRANSACTION
     @RequestMapping(value = "/employee/transactions", method = RequestMethod.POST, params = "action=Decline")
-    public ModelAndView declinetransaction(@ModelAttribute("row") Transaction Id, BindingResult result,
-            WebRequest request, Errors errors) {
-        ModelAndView mv = new ModelAndView();
+    public String declinetransaction(@ModelAttribute("row") Transaction txn, BindingResult result, WebRequest request,
+            Errors errors, RedirectAttributes attributes) {
 
-        Transaction transaction = managerService.getTransactionById(Id.getTransactionId());
-
+        Transaction transaction = managerService.getTransactionById(txn.getTransactionId());
         String str = managerService.declineTransaction(transaction);
-
-        mv.addObject("result1", str);
-        mv.setViewName("employee/viewTransactions");
-
-        return mv;
+        attributes.addFlashAttribute("message", new Message("success", str));
+        return "redirect:/employee/transactions";
     }
 
     // EMPLOYEE MODIFY TRANSACTION
@@ -167,6 +167,46 @@ public class EmployeeController implements Constants {
         mv.setViewName("employee/editTransactions");
 
         return mv;
+    }
+
+    @RequestMapping(value = { "/employee/userscreditrequest" }, method = RequestMethod.GET)
+    public ModelAndView creditDebit(HttpServletRequest request) {
+
+        ModelAndView mv = new ModelAndView("employee/viewcreditrequest");
+        mv.addObject("role", "employee");
+        List<Transaction> transactions = transactionService.getCreditDebitRequest();
+        mv.addObject("transactions", transactions);
+        String logMessage = String.format("[Action=%s, Method=%s, Role=%s]", "usercreditrequest", "GET", "employee");
+        LOGGER.info(logMessage);
+        return mv;
+    }
+    
+    @RequestMapping(value = "/employee/credittransactions", method = RequestMethod.POST)
+    public String acceptCreditRequest(@AuthenticationPrincipal UserDetails activeUser, @ModelAttribute("row") Transaction txn, BindingResult result, WebRequest request,
+            Errors errors, RedirectAttributes attributes) {
+
+        Transaction transaction = transactionService.getTransactionsById(txn.getTransactionId());
+        String str = transactionService.creditDebitTransaction(userService.getUserByEmail(activeUser.getUsername()), A_CREDIT, transaction);
+        if(str.equals(SUCCESS)){
+            attributes.addFlashAttribute("message", new Message("success", str));
+        }else{
+            attributes.addFlashAttribute("message", new Message("error", str));
+        }
+        return "redirect:/employee/userscreditrequest";
+    }
+    
+    @RequestMapping(value = "/employee/debittransactions", method = RequestMethod.POST)
+    public String acceptDebitRequest(@AuthenticationPrincipal UserDetails activeUser,@ModelAttribute("row") Transaction txn, BindingResult result, WebRequest request,
+            Errors errors, RedirectAttributes attributes) {
+
+        Transaction transaction = transactionService.getTransactionsById(txn.getTransactionId());
+        String str = transactionService.creditDebitTransaction(userService.getUserByEmail(activeUser.getUsername()), A_DEBIT, transaction);
+        if(str.equals(SUCCESS)){
+            attributes.addFlashAttribute("message", new Message("success", str));
+        }else{
+            attributes.addFlashAttribute("message", new Message("error", str));
+        }
+        return "redirect:/employee/userscreditrequest";
     }
 
 }
