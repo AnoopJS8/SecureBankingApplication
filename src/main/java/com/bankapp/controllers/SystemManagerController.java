@@ -37,7 +37,6 @@ import com.bankapp.forms.AddEmployeeForm;
 import com.bankapp.forms.UpdateUsersForm;
 import com.bankapp.forms.ViewByEmailForm;
 import com.bankapp.listeners.OnRegistrationCompleteEvent;
-import com.bankapp.models.Account;
 import com.bankapp.models.OneTimePassword;
 import com.bankapp.models.ProfileRequest;
 import com.bankapp.models.Role;
@@ -97,9 +96,8 @@ public class SystemManagerController implements Constants {
 
     @RequestMapping(value = "/manager/profilerequests", method = RequestMethod.GET)
     public ModelAndView getProfileRequests() {
-        List<ProfileRequest> list = profileReq.getRequestsByStatus(S_PENDING);
+        List<ProfileRequest> list = profileReq.getRequestsByStatus(S_PROFILE_UPDATE_PENDING);
         List<ProfileRequest> list1 = new ArrayList<>();
-        ;
         int k = 0;
         for (int i = 0; i < list.size(); i++) {
             ProfileRequest Req = list.get(i);
@@ -116,10 +114,8 @@ public class SystemManagerController implements Constants {
     }
 
     @RequestMapping(value = "/manager/approveprofilerequest", method = RequestMethod.POST)
-    public ModelAndView approveprofilerequest(@ModelAttribute("row") ProfileRequest Id, BindingResult result,
-            WebRequest request, Errors errors, Principal principal) {
-        ModelAndView mv = new ModelAndView();
-
+    public String approveprofilerequest(@ModelAttribute("row") ProfileRequest Id, BindingResult result,
+            WebRequest request, Errors errors, Principal principal, RedirectAttributes attributes) {
         ProfileRequest profile = manager.getProfilebRequestByRId(Id.getrId());
         String Address = profile.getAddress();
         Date DoB = profile.getDateOfBirth();
@@ -129,14 +125,15 @@ public class SystemManagerController implements Constants {
         user.setAddress(Address);
         user.setDateOfBirth(DoB);
         user.setPhoneNumber(Ph);
+        user.setSecurityAnswer(profile.getSercurityAnswer());
+        user.setSecurityQuestion(profile.getSecurityQuestion());
         manager.saveUser(user);
 
         String status = manager.approveProfileRequest(profile);
 
-        mv.addObject("message", new Message(status, "Action Completed"));
-        mv.setViewName("/manager/profileRequests");
-
-        return mv;
+        attributes.addFlashAttribute("message", new Message(status, "Action Completed"));
+        attributes.addFlashAttribute("role", "manager");
+        return "redirect:/manager/profilerequests";
     }
 
     @RequestMapping(value = "/manager/getUserByEmail", method = RequestMethod.GET)
@@ -210,10 +207,11 @@ public class SystemManagerController implements Constants {
 
         user.setEmail(form.getEmail());
         user.setUsername(form.getUsername());
+        user.setDateOfBirth(form.getDateOfBirth());
 
         String temporaryPassword = OneTimePassword.generateOTP();
         user.setPassword(passwordEncoder.encode(temporaryPassword));
-        String message = "success";
+        String message = "External user is added successfully";
         try {
             registered = userService.registerNewUserAccount(user, role.getName());
         } catch (EmailExistsException e1) {
@@ -221,25 +219,19 @@ public class SystemManagerController implements Constants {
             message = String.format("Action: %s, Message: %s", "signup", e1.getMessage());
             LOGGER.error(message);
             redirectUrl = "redirect:/manager/addUserForm";
-
         }
 
         if (registered != null) {
             try {
-
                 eventPublisher.publishEvent(
                         new OnRegistrationCompleteEvent(registered, request.getLocale(), getAppUrl(request)));
             } catch (Exception e) {
                 status = "error";
                 message = String.format("Action: %s, Message: %s", "signup", e.getMessage());
                 LOGGER.error(message);
-
             }
-
             userService.generateTemporaryPassword(registered);
         }
-
-        // System.out.println("message out" + message) ;
         attributes.addFlashAttribute("message", new Message(status, message));
         return redirectUrl;
 
@@ -323,12 +315,10 @@ public class SystemManagerController implements Constants {
     public String updateustomerAndMerchantDetails(@ModelAttribute("user") User updatedUser, BindingResult result,
             RedirectAttributes attributes) {
         userService.updateUser(updatedUser.getId(), updatedUser);
-        Map<String, String> message = new HashMap<String, String>();
-        message.put("status", "success");
-        message.put("msg", "Details have been updated");
-        attributes.addFlashAttribute("message", message);
+        String msg = "Updated successfully";
+        attributes.addFlashAttribute("message", new Message("success", msg));
         String logMessage = String.format("[Action=%s, Method=%s, Role=%s][Status=%s][Message=%s]", "update", "POST",
-                "manager", "success", message);
+                "manager", "success", msg);
         LOGGER.info(logMessage);
         return "redirect:/manager/update";
     }

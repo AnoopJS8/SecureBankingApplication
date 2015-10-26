@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org"
 	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
 <head th:include="fragment/common :: headerFragment" />
 <body>
@@ -12,7 +13,8 @@
 				<div
 					th:class="*{status} == success ? 'alert alert-success alert-dismissible' : 'alert alert-danger alert-dismissible'"
 					role="alert">
-					<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+					<button type="button" class="close" data-dismiss="alert"
+						aria-label="Close">
 						<span aria-hidden="true">&times;</span>
 					</button>
 					<p th:text="*{msg}"></p>
@@ -26,15 +28,15 @@
 						<th>Address</th>
 						<th>Date Of Birth</th>
 						<th>Phone Number</th>
-						<th>Role</th>
-						<th>Status</th>
-						<th></th>
+						<th>Security Question</th>
+						<th>Security Answer</th>
+						<th>Action</th>
 					</tr>
 				</thead>
 				<tbody>
 					<tr th:each="row : ${profileRequests}">
-						<form th:action="@{/manager/approveprofilerequest}" th:object="${row}"
-							method="post">
+						<form th:action="@{/manager/approveprofilerequest}"
+							th:object="${row}" method="post">
 							<td><span th:text="*{address}"></span></td>
 							<td>
 								<div th:if="*{dateOfBirth} != null">
@@ -44,11 +46,11 @@
 									<span th:text="*{dateOfBirth}"></span>
 								</div>
 							</td>
-						<td><span th:text="*{phoneNumber}"></span></td>
-						<td><span th:text="*{role.name}"></span></td>
-						<td><span th:text="*{status}"></span></td>
-						<td><input type="hidden" name="rId" th:value="*{rId}" /> <input
-							type="submit" /></td>
+							<td><span th:text="*{phoneNumber}"></span></td>
+							<td><span th:text="*{securityQuestion}"></span></td>
+							<td><span th:text="*{sercurityAnswer}"></span></td>
+							<td><input type="hidden" name="rId" th:value="*{rId}" />
+								<button type="submit" class="btn btn-info" >Approve</button></td>
 						</form>
 					</tr>
 				</tbody>

@@ -247,7 +247,6 @@ public class UserService implements IUserService, Constants {
         existingUser.setAddress(updatedUser.getAddress());
         existingUser.setPhoneNumber(updatedUser.getPhoneNumber());
         existingUser.setDateOfBirth(updatedUser.getDateOfBirth());
-        existingUser.setGender(updatedUser.getGender());
         userRepository.save(existingUser);
 
         String logMessageFormat = "[Action=%s][Status=%s][User=%s]";
