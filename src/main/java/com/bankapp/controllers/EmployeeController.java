@@ -220,7 +220,7 @@ public class EmployeeController implements Constants {
             status = "success";
         }else{
             attributes.addFlashAttribute("message", new Message("error", str));
-            status = "success";
+            status = "error";
         }
         String logMessage = String.format("[Action=%s, Method=%s, Role=%s][Status=%s][Message=%s]", "credittransactions",
                 "POST", "employee", status, str);
