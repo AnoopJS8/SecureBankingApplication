@@ -107,8 +107,8 @@ public class Account {
 
     @Override
     public String toString() {
-        final String value = String.format("Account [userId=%s, accId=%s, balance=%s, criticalLimit=%s]", user.getId(),
-                accId, balance, criticalLimit);
+        final String value = String.format("Account Object [accountId=%s, user=%s, balance=%s, criticalLimit=%s]",
+                accId, user.getId(), balance, criticalLimit);
         return value;
     }
 

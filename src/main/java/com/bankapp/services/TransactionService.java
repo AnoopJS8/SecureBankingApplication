@@ -320,7 +320,7 @@ public class TransactionService implements ITransactionService, Constants {
             transaction.setStatus(status);
             accountService.saveAccount(transaction.getToAccount());
             transactionRepository.save(transaction);
-        }catch(Exception e){
+        } catch (Exception e) {
             return ERROR;
         }
         return SUCCESS;

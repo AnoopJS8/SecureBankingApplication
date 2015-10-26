@@ -139,4 +139,12 @@ public class Transaction {
     public void setTransferDate(Date transferDate) {
         this.transferDate = transferDate;
     }
+
+    @Override
+    public String toString() {
+        String value = String.format(
+                "Transaction object [id=%s, fromAccount=%s, toAccount=%s, tranferDate=%s, amount=%s, status=%s, comment=%s]",
+                transactionId, fromAccount.getAccId(), toAccount.getAccId(), transferDate, amount, status, comment);
+        return value;
+    }
 }
