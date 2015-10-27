@@ -1,7 +1,11 @@
 package com.bankapp.controllers;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 import javax.validation.Valid;
 
@@ -281,7 +285,7 @@ public class AdminController implements Constants {
         Message message;
         ProfileRequest request = profileService.getRequestById(profileRequest.getrId());
         String msg = profileService.declineRequest(request);
-        if(msg.equals(ERROR)){
+        if (msg.equals(ERROR)) {
             message = new Message("error", "Please try again");
             attributes.addFlashAttribute("message", message);
             String logMessage = String.format("[Action=%s, Method=%s, Role=%s][Status=%s][Message=%s]",
@@ -346,4 +350,33 @@ public class AdminController implements Constants {
         LOGGER.info(logMessage);
         return mv;
     }
+
+    @RequestMapping(value = "/admin/logs", method = RequestMethod.GET)
+    public ModelAndView logDetails() {
+
+        File file = new File("logging.log");
+        Scanner in = null;
+        List<String> l1 = new ArrayList<String>();
+        int count = 0;
+        try {
+            in = new Scanner(file);
+            while (in.hasNext() && count < 51) {
+                String line = in.nextLine();
+                if ((line.contains("WARN") || line.contains("ERROR"))) {
+                    count++;
+                    l1.add(line);
+                }
+            }
+        } catch (FileNotFoundException e) {
+            String logMessage = String.format("[Action=%s, Method=%s, Role=%s][Status=%s][Message=%s]", "admin view log", "GET",
+                    "admin", "error", "View Logs");
+            LOGGER.info(logMessage);
+        }
+        ModelAndView mv = new ModelAndView();
+        mv.addObject("listlogs", l1);
+        mv.setViewName("/admin/viewLogs");
+        return mv;
+
+    }
+
 }
