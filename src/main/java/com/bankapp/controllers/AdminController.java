@@ -21,6 +21,7 @@ import com.bankapp.constants.Constants;
 import com.bankapp.constants.Message;
 import com.bankapp.exceptions.EmailExistsException;
 import com.bankapp.forms.AddEmployeeForm;
+import com.bankapp.forms.EmployeeProfileUpdateForm;
 import com.bankapp.forms.UpdateUsersForm;
 import com.bankapp.models.PersonalIdentificationInfo;
 import com.bankapp.models.PiiRequest;
@@ -37,8 +38,7 @@ import com.bankapp.services.IUserService;
 @Secured("ROLE_ADMIN")
 public class AdminController implements Constants {
 
-    private final Logger LOGGER = Logger
-            .getLogger(AdminController.class);
+    private final Logger LOGGER = Logger.getLogger(AdminController.class);
 
     @Autowired
     IUserService userService;
@@ -58,15 +58,15 @@ public class AdminController implements Constants {
     @RequestMapping(value = "/admin/myaccount", method = RequestMethod.GET)
     public ModelAndView AdminDetails(Principal principal) {
         ModelAndView mv = new ModelAndView("/admin/myaccount");
-        String logMessage="";
-        if(userService.hasMissingFields(principal)) {
+        String logMessage = "";
+        if (userService.hasMissingFields(principal)) {
             mv.addObject("message",
                     new Message("error", "You are missing important details. Please update your profile urgently"));
-           logMessage  = String.format("[Action=%s, Method=%s, Role=%s][Status=%s][Message=%s]", "myaccount",
-                    "GET", "admin", "error", "You are missing important details. Please update your profile urgently");
+            logMessage = String.format("[Action=%s, Method=%s, Role=%s][Status=%s][Message=%s]", "myaccount", "GET",
+                    "admin", "error", "You are missing important details. Please update your profile urgently");
         }
-         logMessage = String.format("[Action=%s, Method=%s, Role=%s][Status=%s][Message=%s]", "myaccount",
-                "GET", "admin", "success", "My Account");
+        logMessage = String.format("[Action=%s, Method=%s, Role=%s][Status=%s][Message=%s]", "myaccount", "GET",
+                "admin", "success", "My Account");
         LOGGER.info(logMessage);
         return mv;
     }
@@ -85,10 +85,8 @@ public class AdminController implements Constants {
     }
 
     @RequestMapping(value = "/admin/managers/update", method = RequestMethod.POST)
-    public String updateManagerDetails(
-            @ModelAttribute("user") User updatedManager, BindingResult result,
+    public String updateManagerDetails(@ModelAttribute("user") User updatedManager, BindingResult result,
             RedirectAttributes attributes) {
-        System.out.println(updatedManager.getId());
         userService.updateUser(updatedManager.getId(), updatedManager);
         attributes.addFlashAttribute("message", new Message("success", "Manager details have been updated"));
         String logMessage = String.format("[Action=%s, Method=%s, Role=%s][Status=%s][Message=%s]", "managers/update",
@@ -98,11 +96,10 @@ public class AdminController implements Constants {
     }
 
     @RequestMapping(value = "/admin/managers/delete", method = RequestMethod.POST)
-    public String deleteManager(@ModelAttribute("user") User user,
-            BindingResult result, RedirectAttributes attributes) {
+    public String deleteManager(@ModelAttribute("user") User user, BindingResult result,
+            RedirectAttributes attributes) {
         userService.deleteUser(user);
-        String msg = String.format("Manager '%s' has been deleted",
-                user.getUsername());
+        String msg = String.format("Manager '%s' has been deleted", user.getUsername());
         attributes.addFlashAttribute("message", new Message("success", msg));
         String logMessage = String.format("[Action=%s, Method=%s, Role=%s][Status=%s][Message=%s]", "managers/delete",
                 "POST", "admin", "success", msg);
@@ -124,23 +121,50 @@ public class AdminController implements Constants {
     }
 
     @RequestMapping(value = "/admin/employees/update", method = RequestMethod.POST)
-    public String updateEmployeeDetails(
-            @ModelAttribute("user") User updatedUser, BindingResult result,
-            RedirectAttributes attributes) {
-        userService.updateUser(updatedUser.getId(), updatedUser);
-        attributes.addFlashAttribute("message", new Message("success", "Employee details have been updated"));
+    public String updateEmployeeDetails(@Valid @ModelAttribute("user") EmployeeProfileUpdateForm updatedUser,
+            BindingResult result, RedirectAttributes attributes) {
+
+        if (result.hasErrors()) {
+            attributes.addFlashAttribute("message", new Message("error",
+                    "Update details incorrect [Phone# should be 10 digits, and DoB in MM/dd/yyyy format]"));
+            return "redirect:/admin/employees";
+        }
+
+        String status, message;
+        User newUser = new User();
+        newUser.setUsername(updatedUser.getUsername());
+        newUser.setAddress(updatedUser.getAddress());
+        newUser.setDateOfBirth(updatedUser.getDateOfBirth());
+        newUser.setPhoneNumber(updatedUser.getPhoneNumber());
+
+        String serviceStatus = userService.updateUser(updatedUser.getId(), newUser);
+
+        switch (serviceStatus) {
+
+        case SUCCESS:
+            status = "success";
+            message = "Employee details have been updated";
+            break;
+        case ERROR:
+        default:
+            status = "error";
+            message = "Oops, something went wrong. Please try again!";
+        }
+
+        attributes.addFlashAttribute("message", new Message(status, message));
+
         String logMessage = String.format("[Action=%s, Method=%s, Role=%s][Status=%s][Message=%s]", "Update details",
-                "POST", "admin", "success", "Employee details have been updated");
+                "POST", "admin", status, serviceStatus);
         LOGGER.info(logMessage);
+
         return "redirect:/admin/employees";
     }
 
     @RequestMapping(value = "/admin/employees/delete", method = RequestMethod.POST)
-    public String deleteEmployee(@ModelAttribute("user") User user,
-            BindingResult result, RedirectAttributes attributes) {
+    public String deleteEmployee(@ModelAttribute("user") User user, BindingResult result,
+            RedirectAttributes attributes) {
         userService.deleteUser(user);
-        String msg = String.format("Employee '%s' has been deleted",
-                user.getUsername());
+        String msg = String.format("Employee '%s' has been deleted", user.getUsername());
         Message message = new Message("success", "Employee deleted successfully");
         attributes.addFlashAttribute("message", message);
         String logMessage = String.format("[Action=%s, Method=%s, Role=%s][Status=%s][Message=%s]", "delete employee",
@@ -167,8 +191,8 @@ public class AdminController implements Constants {
         profileService.authorizeRequest(profileRequest);
         message = new Message("succes", "Request has been approved");
         attributes.addFlashAttribute("message", message);
-        String logMessage = String.format("[Action=%s, Method=%s, Role=%s][Status=%s][Message=%s]", "approve Profile Request",
-                "POST", "admin", "success", message);
+        String logMessage = String.format("[Action=%s, Method=%s, Role=%s][Status=%s][Message=%s]",
+                "approve Profile Request", "POST", "admin", "success", message);
         LOGGER.info(logMessage);
         return "redirect:/admin/requests";
     }
@@ -182,19 +206,18 @@ public class AdminController implements Constants {
     }
 
     @RequestMapping(value = "/admin/add", method = RequestMethod.POST)
-    public String addUser(final ModelMap model , @ModelAttribute("form") @Valid AddEmployeeForm form, BindingResult result, RedirectAttributes attr) {
+    public String addUser(final ModelMap model, @ModelAttribute("form") @Valid AddEmployeeForm form,
+            BindingResult result, RedirectAttributes attr) {
 
-        String logMessage = String.format("Action: %s, Message: %s",
-                "addEmployee", "POST");
+        String logMessage = String.format("Action: %s, Message: %s", "addEmployee", "POST");
         String redirectSuccessURL = "redirect:/admin/myaccount";
         String redirectFailureURL = "redirect:/admin/add";
 
         if (result.hasErrors()) {
-            System.out.println(result.getAllErrors());
             model.addAttribute("form", form);
             return "admin/addemployee";
         }
-        
+
         User user = new User();
         user.setEmail(form.getEmail());
         user.setUsername(form.getUsername());
@@ -202,21 +225,20 @@ public class AdminController implements Constants {
         Role role = form.getRole();
         try {
             String msg = userService.addEmployee(user, role.getName());
-            if(msg.equalsIgnoreCase("EmailExists")){
+            if (msg.equalsIgnoreCase("EmailExists")) {
                 attr.addFlashAttribute("message", new Message("error", "Email already exists"));
                 return redirectFailureURL;
             }
-            if(msg.equalsIgnoreCase("mailError")){
-                attr.addFlashAttribute("message", new Message("error", "Mail service dint work properly please try again"));
+            if (msg.equalsIgnoreCase("mailError")) {
+                attr.addFlashAttribute("message",
+                        new Message("error", "Mail service dint work properly please try again"));
                 return redirectFailureURL;
             }
             attr.addFlashAttribute("message", new Message("success", "Internal user has been created"));
-            logMessage = String.format("Action: %s, Message: %s",
-                    "add", "Employee has been created");
+            logMessage = String.format("Action: %s, Message: %s", "add", "Employee has been created");
             return redirectSuccessURL;
         } catch (EmailExistsException e) {
-            logMessage = String.format("Action: %s, Message: %s",
-                    "email_exists", e.getMessage());
+            logMessage = String.format("Action: %s, Message: %s", "email_exists", e.getMessage());
             attr.addFlashAttribute("message", new Message("error", "Email already exists"));
             return redirectFailureURL;
         } finally {
@@ -231,8 +253,8 @@ public class AdminController implements Constants {
         profileService.declineRequest(profileRequest);
         message = new Message("success", "Request has been declined");
         attributes.addFlashAttribute("message", message);
-        String logMessage = String.format("[Action=%s, Method=%s, Role=%s][Status=%s][Message=%s]", "declineProfileRequest",
-                "POST", "admin", "success", "Declined Profile Request");
+        String logMessage = String.format("[Action=%s, Method=%s, Role=%s][Status=%s][Message=%s]",
+                "declineProfileRequest", "POST", "admin", "success", "Declined Profile Request");
         LOGGER.info(logMessage);
         return "redirect:/admin/requests";
 
@@ -244,8 +266,8 @@ public class AdminController implements Constants {
         mv.addObject("role", "admin");
         PiiRequest piiRequest = new PiiRequest();
         mv.addObject("piirequest", piiRequest);
-        String logMessage = String.format("[Action=%s, Method=%s, Role=%s][Status=%s][Message=%s]", "piirequest",
-                "GET", "admin", "success", "Pii details");
+        String logMessage = String.format("[Action=%s, Method=%s, Role=%s][Status=%s][Message=%s]", "piirequest", "GET",
+                "admin", "success", "Pii details");
         LOGGER.info(logMessage);
         return mv;
     }
@@ -260,10 +282,10 @@ public class AdminController implements Constants {
         if (msg.equals(SUCCESS)) {
             message = new Message("success", "Request has been forwarded to agency ");
             status = "sucesss";
-        } else if(msg.equals(ERR_EMAIL_NOT_EXISTS)){
+        } else if (msg.equals(ERR_EMAIL_NOT_EXISTS)) {
             message = new Message("error", "Email does not exist");
             status = "error";
-        }else {
+        } else {
             message = new Message("error", "error please try again");
             status = "error";
         }
@@ -281,8 +303,8 @@ public class AdminController implements Constants {
         mv.addObject("role", "admin");
         List<PersonalIdentificationInfo> piiList = piiService.getAuthorizedPII();
         mv.addObject("piiInfo", piiList);
-        String logMessage = String.format("[Action=%s, Method=%s, Role=%s][Status=%s][Message=%s]", "piidetails",
-                "GET", "admin", "success", "Pii details");
+        String logMessage = String.format("[Action=%s, Method=%s, Role=%s][Status=%s][Message=%s]", "piidetails", "GET",
+                "admin", "success", "Pii details");
         LOGGER.info(logMessage);
         return mv;
     }
