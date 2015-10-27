@@ -52,7 +52,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 		        .logoutSuccessUrl("/").and()
 	        .sessionManagement()
 	            .maximumSessions(1)
-	            .maxSessionsPreventsLogin(true)
 	            .expiredUrl("/")
 	            .and()
 	            .invalidSessionUrl("/");

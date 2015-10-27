@@ -21,13 +21,10 @@
 				<div class="error" th:if="${param.error} and ${session['SPRING_SECURITY_LAST_EXCEPTION']}"
 					th:with="errorMsg=${session['SPRING_SECURITY_LAST_EXCEPTION'].message}">
 					<div th:if="${errorMsg} == 'Bad credentials'">
-						<div class="alert alert-danger" role="alert">
-							<p>Invalid username and password</p>
-						</div>
-					</div>
-					<div th:if="${errorMsg} == 'blocked'">
-						<div class="alert alert-danger" role="alert">
-							<p>Too many failed login attempts. You have been banned for a day!</p>
+						<div th:switch="${errorMsg}" class="alert alert-danger" role="alert">
+							<p th:case="'Bad credentials'">Invalid username and password</p>
+							<p th:case="'blocked'">Too many failed login attempts. You have been banned for a day!</p>
+							<p th:case="*" th:text="${errorMsg}"></p>
 						</div>
 					</div>
 				</div>
