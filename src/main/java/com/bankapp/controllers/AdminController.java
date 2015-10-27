@@ -216,8 +216,9 @@ public class AdminController implements Constants {
     public String changeRequest(@ModelAttribute("request") ProfileRequest profileRequest, BindingResult result,
             RedirectAttributes attributes) {
         Message message;
-        profileService.authorizeRequest(profileRequest);
-        message = new Message("succes", "Request has been approved");
+        ProfileRequest request = profileService.getRequestById(profileRequest.getrId());
+        profileService.authorizeRequest(request);
+        message = new Message("success", "Request has been approved");
         attributes.addFlashAttribute("message", message);
         String logMessage = String.format("[Action=%s, Method=%s, Role=%s][Status=%s][Message=%s]",
                 "approve Profile Request", "POST", "admin", "success", message);
@@ -278,7 +279,16 @@ public class AdminController implements Constants {
     public String declineRequest(@ModelAttribute("request") ProfileRequest profileRequest, BindingResult result,
             RedirectAttributes attributes) {
         Message message;
-        profileService.declineRequest(profileRequest);
+        ProfileRequest request = profileService.getRequestById(profileRequest.getrId());
+        String msg = profileService.declineRequest(request);
+        if(msg.equals(ERROR)){
+            message = new Message("error", "Please try again");
+            attributes.addFlashAttribute("message", message);
+            String logMessage = String.format("[Action=%s, Method=%s, Role=%s][Status=%s][Message=%s]",
+                    "declineProfileRequest", "POST", "admin", "error", "Error");
+            LOGGER.info(logMessage);
+            return "redirect:/admin/requests";
+        }
         message = new Message("success", "Request has been declined");
         attributes.addFlashAttribute("message", message);
         String logMessage = String.format("[Action=%s, Method=%s, Role=%s][Status=%s][Message=%s]",

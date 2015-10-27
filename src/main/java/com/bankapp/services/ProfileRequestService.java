@@ -41,9 +41,11 @@ public class ProfileRequestService implements IProfileRequestService, Constants 
     public List<ProfileRequest> getPendingRequests() {
         Role manager = roleRepository.findByName("ROLE_MANAGER");
         Role employee = roleRepository.findByName("ROLE_EMPLOYEE");
+        Role admin = roleRepository.findByName("ROLE_ADMIN");
         List<ProfileRequest> profileRequest = profileRequestRepository.findByStatusAndRole(S_PROFILE_UPDATE_PENDING,
                 manager);
         profileRequest.addAll(profileRequestRepository.findByStatusAndRole(S_PROFILE_UPDATE_PENDING, employee));
+        profileRequest.addAll(profileRequestRepository.findByStatusAndRole(S_PROFILE_UPDATE_PENDING, admin));
         return profileRequest;
     }
 
@@ -77,7 +79,6 @@ public class ProfileRequestService implements IProfileRequestService, Constants 
     public String authorizeRequest(ProfileRequest request) {
         try {
             request.setStatus(S_PROFILE_UPDATE_VERIFIED);
-            profileRequestRepository.save(request);
             updateUser(request);
         } catch (Exception e) {
             return ERR_PROFILE_UPDATE;
@@ -86,6 +87,19 @@ public class ProfileRequestService implements IProfileRequestService, Constants 
         return S_PROFILE_UPDATE_VERIFIED;
     }
 
+    private User updateUser(ProfileRequest request) {
+        User user = request.getUser();
+        user.setAddress(request.getAddress());
+        user.setPhoneNumber(request.getPhoneNumber());
+        user.setDateOfBirth(request.getDateOfBirth());
+        user.setSecurityQuestion(request.getSecurityQuestion());
+        user.setSecurityAnswer(request.getSercurityAnswer());
+        profileRequestRepository.save(request);
+        return userRepository.save(user);
+
+    }
+
+    @Transactional
     @Override
     public String declineRequest(ProfileRequest request) {
         try {
@@ -104,13 +118,4 @@ public class ProfileRequestService implements IProfileRequestService, Constants 
         return request;
     }
 
-    private User updateUser(ProfileRequest request) {
-        User user = request.getUser();
-        user.setAddress(request.getAddress());
-        user.setPhoneNumber(request.getPhoneNumber());
-        user.setDateOfBirth(request.getDateOfBirth());
-        user.setSecurityQuestion(request.getSecurityQuestion());
-        user.setSecurityAnswer(request.getSercurityAnswer());
-        return userRepository.save(user);
-    }
 }

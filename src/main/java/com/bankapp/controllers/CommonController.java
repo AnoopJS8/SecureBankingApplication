@@ -3,9 +3,12 @@ package com.bankapp.controllers;
 import java.security.Principal;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 import org.apache.log4j.Logger;
@@ -24,6 +27,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.servlet.view.document.AbstractPdfView;
 
 import com.bankapp.constants.Constants;
 import com.bankapp.constants.Message;
@@ -36,6 +40,10 @@ import com.bankapp.models.User;
 import com.bankapp.services.IAccountService;
 import com.bankapp.services.ITransactionService;
 import com.bankapp.services.IUserService;
+import com.lowagie.text.Document;
+import com.lowagie.text.Paragraph;
+import com.lowagie.text.Table;
+import com.lowagie.text.pdf.PdfWriter;
 
 @Controller
 @Secured({ "ROLE_CUSTOMER", "ROLE_MERCHANT" })
@@ -357,6 +365,59 @@ public class CommonController implements Constants {
         LOGGER.info(logMessage);
 
         return redirectUrl;
+    }
+
+    @RequestMapping(value = "/getstatement", method = RequestMethod.GET)
+    public ModelAndView getStatement(Principal principal, HttpServletRequest request) {
+        String role;
+
+        if (request.isUserInRole("ROLE_CUSTOMER")) {
+            role = "customer";
+        } else {
+            role = "merchant";
+        }
+        User loggedInUser = userService.getUserFromSession(principal);
+        Account account = accountService.getAccountByUser(loggedInUser);
+        List<Transaction> transactions = transactionService.getTransactionsByAccount(account, account);
+        Map<String, Transaction> statementData = new HashMap<String, Transaction>();
+        Integer count = 0;
+        for (Transaction tr : transactions) {
+            statementData.put((count++).toString(), tr);
+        }
+        ModelAndView mv = new ModelAndView(new AbstractPdfView() {
+
+            @Override
+            protected void buildPdfDocument(Map<String, Object> model, Document document, PdfWriter writer,
+                    HttpServletRequest request, HttpServletResponse response) throws Exception {
+
+                document.add(new Paragraph("My ASU Bank - Your Bank Statement"));
+                document.add(new Paragraph("Account: " + account.getAccId()));
+                document.add(new Paragraph("User: " + loggedInUser.getEmail()));
+                document.add(new Paragraph("Generated: " + new Date()));
+
+                Map<String, Transaction> statementData = (Map<String, Transaction>) model.get("statementData");
+
+                Table table = new Table(4);
+                table.addCell("Tranfer Date");
+                table.addCell("From Account");
+                table.addCell("To Account");
+                table.addCell("Amount");
+
+                for (Map.Entry<String, Transaction> entry : statementData.entrySet()) {
+                    table.addCell(entry.getValue().getTransferDate().toString());
+                    table.addCell(entry.getValue().getFromAccount().getUser().getUsername());
+                    table.addCell(entry.getValue().getToAccount().getUser().getUsername());
+                    table.addCell(entry.getValue().getAmount().toString());
+                }
+
+                document.add(table);
+
+            }
+
+        }, "statementData", statementData);
+        mv.addObject("role", role);
+        return mv;
+
     }
 
 }
