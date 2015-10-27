@@ -37,7 +37,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 		        "/badUser",
 		        // Resources
 		        "/webjars/**",
-		        "/css/**", 
+		        "/css/**",
+		        "/img/**",
 		        "/js/**",
 		        "/app/**"
 		).permitAll().anyRequest().authenticated().and()
