@@ -26,6 +26,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.bankapp.constants.Constants;
 import com.bankapp.constants.Message;
 import com.bankapp.forms.OTPForm;
+import com.bankapp.forms.PIIForm;
 import com.bankapp.forms.ProfileForm;
 import com.bankapp.listeners.OnOtpEvent;
 import com.bankapp.models.Account;
@@ -303,7 +304,7 @@ public class MainController implements Constants {
     public ModelAndView addPII(Principal principal) {
         ModelAndView mv = new ModelAndView();
         User loggedInUser = userService.getUserFromSession(principal);
-        PersonalIdentificationInfo pii = new PersonalIdentificationInfo();
+        PIIForm pii = new PIIForm();
         mv.addObject("role", loggedInUser.getRole().getName());
         mv.addObject("pii", pii);
         mv.setViewName("pii");
@@ -311,19 +312,20 @@ public class MainController implements Constants {
     }
 
     @RequestMapping(value = "/pii", method = RequestMethod.POST)
-    public ModelAndView savePII(@ModelAttribute("pii") @Valid PersonalIdentificationInfo pii, BindingResult result,
+    public ModelAndView savePII(@ModelAttribute("pii") @Valid PIIForm form, BindingResult result,
             WebRequest request, Errors errors, Principal principal) {
         ModelAndView mv = new ModelAndView();
         
         if(result.hasErrors()){
-            mv.addObject("message", new Message("error", "Error in adding the pii please try again"));
+            mv.addObject("message", new Message("error", "Error in adding the pii. Please add 9 digit pii."));
             mv.setViewName("error");
             return mv;
         }
-        
+        PersonalIdentificationInfo pii = new PersonalIdentificationInfo();
         User loggedInUser = userService.getUserFromSession(principal);
         pii.setEmail(loggedInUser.getEmail());
         pii.setStatus(S_PII_PENDING);
+        pii.setPii(form.getPii());
         String message = ipiiservice.savePII(pii);
         String msg ;
         if (message.equals(SUCCESS)) {

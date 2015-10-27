@@ -25,7 +25,6 @@ public class PersonalIdentificationInfo {
 
     @NotNull
     @NotEmpty
-    @Pattern(regexp="[\\d]")
     String pii;
 
     @NotNull
