@@ -7,9 +7,11 @@
 		<div th:replace="fragment/common :: top-nav(profile)"></div>
 		<div th:replace="fragment/roleheader :: role-header(${role})"></div>
 		<div th:replace="fragment/common :: message"></div>
+		<div class="page-header">
+			<h3>Your Profile</h3>
+		</div>
 		<form id="profile-form" class="form-horizontal col-md-12" role="form"
 			th:action="@{/profile}" th:object="${form}" method="post">
-			<h1>Your Profile</h1>
 			<div class="form-group">
 				<label class="col-md-3 control-label">Username: </label>
 				<div class="col-md-5">
@@ -89,10 +91,10 @@
 					Information</a>
 			</p>
 			<p th:if="${role} == 'ROLE_CUSTOMER' or ${role} == 'ROLE_MERCHANT'">
-				<form th:action="@{/deleteprofile}" method="POST">
-					<input type="hidden" name="user_id" id="user_id" th:value="${form.email}" />
-					<button class="btn btn-danger" type="submit">Delete Profile</button>
-				</form>
+			<form th:action="@{/deleteprofile}" method="POST">
+				<input type="hidden" name="user_id" id="user_id" th:value="${form.email}" />
+				<button class="btn btn-danger" type="submit">Delete Profile</button>
+			</form>
 			</p>
 		</div>
 	</div>

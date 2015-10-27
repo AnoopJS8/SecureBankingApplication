@@ -6,14 +6,15 @@
 	<div class="container">
 		<div th:replace="fragment/common :: top-nav(admin)"></div>
 		<div th:replace="fragment/admin :: admin-header"></div>
-		<div>
+		<div class="page-header">
 			<h3>View Logs</h3>
 		</div>
+		<div th:replace="fragment/common :: message"></div>
 		<div class="table-responsive">
 			<table class="table table-bordered table-hover">
 				<thead>
-					<tr>
-						<th>Logs</th>
+					<tr class="info">
+						<th>Logs (Last 50 rows)</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -21,7 +22,7 @@
 						<td colspan="7">There are no transactions</td>
 					</tr>
 					<tr th:each="row : ${listlogs}">
-						<td><span th:text="${row}"></span></td>						
+						<td><span th:text="${row}"></span></td>
 					</tr>
 				</tbody>
 			</table>

@@ -16,3 +16,9 @@ form label.error {
 form.hidden-form {
 	display: none;
 }
+.admin-profile {
+	font-size: 28px;
+}
+.admin-profile .fa {
+	font-size: 90px;
+}

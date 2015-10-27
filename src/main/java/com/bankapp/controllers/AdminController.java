@@ -60,8 +60,10 @@ public class AdminController implements Constants {
     IPIIService piiService;
 
     @RequestMapping(value = "/admin/myaccount", method = RequestMethod.GET)
-    public ModelAndView AdminDetails(Principal principal) {
+    public ModelAndView getMyaccount(Principal principal) {
         ModelAndView mv = new ModelAndView("/admin/myaccount");
+        User user = userService.getUserFromSession(principal);
+
         String logMessage = "";
         if (userService.hasMissingFields(principal)) {
             mv.addObject("message",
@@ -72,6 +74,9 @@ public class AdminController implements Constants {
         logMessage = String.format("[Action=%s, Method=%s, Role=%s][Status=%s][Message=%s]", "myaccount", "GET",
                 "admin", "success", "My Account");
         LOGGER.info(logMessage);
+
+        mv.addObject("user", user);
+        mv.addObject("role", "ROLE_ADMIN");
         return mv;
     }
 
@@ -354,28 +359,33 @@ public class AdminController implements Constants {
     @RequestMapping(value = "/admin/logs", method = RequestMethod.GET)
     public ModelAndView logDetails() {
 
-        File file = new File("logging.log");
-        Scanner in = null;
-        List<String> l1 = new ArrayList<String>();
-        int count = 0;
+        ModelAndView mv = new ModelAndView("/admin/viewLogs");
         try {
-            in = new Scanner(file);
-            while (in.hasNext() && count < 51) {
-                String line = in.nextLine();
-                if ((line.contains("WARN") || line.contains("ERROR"))) {
-                    count++;
-                    l1.add(line);
+            File file = new File("logging.log");
+            Scanner in = null;
+            List<String> l1 = new ArrayList<String>();
+            int count = 0;
+            try {
+                in = new Scanner(file);
+                while (in.hasNext() && count < 51) {
+                    String line = in.nextLine();
+                    if ((line.contains("WARN") || line.contains("ERROR"))) {
+                        count++;
+                        l1.add(line);
+                    }
                 }
+            } catch (FileNotFoundException e) {
+                String logMessage = String.format("[Action=%s, Method=%s, Role=%s][Status=%s][Message=%s]",
+                        "admin view log", "GET", "admin", "error", "View Logs");
+                LOGGER.info(logMessage);
             }
-        } catch (FileNotFoundException e) {
-            String logMessage = String.format("[Action=%s, Method=%s, Role=%s][Status=%s][Message=%s]", "admin view log", "GET",
-                    "admin", "error", "View Logs");
-            LOGGER.info(logMessage);
+
+            mv.addObject("listlogs", l1);
+            return mv;
+        } catch (Exception e) {
+            mv.addObject("message", new Message("error", ERR_UNHANDLED));
+            return mv;
         }
-        ModelAndView mv = new ModelAndView();
-        mv.addObject("listlogs", l1);
-        mv.setViewName("/admin/viewLogs");
-        return mv;
 
     }
 

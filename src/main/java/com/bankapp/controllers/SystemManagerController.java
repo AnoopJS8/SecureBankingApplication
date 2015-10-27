@@ -75,6 +75,17 @@ public class SystemManagerController implements Constants {
 
     private final Logger LOGGER = Logger.getLogger(SystemManagerController.class);
 
+    @RequestMapping(value = "/manager/myaccount", method = RequestMethod.GET)
+    public ModelAndView getMyaccount(Principal principal) {
+        ModelAndView mv = new ModelAndView();
+        User loggedInUser = userService.getUserFromSession(principal);
+        String Username = loggedInUser.getUsername();
+        mv.addObject("username", Username);
+        mv.addObject("role", "ROLE_MANAGER");
+        mv.setViewName("manager/myaccount");
+        return mv;
+    }
+
     @RequestMapping(value = "/manager/criticaltransaction", method = RequestMethod.GET)
     public ModelAndView getCriticalTransaction() {
         List<Transaction> transactions = managerService.getTransactionsByStatus(S_OTP_PENDING);
@@ -139,16 +150,6 @@ public class SystemManagerController implements Constants {
     public ModelAndView getUserEmail() {
         ModelAndView modelAndView = new ModelAndView("/manager/viewUserByEmailForm", "form", new ViewByEmailForm());
         return modelAndView;
-    }
-
-    @RequestMapping(value = "/manager/myaccount", method = RequestMethod.GET)
-    public ModelAndView getManagerHome(Principal principal) {
-        ModelAndView mv = new ModelAndView();
-        User loggedInUser = userService.getUserFromSession(principal);
-        String Username = loggedInUser.getUsername();
-        mv.addObject("username", Username);
-        mv.setViewName("manager/myaccount");
-        return mv;
     }
 
     @RequestMapping(value = "/manager/approvetransaction", method = RequestMethod.POST)
