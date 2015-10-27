@@ -8,7 +8,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Lob;
-import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Past;
@@ -38,7 +38,7 @@ public class User {
     @Column(unique = true)
     private String email;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @OneToOne
     private Role role;
 
     @NotEmpty
@@ -76,6 +76,12 @@ public class User {
     private String lastLoginIP;
 
     private Date lastLoginDate;
+
+    @OneToOne(cascade = CascadeType.REMOVE, orphanRemoval = true)
+    Account account;
+
+    @OneToOne(cascade = CascadeType.REMOVE, orphanRemoval = true)
+    ProfileRequest request;
 
     @Lob
     private byte[] publicKey;
@@ -265,12 +271,28 @@ public class User {
         this.isDeleted = isDeleted;
     }
 
+    public Account getAccount() {
+        return account;
+    }
+
+    public void setAccount(Account account) {
+        this.account = account;
+    }
+
     public byte[] getPublicKey() {
         return publicKey;
     }
 
     public void setPublicKey(byte[] publicKey) {
         this.publicKey = publicKey;
+    }
+
+    public ProfileRequest getRequest() {
+        return request;
+    }
+
+    public void setRequest(ProfileRequest request) {
+        this.request = request;
     }
 
     @Override

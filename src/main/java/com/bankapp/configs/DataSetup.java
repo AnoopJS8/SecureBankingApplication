@@ -11,8 +11,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.bankapp.models.Account;
 import com.bankapp.models.Role;
 import com.bankapp.models.User;
+import com.bankapp.repositories.AccountRepository;
 import com.bankapp.repositories.RoleRepository;
 import com.bankapp.repositories.UserRepository;
 
@@ -21,7 +23,7 @@ public class DataSetup implements ApplicationListener<ContextRefreshedEvent> {
 
     @Value("${com.bankapp.data.doSetup}")
     private Boolean doDataSetup;
-    
+
     @Value("${com.bankapp.data.roleSetup}")
     private Boolean doRoleSetup;
 
@@ -32,13 +34,16 @@ public class DataSetup implements ApplicationListener<ContextRefreshedEvent> {
     private RoleRepository roleRepository;
 
     @Autowired
+    private AccountRepository accountRepository;
+
+    @Autowired
     private PasswordEncoder passwordEncoder;
 
     @Override
     @Transactional
     public void onApplicationEvent(final ContextRefreshedEvent event) {
-        if(doRoleSetup) {
-         // Create initial roles
+        if (doRoleSetup) {
+            // Create initial roles
             for (Roles role : Roles.values()) {
                 createRoleIfNotFound(role.toString());
             }
@@ -90,7 +95,7 @@ public class DataSetup implements ApplicationListener<ContextRefreshedEvent> {
 
         final Role customerRole = roleRepository.findByName("ROLE_CUSTOMER");
         User customerUser = new User();
-        customerUser.setUsername("Test Custoemr");
+        customerUser.setUsername("Test Customer");
         customerUser.setPassword(passwordEncoder.encode("test123"));
         customerUser.setEmail("test@customer.com");
         customerUser.setRole(customerRole);
@@ -100,6 +105,35 @@ public class DataSetup implements ApplicationListener<ContextRefreshedEvent> {
         customerUser.setSecurityQuestion("Name?");
         customerUser.setSecurityAnswer("test");
         userRepository.save(customerUser);
+
+        Account customerAccount = new Account();
+        customerUser.setAccount(customerAccount);
+        customerAccount.setUser(customerUser);
+        customerAccount.setCreated(new Date());
+        customerAccount.setBalance(100.0);
+        customerAccount.setCriticalLimit(100.0);
+        accountRepository.save(customerAccount);
+
+        final Role merchantRole = roleRepository.findByName("ROLE_MERCHANT");
+        User merchantUser = new User();
+        merchantUser.setUsername("Test Merchant");
+        merchantUser.setPassword(passwordEncoder.encode("test123"));
+        merchantUser.setEmail("test@merchant.com");
+        merchantUser.setRole(merchantRole);
+        merchantUser.setEnabled(true);
+        merchantUser.setDateOfBirth(new Date());
+        merchantUser.setPhoneNumber("1231231231");
+        merchantUser.setSecurityQuestion("Name?");
+        merchantUser.setSecurityAnswer("test");
+        userRepository.save(merchantUser);
+
+        Account merchantAccount = new Account();
+        merchantUser.setAccount(merchantAccount);
+        merchantAccount.setUser(merchantUser);
+        merchantAccount.setCreated(new Date());
+        merchantAccount.setBalance(100.0);
+        merchantAccount.setCriticalLimit(100.0);
+        accountRepository.save(merchantAccount);
 
         final Role agencyRole = roleRepository.findByName("ROLE_AGENCY");
         User agencyUser = new User();

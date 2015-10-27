@@ -25,18 +25,18 @@ public class Transaction {
     @GenericGenerator(name = "uuid", strategy = "uuid2")
     private String transactionId;
 
-    @ManyToOne()
+    @ManyToOne
     @JoinColumn(name = "fromAccId", nullable = false)
     @NotNull
     private Account fromAccount;
 
-    private String status;
-    private String comment;
-
-    @ManyToOne()
+    @ManyToOne
     @JoinColumn(name = "toAccId", nullable = false)
     @NotNull
     private Account toAccount;
+
+    private String status;
+    private String comment;
 
     @NotNull
     @Min(value = 0)

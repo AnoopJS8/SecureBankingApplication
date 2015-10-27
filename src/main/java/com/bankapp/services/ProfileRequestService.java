@@ -96,7 +96,7 @@ public class ProfileRequestService implements IProfileRequestService, Constants 
         user.setSecurityAnswer(request.getSercurityAnswer());
         profileRequestRepository.save(request);
         return userRepository.save(user);
-       
+
     }
 
     @Transactional
@@ -110,6 +110,12 @@ public class ProfileRequestService implements IProfileRequestService, Constants 
         }
 
         return S_PROFILE_UPDATE_DECLINED;
+    }
+
+    @Override
+    public ProfileRequest getRequestByUser(User user) {
+        ProfileRequest request = profileRequestRepository.findByUser(user);
+        return request;
     }
 
 }

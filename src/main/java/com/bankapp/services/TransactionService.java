@@ -201,7 +201,7 @@ public class TransactionService implements ITransactionService, Constants {
                 return ERR_SAME_USER;
             }
 
-            byte[] privateKeyBytes = fromUser.getPublicKey();
+            byte[] privateKeyBytes = toUser.getPublicKey();
             try {
                 String amount = decryptAmount(privateKeyBytes, transaction.getEncryptedAmount());
                 Double parsedAmount = Double.parseDouble(amount);

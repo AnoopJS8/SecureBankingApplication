@@ -6,7 +6,9 @@
 	<div class="container">
 		<div th:replace="fragment/common :: top-nav(viewUserByEmailForm)"></div>
 		<div th:replace="fragment/manager :: manager-header"></div>
-		<h3>View User By Email Form</h3>
+		<div class="page-header">
+			<h3>View User By Email Form</h3>
+		</div>
 		<div th:replace="fragment/common :: message"></div>
 		<form id="viewUserByemail-form" th:action="@{/manager/viewUserByEmailForm}"
 			th:object="${form}" method="post" class="form-horizontal">
@@ -17,10 +19,10 @@
 						class="form-control" placeholder="Email" /> <label
 						th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></label>
 				</div>
-				<div class="form-group">
-					<div class="col-md-offset-3 col-md-9">
-						<button type="submit" class="btn btn-primary">Get Details</button>
-					</div>
+			</div>
+			<div class="form-group">
+				<div class="col-md-offset-3 col-md-9">
+					<button type="submit" class="btn btn-primary">Get Details</button>
 				</div>
 			</div>
 		</form>

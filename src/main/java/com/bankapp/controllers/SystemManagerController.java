@@ -6,9 +6,7 @@ package com.bankapp.controllers;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
@@ -132,7 +130,7 @@ public class SystemManagerController implements Constants {
 
         String status = managerService.approveProfileRequest(profile);
 
-        attributes.addFlashAttribute("message", new Message(status, "Action Completed"));
+        attributes.addFlashAttribute("message", new Message(status, "Request has been approved"));
         attributes.addFlashAttribute("role", "manager");
         return "redirect:/manager/profilerequests";
     }
@@ -334,41 +332,39 @@ public class SystemManagerController implements Constants {
         return "redirect:/manager/update";
     }
 
-    @RequestMapping(value = "/manager/delete", method = RequestMethod.POST)
-    public String deleteUser(@ModelAttribute("user") User user, BindingResult result, RedirectAttributes attributes) {
-        userService.deleteUser(user);
-        Map<String, String> message = new HashMap<String, String>();
-        message.put("status", "success");
-        String msg = String.format("User '%s' has been deleted", user.getUsername());
-        message.put("msg", msg);
-        attributes.addFlashAttribute("message", message);
-        String logMessage = String.format("[Action=%s, Method=%s, Role=%s][Status=%s][Message=%s]", "deleteUsers",
-                "POST", "manager", "success", message);
-        LOGGER.info(logMessage);
-        return "redirect:/manager/update";
-    }
-
     @RequestMapping(value = "/manager/deleteUsers", method = RequestMethod.GET)
     public ModelAndView deleteUser() {
 
         ModelAndView mv = new ModelAndView();
         mv.setViewName("/manager/deleteUser");
         List<User> users = userService.displayDeleteUsers();
-        mv.addObject("viewuser", users);
+        mv.addObject("users", users);
         return mv;
     }
 
     @RequestMapping(value = "/manager/deleteUsers", method = RequestMethod.POST)
-    public String deleteManager(@ModelAttribute("user") User user, BindingResult result,
+    public String deleteManager(@ModelAttribute("email") String email, BindingResult result,
             RedirectAttributes attributes) {
-        Message message;
-        userService.deleteExternalUser(user);
-        String msg = String.format("Manager '%s' has been deleted", user.getUsername());
-        message = new Message("succes", msg);
-        attributes.addFlashAttribute("message", message);
+        String status, message;
+        String serviceStatus = userService.deleteExternalUser(email);
+        switch (serviceStatus) {
+        case SUCCESS:
+            status = "success";
+            message = String.format("User %s has been deleted", email);
+            break;
+        case ERR_ACCOUNT_NOT_EXISTS:
+        case ERR_UNHANDLED:
+        default:
+            status = "error";
+            message = serviceStatus;
+        }
+
+        attributes.addFlashAttribute("message", new Message(status, message));
+
         String logMessage = String.format("[Action=%s, Method=%s, Role=%s][Status=%s][Message=%s]", "deleteUsers",
-                "POST", "manager", message, msg);
+                "POST", "manager", status, message);
         LOGGER.info(logMessage);
+
         return "redirect:/manager/deleteUsers";
     }
 

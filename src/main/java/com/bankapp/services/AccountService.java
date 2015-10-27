@@ -25,9 +25,9 @@ public class AccountService implements IAccountService, Constants {
         Account account = accountRepository.findByUser(user);
 
         String logMessageFormat = "[Action=%s][User=%s, Account=%s]";
-        String logMessage = String.format(logMessageFormat, "getAccountByUser", user.getId(), account.getAccId());
+        String logMessage = String.format(logMessageFormat, "getAccountByUser", user.getId(), account);
         logger.info(logMessage);
-
+        
         return account;
     }
 

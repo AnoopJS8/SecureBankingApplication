@@ -1,9 +1,9 @@
 package com.bankapp.services;
 
-
 import java.util.List;
 
 import com.bankapp.models.ProfileRequest;
+import com.bankapp.models.User;
 
 public interface IProfileRequestService {
 
@@ -12,6 +12,8 @@ public interface IProfileRequestService {
     List<ProfileRequest> getPendingRequests();
 
     void declineRequest(String id);
+
+    public ProfileRequest getRequestByUser(User user);
 
     public List<ProfileRequest> getRequestsByStatus(String status);
 
