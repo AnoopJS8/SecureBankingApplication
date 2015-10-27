@@ -34,7 +34,11 @@ public interface IUserService {
 
     String updateUser(String existingUserId, User newUser);
 
+    boolean markUserAsDeleted(String email);
+
     void deleteUser(User user);
+
+    String deleteExternalUser(String email);
 
     List<User> getManagers();
 
@@ -53,8 +57,6 @@ public interface IUserService {
     boolean idExist(String id);
 
     public boolean verifyPassword(User user, String currentPassword);
-
-    public void deleteExternalUser(User user);
 
     // OTP Section
     OneTimePassword generateOTP(String resourceId, String resourceName);

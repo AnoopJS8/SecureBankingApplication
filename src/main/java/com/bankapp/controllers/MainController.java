@@ -312,11 +312,11 @@ public class MainController implements Constants {
     }
 
     @RequestMapping(value = "/pii", method = RequestMethod.POST)
-    public ModelAndView savePII(@ModelAttribute("pii") @Valid PIIForm form, BindingResult result,
-            WebRequest request, Errors errors, Principal principal) {
+    public ModelAndView savePII(@ModelAttribute("pii") @Valid PIIForm form, BindingResult result, WebRequest request,
+            Errors errors, Principal principal) {
         ModelAndView mv = new ModelAndView();
-        
-        if(result.hasErrors()){
+
+        if (result.hasErrors()) {
             mv.addObject("message", new Message("error", "Error in adding the pii. Please add 9 digit pii."));
             mv.setViewName("error");
             return mv;
@@ -327,19 +327,32 @@ public class MainController implements Constants {
         pii.setStatus(S_PII_PENDING);
         pii.setPii(form.getPii());
         String message = ipiiservice.savePII(pii);
-        String msg ;
+        String msg;
         if (message.equals(SUCCESS)) {
             mv.addObject("message", new Message("success", "Pii added successfully"));
-            msg="Pii added successfully";
+            msg = "Pii added successfully";
             mv.setViewName("success");
         } else {
-            msg="Error in adding the pii please try again";
+            msg = "Error in adding the pii please try again";
             mv.addObject("message", new Message("error", "Error in adding the pii please try again"));
             mv.setViewName("error");
         }
-        String logMessage = String.format("[Action=%s, Method=%s, Role=%s][Status=%s][Message=%s]", "pii",
-                "POST", "main", message,msg);
+        String logMessage = String.format("[Action=%s, Method=%s, Role=%s][Status=%s][Message=%s]", "pii", "POST",
+                "main", message, msg);
         LOGGER.info(logMessage);
         return mv;
+    }
+
+    @RequestMapping(value = "/deleteprofile", method = RequestMethod.POST)
+    public String sendProfileDeletionRequest(@ModelAttribute("user_id") String email, RedirectAttributes attributes) {
+        boolean serviceStatus = userService.markUserAsDeleted(email);
+        if (serviceStatus) {
+            attributes.addFlashAttribute("message",
+                    new Message("success", "We have sent a profile deletion request to a manager"));
+            return "redirect:/profile";
+        } else {
+            attributes.addFlashAttribute("message", new Message("error", ERR_UNHANDLED));
+            return "redirect:/profile";
+        }
     }
 }
