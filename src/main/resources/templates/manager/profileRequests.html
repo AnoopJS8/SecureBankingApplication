@@ -6,19 +6,10 @@
 	<div class="container">
 		<div th:replace="fragment/common :: top-nav(myaccount)"></div>
 		<div th:replace="fragment/manager :: manager-header"></div>
-		<div>
+		<div class="page-header">
 			<h3>Profile Change Requests</h3>
-			<div th:if="${message}" th:object="${message}">
-				<div
-					th:class="*{status} == success ? 'alert alert-success alert-dismissible' : 'alert alert-danger alert-dismissible'"
-					role="alert">
-					<button type="button" class="close" data-dismiss="alert" aria-label="Close">
-						<span aria-hidden="true">&times;</span>
-					</button>
-					<p th:text="*{msg}"></p>
-				</div>
-			</div>
 		</div>
+		<div th:replace="fragment/common :: message"></div>
 		<div class="table-responsive">
 			<table class="table table-bordered table-hover">
 				<thead>
@@ -51,9 +42,9 @@
 							</td>
 							<td th:text="*{phoneNumber}"></td>
 							<td th:text="*{securityQuestion}"></td>
-						<td th:text="*{sercurityAnswer}"></td>
-						<td><input type="hidden" name="rId" th:value="*{rId}" />
-							<button type="submit" class="btn btn-success">Approve</button></td>
+							<td th:text="*{sercurityAnswer}"></td>
+							<td><input type="hidden" name="rId" th:value="*{rId}" />
+								<button type="submit" class="btn btn-success">Approve</button></td>
 						</form>
 					</tr>
 				</tbody>

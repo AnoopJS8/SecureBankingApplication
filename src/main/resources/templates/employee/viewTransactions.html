@@ -1,6 +1,5 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml"
-	xmlns:th="http://www.thymeleaf.org">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
 <head th:include="fragment/common :: headerFragment" />
 <body>
 	<div class="container">
@@ -14,7 +13,7 @@
 			<table class="table table-bordered table-hover">
 				<thead>
 					<tr class="info">
-						<th>Created Date</th>
+						<th>Transfer Date</th>
 						<th>From</th>
 						<th>To</th>
 						<th>Amount</th>
@@ -24,6 +23,9 @@
 					</tr>
 				</thead>
 				<tbody>
+					<tr th:if="${transactions.size()} == 0">
+						<td colspan="7">No transactions to show</td>
+					</tr>
 					<tr th:each="row : ${transactions}">
 						<form action="#" th:action="@{/employee/transactions}" th:object="${row}"
 							method="post">
@@ -34,18 +36,18 @@
 								<div th:if="*{transferDate} == null">
 									<span>N/A</span>
 								</div>
-							</td><td><span th:text="*{fromAccount.user.username}"></span></td>
-							<td><span th:text="*{toAccount.user.username}"></span></td>
-							<td><span th:text="*{amount}"></span></td>
-							<td><span th:text="*{status}"></span></td>
-							<td><span th:text="*{comment}"></span></td>
+							</td>
+							<td th:text="*{fromAccount.user.email}"></td>
+							<td th:text="*{toAccount.user.email}"></td>
+							<td th:text="*{amount}"></td>
+							<td th:text="*{status}"></td>
+							<td th:text="*{comment}"></td>
 							<td><input type="hidden" name="transactionId"
 								th:value="*{transactionId}" />
-								<button class="btn btn-sm btn-success" type="Submit"
-									name="action" value="Authorize">Authorize</button>
-								<button class="btn btn-sm btn-danger" type="Submit"
-									name="action" value="Decline">Decline</button>
-							</td>
+								<button class="btn btn-sm btn-success" type="Submit" name="action"
+									value="Authorize">Authorize</button>
+								<button class="btn btn-sm btn-danger" type="Submit" name="action"
+									value="Decline">Decline</button></td>
 						</form>
 					</tr>
 				</tbody>

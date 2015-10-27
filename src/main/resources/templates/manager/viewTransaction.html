@@ -7,14 +7,14 @@
 	<div class="container">
 		<div th:replace="fragment/common :: top-nav(myaccount)"></div>
 		<div th:replace="fragment/manager :: manager-header"></div>
-		<div>
+		<div class="page-header">
 			<h3>Critical Transactions</h3>
 		</div>
 		<div th:replace="fragment/common :: message"></div>
 		<div class="table-responsive">
 			<table class="table table-bordered table-hover">
 				<thead>
-					<tr>
+					<tr class="info">
 						<th>Created Date</th>
 						<th>From</th>
 						<th>To</th>

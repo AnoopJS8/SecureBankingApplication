@@ -6,7 +6,7 @@
 		<div th:replace="fragment/common :: top-nav(userpayment)"></div>
 		<div th:replace="fragment/employee :: employee-header"></div>
 		<div class="page-header">
-			<h1>View Requests</h1>
+			<h1>Profile Change Requests</h1>
 		</div>
 		<div th:replace="fragment/common :: message"></div>
 		<p th:text="${result1}">MyASU BANK</p>
@@ -14,7 +14,7 @@
 			<table class="table table-bordered table-hover">
 				<thead>
 					<tr class="info">
-						<th>Request ID</th>
+						<th>Email</th>
 						<th>Address</th>
 						<th>D.O.B</th>
 						<th>Phone</th>
@@ -27,25 +27,23 @@
 						<td colspan="6">No requests to show</td>
 					</tr>
 					<tr th:each="request : ${requests}">
-						<form action="#" th:action="@{/employee/requests}"
-							th:object="${request}" method="post">
-							<input type="hidden" name="rId" th:value="*{rId}" />
-							<td><span th:text="${request.rId}"></span></td>
-							<td><span th:text="${request.address}"></span></td>
-							<td>
-								<div th:if="*{dateOfBirth} != null">
-									<span th:text="*{#dates.format(dateOfBirth,'MM/dd/yyyy')}"></span>
-								</div>
-								<div th:if="*{dateOfBirth} == null">N/A</div>
-							</td>
-							<td><span th:text="${request.phoneNumber}"></span></td>
-							<td><span th:text="${request.status}"></span></td>
-							<td>
-								<button class="btn btn-sm btn-success" type="Submit" name="action"
-									value="Authorize">Authorize</button>
-								<button class="btn btn-sm btn-danger" type="Submit" name="action"
-									value="Decline">Decline</button>
-							</td>
+						<form action="#" th:action="@{/employee/requests}" th:object="${request}"
+							method="post">
+							<td th:text="${request.user.email}"></td>
+						<td th:text="${request.address}"></td>
+						<td>
+							<div th:if="*{dateOfBirth} != null">
+								<span th:text="*{#dates.format(dateOfBirth,'MM/dd/yyyy')}"></span>
+							</div>
+							<div th:if="*{dateOfBirth} == null">N/A</div>
+						</td>
+						<td th:text="${request.phoneNumber}"></td>
+						<td th:text="${request.status}"></td>
+						<td><input type="hidden" name="rId" th:value="*{rId}" />
+							<button class="btn btn-sm btn-success" type="Submit" name="action"
+								value="Authorize">Authorize</button>
+							<button class="btn btn-sm btn-danger" type="Submit" name="action"
+								value="Decline">Decline</button></td>
 						</form>
 					</tr>
 				</tbody>

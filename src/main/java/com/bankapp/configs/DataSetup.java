@@ -114,6 +114,27 @@ public class DataSetup implements ApplicationListener<ContextRefreshedEvent> {
         customerAccount.setCriticalLimit(100.0);
         accountRepository.save(customerAccount);
 
+        final Role merchantRole = roleRepository.findByName("ROLE_MERCHANT");
+        User merchantUser = new User();
+        merchantUser.setUsername("Test Merchant");
+        merchantUser.setPassword(passwordEncoder.encode("test123"));
+        merchantUser.setEmail("test@merchant.com");
+        merchantUser.setRole(merchantRole);
+        merchantUser.setEnabled(true);
+        merchantUser.setDateOfBirth(new Date());
+        merchantUser.setPhoneNumber("1231231231");
+        merchantUser.setSecurityQuestion("Name?");
+        merchantUser.setSecurityAnswer("test");
+        userRepository.save(merchantUser);
+
+        Account merchantAccount = new Account();
+        merchantUser.setAccount(merchantAccount);
+        merchantAccount.setUser(merchantUser);
+        merchantAccount.setCreated(new Date());
+        merchantAccount.setBalance(100.0);
+        merchantAccount.setCriticalLimit(100.0);
+        accountRepository.save(merchantAccount);
+
         final Role agencyRole = roleRepository.findByName("ROLE_AGENCY");
         User agencyUser = new User();
         agencyUser.setUsername("Test Agency");
