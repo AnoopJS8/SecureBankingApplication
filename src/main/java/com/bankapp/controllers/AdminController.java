@@ -165,8 +165,11 @@ public class AdminController implements Constants {
 
         User user = form.getUser();
         Role role = form.getRole();
+        
+        
         try {
             user = userService.addEmployee(user, role.getName());
+            
             attr.addFlashAttribute("message", new Message("success", "Employee has been created"));
             return redirectSuccessURL;
         } catch (EmailExistsException e) {
