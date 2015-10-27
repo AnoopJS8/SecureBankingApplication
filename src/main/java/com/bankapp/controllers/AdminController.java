@@ -85,13 +85,41 @@ public class AdminController implements Constants {
     }
 
     @RequestMapping(value = "/admin/managers/update", method = RequestMethod.POST)
-    public String updateManagerDetails(@ModelAttribute("user") User updatedManager, BindingResult result,
-            RedirectAttributes attributes) {
-        userService.updateUser(updatedManager.getId(), updatedManager);
-        attributes.addFlashAttribute("message", new Message("success", "Manager details have been updated"));
-        String logMessage = String.format("[Action=%s, Method=%s, Role=%s][Status=%s][Message=%s]", "managers/update",
-                "POST", "admin", "success", "Manager details have been updated");
+    public String updateManagerDetails(@Valid @ModelAttribute("user") EmployeeProfileUpdateForm updatedManager,
+            BindingResult result, RedirectAttributes attributes) {
+        if (result.hasErrors()) {
+            attributes.addFlashAttribute("message", new Message("error",
+                    "Update details incorrect [Phone# should be 10 digits, and DoB in MM/dd/yyyy format]"));
+            return "redirect:/admin/managers";
+        }
+
+        String status, message;
+        User newUser = new User();
+        newUser.setUsername(updatedManager.getUsername());
+        newUser.setAddress(updatedManager.getAddress());
+        newUser.setDateOfBirth(updatedManager.getDateOfBirth());
+        newUser.setPhoneNumber(updatedManager.getPhoneNumber());
+
+        String serviceStatus = userService.updateUser(updatedManager.getId(), newUser);
+
+        switch (serviceStatus) {
+
+        case SUCCESS:
+            status = "success";
+            message = "Employee details have been updated";
+            break;
+        case ERROR:
+        default:
+            status = "error";
+            message = "Oops, something went wrong. Please try again!";
+        }
+
+        attributes.addFlashAttribute("message", new Message(status, message));
+
+        String logMessage = String.format("[Action=%s, Method=%s, Role=%s][Status=%s][Message=%s]", "Update details",
+                "POST", "admin", status, serviceStatus);
         LOGGER.info(logMessage);
+
         return "redirect:/admin/managers";
     }
 
