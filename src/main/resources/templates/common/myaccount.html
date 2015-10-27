@@ -56,6 +56,17 @@
 		<div>
 			<h3>Transactions</h3>
 		</div>
+		<div>
+			<form id="cd-form" class="form-horizontal" role="form" action="#"
+			th:action="@{/getstatement}" th:object="${form}"
+			method="post">
+			<div class="form-group">
+				<div class="col-md-12">
+					<button type="submit" class="btn btn-primary">Download Statement</button>
+				</div>
+			</div>
+			</form>
+		</div>
 		<div class="table-responsive">
 			<table class="table table-bordered table-hover">
 				<thead>

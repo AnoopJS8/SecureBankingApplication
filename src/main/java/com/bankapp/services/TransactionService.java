@@ -219,7 +219,6 @@ public class TransactionService implements ITransactionService, Constants {
                 String logMessage = String.format(logMessageFormat, "askCustomerPayment", ERR_TRANS_DECRYPTION,
                         fromEmail, toEmail);
                 logger.info(logMessage);
-
                 return ERR_TRANS_DECRYPTION;
             } catch (NumberFormatException e) {
                 String logMessageFormat = "[Action=%s][Status=%s][FromEmail=%s, ToEmail=%s]";
