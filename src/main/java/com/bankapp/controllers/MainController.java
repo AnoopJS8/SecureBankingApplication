@@ -184,7 +184,12 @@ public class MainController implements Constants {
         User loggedInUser = userService.getUserFromSession(principal);
         Role role = loggedInUser.getRole();
 
-        ProfileRequest profile = new ProfileRequest();
+        ProfileRequest profile = profileRequestService.getRequestByUser(loggedInUser);
+
+        if (profile == null) {
+            profile = new ProfileRequest();
+        }
+
         profile.setAddress(form.getAddress());
         profile.setDateOfBirth(form.getDateOfBirth());
         profile.setPhoneNumber(form.getPhoneNumber());

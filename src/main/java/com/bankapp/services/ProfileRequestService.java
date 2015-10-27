@@ -86,16 +86,6 @@ public class ProfileRequestService implements IProfileRequestService, Constants 
         return S_PROFILE_UPDATE_VERIFIED;
     }
 
-    private User updateUser(ProfileRequest request) {
-        User user = request.getUser();
-        user.setAddress(request.getAddress());
-        user.setPhoneNumber(request.getPhoneNumber());
-        user.setDateOfBirth(request.getDateOfBirth());
-        user.setSecurityQuestion(request.getSecurityQuestion());
-        user.setSecurityAnswer(request.getSercurityAnswer());
-        return userRepository.save(user);
-    }
-
     @Override
     public String declineRequest(ProfileRequest request) {
         try {
@@ -108,4 +98,19 @@ public class ProfileRequestService implements IProfileRequestService, Constants 
         return S_PROFILE_UPDATE_DECLINED;
     }
 
+    @Override
+    public ProfileRequest getRequestByUser(User user) {
+        ProfileRequest request = profileRequestRepository.findByUser(user);
+        return request;
+    }
+
+    private User updateUser(ProfileRequest request) {
+        User user = request.getUser();
+        user.setAddress(request.getAddress());
+        user.setPhoneNumber(request.getPhoneNumber());
+        user.setDateOfBirth(request.getDateOfBirth());
+        user.setSecurityQuestion(request.getSecurityQuestion());
+        user.setSecurityAnswer(request.getSercurityAnswer());
+        return userRepository.save(user);
+    }
 }

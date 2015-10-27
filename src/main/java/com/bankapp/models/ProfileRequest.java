@@ -2,7 +2,6 @@ package com.bankapp.models;
 
 import java.util.Date;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -23,7 +22,7 @@ public class ProfileRequest {
     @GenericGenerator(name = "uuid", strategy = "uuid2")
     private String rId;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne
     @JoinColumn(name = "userId", nullable = false)
     private User user;
 

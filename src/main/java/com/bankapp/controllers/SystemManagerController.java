@@ -130,7 +130,7 @@ public class SystemManagerController implements Constants {
 
         String status = managerService.approveProfileRequest(profile);
 
-        attributes.addFlashAttribute("message", new Message(status, "Action Completed"));
+        attributes.addFlashAttribute("message", new Message(status, "Request has been approved"));
         attributes.addFlashAttribute("role", "manager");
         return "redirect:/manager/profilerequests";
     }

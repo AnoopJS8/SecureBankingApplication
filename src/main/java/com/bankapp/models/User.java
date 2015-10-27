@@ -80,6 +80,9 @@ public class User {
     @OneToOne(cascade = CascadeType.REMOVE, orphanRemoval = true)
     Account account;
 
+    @OneToOne(cascade = CascadeType.REMOVE, orphanRemoval = true)
+    ProfileRequest request;
+
     @Lob
     private byte[] publicKey;
 
@@ -282,6 +285,14 @@ public class User {
 
     public void setPublicKey(byte[] publicKey) {
         this.publicKey = publicKey;
+    }
+
+    public ProfileRequest getRequest() {
+        return request;
+    }
+
+    public void setRequest(ProfileRequest request) {
+        this.request = request;
     }
 
     @Override
