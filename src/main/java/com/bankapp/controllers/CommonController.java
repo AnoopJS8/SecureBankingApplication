@@ -391,8 +391,7 @@ public class CommonController implements Constants {
 
                 Map<String, Transaction> statementData = (Map<String, Transaction>) model.get("statementData");
 
-                Table table = new Table(5);
-                table.addCell("Number");
+                Table table = new Table(4);
                 table.addCell("Tranfer Date");
                 table.addCell("From Account");
                 table.addCell("To Account");
