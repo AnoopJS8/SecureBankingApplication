@@ -52,7 +52,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 		        .logoutUrl("/logout")
 		        .logoutSuccessUrl("/").and()
 	        .sessionManagement()
-	            .maximumSessions(1);
+	            .maximumSessions(1)
+	            .maxSessionsPreventsLogin(true)
+	            .expiredUrl("/")
+	            .and()
+	            .invalidSessionUrl("/");
 		
 		http.addFilterBefore(new CrossScriptingFilter(), BasicAuthenticationFilter.class);
 			     
