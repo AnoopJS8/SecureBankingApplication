@@ -241,17 +241,29 @@ public class UserService implements IUserService, Constants {
     }
 
     @Override
-    public void updateUser(String existingUserId, User updatedUser) {
-        User existingUser = userRepository.findById(existingUserId);
-        existingUser.setUsername(updatedUser.getUsername());
-        existingUser.setAddress(updatedUser.getAddress());
-        existingUser.setPhoneNumber(updatedUser.getPhoneNumber());
-        existingUser.setDateOfBirth(updatedUser.getDateOfBirth());
-        userRepository.save(existingUser);
+    public String updateUser(String existingUserId, User updatedUser) {
+        try {
+            User existingUser = userRepository.findById(existingUserId);
+            existingUser.setUsername(updatedUser.getUsername());
+            existingUser.setAddress(updatedUser.getAddress());
 
-        String logMessageFormat = "[Action=%s][Status=%s][User=%s]";
-        String logMessage = String.format(logMessageFormat, "updateUser", SUCCESS, existingUserId);
-        logger.info(logMessage);
+            existingUser.setPhoneNumber(updatedUser.getPhoneNumber());
+            existingUser.setDateOfBirth(updatedUser.getDateOfBirth());
+            userRepository.save(existingUser);
+
+            String logMessageFormat = "[Action=%s][Status=%s][User=%s]";
+            String logMessage = String.format(logMessageFormat, "updateUser", SUCCESS, existingUserId);
+            logger.info(logMessage);
+
+            return SUCCESS;
+        } catch (Exception e) {
+            String logMessageFormat = "[Action=%s][Status=%s][User=%s, ErrorMessage=%s]";
+            String logMessage = String.format(logMessageFormat, "updateUser", ERROR, existingUserId,
+                    e.getMessage());
+            logger.info(logMessage);
+
+            return ERROR;
+        }
     }
 
     @Override

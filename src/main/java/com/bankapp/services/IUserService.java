@@ -32,7 +32,7 @@ public interface IUserService {
 
     VerificationToken generateNewVerificationToken(String VerificationToken);
 
-    void updateUser(String existingUserId, User newUser);
+    String updateUser(String existingUserId, User newUser);
 
     void deleteUser(User user);
 

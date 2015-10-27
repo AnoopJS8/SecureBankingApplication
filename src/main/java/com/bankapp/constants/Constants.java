@@ -11,7 +11,11 @@ public interface Constants {
 	public String ERR_ACCOUNT_NOT_EXISTS = "Account does not exist!";
 	public String ERR_SAME_USER = "Same user transfer is not valid";
 	public String ERR_EMAIL_NOT_EXISTS = "email not present with agency";
+	
 	public String ERR_PROFILE_UPDATE = "Could not authorize the request";
+	public String ERR_PROFILE_DOB = "Date of Birth must be in MM/dd/yyyy format";
+	public String ERR_PROFILE_PHONE = "Phone number must be 10 digits.";
+	
 	public String ERR_TRANS_LIMIT = "Transaction amount not in our bank's transaction bounds ($0 - $100000). Please try with something in between!";
 	public String ERR_TRANS_DECODE = "Could not decode your input. Please try again!";
 	public String ERR_TRANS_DECRYPTION = "Invalid encypted input. Please try again!";
