@@ -34,6 +34,7 @@ import com.bankapp.constants.Message;
 import com.bankapp.exceptions.EmailExistsException;
 import com.bankapp.exceptions.UserNameExistsException;
 import com.bankapp.forms.AddEmployeeForm;
+import com.bankapp.forms.EmployeeProfileUpdateForm;
 import com.bankapp.forms.UpdateUsersForm;
 import com.bankapp.forms.ViewByEmailForm;
 import com.bankapp.listeners.OnRegistrationCompleteEvent;
@@ -57,7 +58,7 @@ import com.bankapp.services.IUserService;;;
 public class SystemManagerController implements Constants {
 
     @Autowired
-    private ISystemManagerService manager;
+    private ISystemManagerService managerService;
 
     @Autowired
     private IUserService userService;
@@ -78,7 +79,7 @@ public class SystemManagerController implements Constants {
 
     @RequestMapping(value = "/manager/criticaltransaction", method = RequestMethod.GET)
     public ModelAndView getCriticalTransaction() {
-        List<Transaction> transactions = manager.getTransactionsByStatus(S_OTP_PENDING);
+        List<Transaction> transactions = managerService.getTransactionsByStatus(S_OTP_PENDING);
         ModelAndView mv = new ModelAndView();
         mv.addObject("critical", transactions);
         mv.setViewName("/manager/viewTransaction");
@@ -87,7 +88,7 @@ public class SystemManagerController implements Constants {
 
     @RequestMapping(value = "/manager/pendingtransaction", method = RequestMethod.GET)
     public ModelAndView getInitiatedTransaction() {
-        List<Transaction> transactions = manager.getTransactionsByStatus(S_PENDING);
+        List<Transaction> transactions = managerService.getTransactionsByStatus(S_PENDING);
         ModelAndView mv = new ModelAndView();
         mv.addObject("transactions", transactions);
         mv.setViewName("/manager/viewPending");
@@ -114,9 +115,9 @@ public class SystemManagerController implements Constants {
     }
 
     @RequestMapping(value = "/manager/approveprofilerequest", method = RequestMethod.POST)
-    public String approveprofilerequest(@ModelAttribute("row") ProfileRequest Id, BindingResult result,
+    public String approveProfileRequests(@ModelAttribute("row") ProfileRequest Id, BindingResult result,
             WebRequest request, Errors errors, Principal principal, RedirectAttributes attributes) {
-        ProfileRequest profile = manager.getProfilebRequestByRId(Id.getrId());
+        ProfileRequest profile = managerService.getProfilebRequestByRId(Id.getrId());
         String Address = profile.getAddress();
         Date DoB = profile.getDateOfBirth();
         String Ph = profile.getPhoneNumber();
@@ -127,9 +128,9 @@ public class SystemManagerController implements Constants {
         user.setPhoneNumber(Ph);
         user.setSecurityAnswer(profile.getSercurityAnswer());
         user.setSecurityQuestion(profile.getSecurityQuestion());
-        manager.saveUser(user);
+        managerService.saveUser(user);
 
-        String status = manager.approveProfileRequest(profile);
+        String status = managerService.approveProfileRequest(profile);
 
         attributes.addFlashAttribute("message", new Message(status, "Action Completed"));
         attributes.addFlashAttribute("role", "manager");
@@ -137,13 +138,13 @@ public class SystemManagerController implements Constants {
     }
 
     @RequestMapping(value = "/manager/getUserByEmail", method = RequestMethod.GET)
-    public ModelAndView getuserEmail() {
+    public ModelAndView getUserEmail() {
         ModelAndView modelAndView = new ModelAndView("/manager/viewUserByEmailForm", "form", new ViewByEmailForm());
         return modelAndView;
     }
 
     @RequestMapping(value = "/manager/myaccount", method = RequestMethod.GET)
-    public ModelAndView getmanagerhome(Principal principal) {
+    public ModelAndView getManagerHome(Principal principal) {
         ModelAndView mv = new ModelAndView();
         User loggedInUser = userService.getUserFromSession(principal);
         String Username = loggedInUser.getUsername();
@@ -153,7 +154,7 @@ public class SystemManagerController implements Constants {
     }
 
     @RequestMapping(value = "/manager/approvetransaction", method = RequestMethod.POST)
-    public String approvetransaction(@ModelAttribute("row") Transaction txn, BindingResult result, WebRequest request,
+    public String approveTransaction(@ModelAttribute("row") Transaction txn, BindingResult result, WebRequest request,
             Errors errors, Principal principal, RedirectAttributes attributes) {
         Transaction transaction = transactionService.getTransactionsById(txn.getTransactionId());
         String serviceStatus = transactionService.executeTransaction(transaction);
@@ -237,12 +238,8 @@ public class SystemManagerController implements Constants {
 
     }
 
-    private String getAppUrl(HttpServletRequest request) {
-        return request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort();
-    }
-
     @RequestMapping(value = "/manager/viewUserByEmailForm", method = RequestMethod.POST)
-    public ModelAndView getuser_byemail(final ModelAndView model, @ModelAttribute("form") @Valid ViewByEmailForm form,
+    public ModelAndView getUserByEmail(final ModelAndView model, @ModelAttribute("form") @Valid ViewByEmailForm form,
             BindingResult result, Errors errors, Principal principal, RedirectAttributes attributes) {
 
         User user = null;
@@ -257,7 +254,7 @@ public class SystemManagerController implements Constants {
 
         if (userService.emailExist(form.getEmail())) {
             try {
-                user = manager.viewUserByEmail(form.getEmail());
+                user = managerService.viewUserByEmail(form.getEmail());
             } catch (Exception e) {
                 status = "error";
                 message = String.format("Message: %s", e.getMessage());
@@ -285,8 +282,8 @@ public class SystemManagerController implements Constants {
     }
 
     @RequestMapping(value = "/manager/update", method = RequestMethod.GET)
-    public ModelAndView customerAndMerchantDetails() {
-        ModelAndView mv = new ModelAndView("/manager/update");
+    public ModelAndView getCustomerAndMerchantDetails() {
+        ModelAndView mv = new ModelAndView("/manager/viewUsers");
         List<User> customers = userService.getCustomers();
         List<User> merchants = userService.getMerchants();
         List<User> newList = new ArrayList<User>(customers);
@@ -295,6 +292,46 @@ public class SystemManagerController implements Constants {
         form.setUsers(newList);
         mv.addObject("form", form);
         return mv;
+    }
+
+    @RequestMapping(value = "/manager/update", method = RequestMethod.POST)
+    public String updateCustomerAndMerchantDetails(@Valid @ModelAttribute("user") EmployeeProfileUpdateForm updatedUser,
+            BindingResult result, RedirectAttributes attributes) {
+
+        if (result.hasErrors()) {
+            attributes.addFlashAttribute("message", new Message("error",
+                    "Update details incorrect [Phone# should be 10 digits, and DoB in MM/dd/yyyy format]"));
+            return "redirect:/manager/update";
+        }
+
+        String status, message;
+        User newUser = new User();
+        newUser.setUsername(updatedUser.getUsername());
+        newUser.setAddress(updatedUser.getAddress());
+        newUser.setDateOfBirth(updatedUser.getDateOfBirth());
+        newUser.setPhoneNumber(updatedUser.getPhoneNumber());
+
+        String serviceStatus = userService.updateUser(updatedUser.getId(), newUser);
+
+        switch (serviceStatus) {
+
+        case SUCCESS:
+            status = "success";
+            message = "Employee details have been updated";
+            break;
+        case ERROR:
+        default:
+            status = "error";
+            message = "Oops, something went wrong. Please try again!";
+        }
+
+        attributes.addFlashAttribute("message", new Message(status, message));
+
+        String logMessage = String.format("[Action=%s, Method=%s, Role=%s][Status=%s][Message=%s]", "Update details",
+                "POST", "manager", status, serviceStatus);
+        LOGGER.info(logMessage);
+
+        return "redirect:/manager/update";
     }
 
     @RequestMapping(value = "/manager/delete", method = RequestMethod.POST)
@@ -307,18 +344,6 @@ public class SystemManagerController implements Constants {
         attributes.addFlashAttribute("message", message);
         String logMessage = String.format("[Action=%s, Method=%s, Role=%s][Status=%s][Message=%s]", "deleteUsers",
                 "POST", "manager", "success", message);
-        LOGGER.info(logMessage);
-        return "redirect:/manager/update";
-    }
-
-    @RequestMapping(value = "/manager/update", method = RequestMethod.POST)
-    public String updateustomerAndMerchantDetails(@ModelAttribute("user") User updatedUser, BindingResult result,
-            RedirectAttributes attributes) {
-        userService.updateUser(updatedUser.getId(), updatedUser);
-        String msg = "Updated successfully";
-        attributes.addFlashAttribute("message", new Message("success", msg));
-        String logMessage = String.format("[Action=%s, Method=%s, Role=%s][Status=%s][Message=%s]", "update", "POST",
-                "manager", "success", msg);
         LOGGER.info(logMessage);
         return "redirect:/manager/update";
     }
@@ -353,4 +378,7 @@ public class SystemManagerController implements Constants {
         return modelAndView;
     }
 
+    private String getAppUrl(HttpServletRequest request) {
+        return request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort();
+    }
 }
