@@ -102,6 +102,19 @@ public class SignupController {
             LOGGER.info(logMessage);
             return mv;
         }
+        Role role = form.getRole();
+
+        if (!role.getName().equalsIgnoreCase("ROLE_CUSTOMER") && !role.getName().equalsIgnoreCase("ROLE_MERCHANT")) {
+            mv.addObject("form", form);
+            mv.addObject("errors", resultForm.getAllErrors());
+            mv.addObject("message", new Message("error", "You can only be a customer or a merchant"));
+
+            String logMessage = String.format(
+                    "Registration for user account failed with information: [Email=%s, Message=%s]", form.getEmail(),
+                    "You can only be a customer or a merchant");
+            LOGGER.info(logMessage);
+            return mv;
+        }
 
         User newUser = new User();
         newUser.setUsername(form.getUsername());
@@ -114,7 +127,7 @@ public class SignupController {
         newUser.setSecurityQuestion(form.getSecurityQuestion());
         newUser.setSecurityAnswer(form.getSecurityAnswer());
         newUser.setTypeOfAccount(form.getTypeOfAccount());
-        Role role = form.getRole();
+
         String logMessage = String.format("Registering user account with information: {%s, %s}", newUser, role);
         LOGGER.info(logMessage);
 
