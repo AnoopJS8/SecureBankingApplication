@@ -27,6 +27,9 @@ public class OneTimePassword {
 
     private String value;
 
+    private Date expiryDate;
+    private boolean verified;
+
     public String getValue() {
         return value;
     }
@@ -50,9 +53,6 @@ public class OneTimePassword {
     public void setResourceId(String resourceId) {
         this.resourceId = resourceId;
     }
-
-    private Date expiryDate;
-    private boolean verified;
 
     public OneTimePassword() {
         super();

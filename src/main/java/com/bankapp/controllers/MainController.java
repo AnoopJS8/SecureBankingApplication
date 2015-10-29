@@ -243,8 +243,8 @@ public class MainController implements Constants {
         boolean checkPassword = userService.verifyPassword(loggedInUser, user.getPassword());
         if (checkPassword) {
             loggedInUser.setNewpassword(user.getNewpassword());
-            userService.saveRegisteredUser(loggedInUser);
             try {
+                userService.saveUser(loggedInUser);
                 eventPublisher.publishEvent(new OnOtpEvent(loggedInUser.getId(), R_USER));
             } catch (Exception e) {
                 String message = String.format("Action: %s, Message: %s", "change password", e.getMessage());

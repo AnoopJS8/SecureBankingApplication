@@ -2,7 +2,6 @@ package com.bankapp.models;
 
 import java.util.Date;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -80,11 +79,11 @@ public class User {
 
     private String typeOfAccount;
 
-    @OneToOne(cascade = CascadeType.REMOVE)
+    @OneToOne
     @JoinColumn(name = "accId")
     Account account;
 
-    @OneToOne(cascade = CascadeType.REMOVE)
+    @OneToOne
     ProfileRequest request;
 
     @Lob

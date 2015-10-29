@@ -2,10 +2,10 @@ package com.bankapp.models;
 
 import java.util.Date;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
@@ -24,7 +24,8 @@ public class Account {
     @GenericGenerator(name = "uuid", strategy = "uuid2")
     private String accId;
 
-    @OneToOne(cascade = CascadeType.REMOVE)
+    @OneToOne
+    @JoinColumn(name = "user_id")
     private User user;
 
     @NotNull

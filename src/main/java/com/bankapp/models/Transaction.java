@@ -26,12 +26,12 @@ public class Transaction {
     private String transactionId;
 
     @ManyToOne
-    @JoinColumn(name = "fromAccId", nullable = false)
+    @JoinColumn(name = "from_acc_id", nullable = false)
     @NotNull
     private Account fromAccount;
 
     @ManyToOne
-    @JoinColumn(name = "toAccId", nullable = false)
+    @JoinColumn(name = "to_acc_id", nullable = false)
     @NotNull
     private Account toAccount;
 

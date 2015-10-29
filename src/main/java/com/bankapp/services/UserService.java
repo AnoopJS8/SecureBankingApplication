@@ -18,12 +18,14 @@ import com.bankapp.encryption.RSAKeyPair;
 import com.bankapp.exceptions.EmailExistsException;
 import com.bankapp.models.Account;
 import com.bankapp.models.OneTimePassword;
+import com.bankapp.models.ProfileRequest;
 import com.bankapp.models.Role;
 import com.bankapp.models.Transaction;
 import com.bankapp.models.User;
 import com.bankapp.models.VerificationToken;
 import com.bankapp.repositories.AccountRepository;
 import com.bankapp.repositories.OTPRepository;
+import com.bankapp.repositories.ProfileRequestRepository;
 import com.bankapp.repositories.RoleRepository;
 import com.bankapp.repositories.TransactionRepository;
 import com.bankapp.repositories.UserRepository;
@@ -54,6 +56,9 @@ public class UserService implements IUserService, Constants {
 
     @Autowired
     private RoleRepository roleRepository;
+
+    @Autowired
+    private ProfileRequestRepository requestRepository;
 
     @Autowired
     private VerificationTokenRepository tokenRepository;
@@ -167,6 +172,20 @@ public class UserService implements IUserService, Constants {
     @Override
     public VerificationToken getVerificationToken(String VerificationToken) {
         return tokenRepository.findByToken(VerificationToken);
+    }
+
+    @Override
+    public String saveUser(User user) {
+        try {
+            userRepository.save(user);
+            return SUCCESS;
+        } catch (Exception e) {
+            String logMessageFormat = "[Action=%s][Status=%s][User=%s, ErrorMsg=%s]";
+            String logMessage = String.format(logMessageFormat, "saveUser", ERROR, user.getId(), e.getMessage());
+            logger.info(logMessage);
+
+            return ERR_UNHANDLED;
+        }
     }
 
     @Override
@@ -285,9 +304,13 @@ public class UserService implements IUserService, Constants {
         List<Transaction> transactions = transactionRepository
                 .findByFromAccountOrToAccountOrderByCreatedDesc(userAccount, userAccount);
         VerificationToken token = tokenRepository.findByUser(user);
+        ProfileRequest request = requestRepository.findByUser(user);
 
         if (token != null) {
             tokenRepository.delete(token);
+        }
+        if (request != null) {
+            requestRepository.delete(request);
         }
         if (transactions != null) {
             transactionRepository.delete(transactions);
@@ -432,9 +455,13 @@ public class UserService implements IUserService, Constants {
                 List<Transaction> transactions = transactionRepository
                         .findByFromAccountOrToAccountOrderByCreatedDesc(userAccount, userAccount);
                 VerificationToken token = tokenRepository.findByUser(user);
+                ProfileRequest request = requestRepository.findByUser(user);
 
                 if (token != null) {
                     tokenRepository.delete(token);
+                }
+                if (request != null) {
+                    requestRepository.delete(request);
                 }
                 if (transactions != null) {
                     transactionRepository.delete(transactions);

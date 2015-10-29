@@ -23,7 +23,7 @@ public class ProfileRequest {
     private String rId;
 
     @OneToOne
-    @JoinColumn(name = "userId")
+    @JoinColumn(name = "user_id")
     private User user;
 
     private String address;
@@ -37,7 +37,7 @@ public class ProfileRequest {
     private String sercurityAnswer;
 
     @ManyToOne
-    @JoinColumn(name = "roleId", nullable = false)
+    @JoinColumn(name = "role_id", nullable = false)
     private Role role;
 
     @NotNull

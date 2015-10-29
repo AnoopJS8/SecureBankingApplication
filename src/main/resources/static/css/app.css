@@ -22,3 +22,7 @@ form.hidden-form {
 .admin-profile .fa {
 	font-size: 90px;
 }
+
+.ui-keyboard {
+	background-color: black !important;
+}

@@ -17,23 +17,21 @@ public class PIIRequestService implements IPIIRequestService, Constants {
 
     @Autowired
     PIIRequestRepository piiRequestRepository;
-    
+
     @Autowired
     PIIRepository piiRepository;
-    
+
     @Autowired
-    IUserService IUserService;
+    IUserService userService;
 
     @Transactional
     @Override
     public String saveRequest(PiiRequest piiRequest) {
-        if(!IUserService.emailExist(piiRequest.getEmail()))
-        {
+        if (!userService.emailExist(piiRequest.getEmail())) {
             return ERR_EMAIL_NOT_EXISTS;
         }
         PersonalIdentificationInfo pii = piiRepository.findByEmail(piiRequest.getEmail());
-        System.out.println(pii);
-        if(pii!=null){
+        if (pii != null) {
             System.out.println(pii.getEmail());
             piiRequest.setStatus(S_PII_REQUEST_PENDING);
             try {
@@ -42,10 +40,10 @@ public class PIIRequestService implements IPIIRequestService, Constants {
             } catch (Exception e) {
                 return ERROR;
             }
-        }else{
+        } else {
             return ERR_PII_NOT_ADDED;
         }
-        
+
     }
 
     @Transactional
@@ -54,35 +52,37 @@ public class PIIRequestService implements IPIIRequestService, Constants {
         List<PiiRequest> listPiiRequest = piiRequestRepository.findByStatus(S_PII_REQUEST_PENDING);
         return listPiiRequest;
     }
-    
+
     @Transactional
     @Override
     public String authorize(PiiRequest piiRequest) {
-        try{
+        try {
             PiiRequest request = piiRequestRepository.findOne(piiRequest.getPiiRId());
-            PersonalIdentificationInfo pii = piiRepository.findByEmail(request.getEmail()) ;
-            pii.setStatus(S_PII_AUTHORIZED); //Saving for the pii information so the admin can see it
-            request.setStatus(S_PII_REQUEST_DONE); 
+            PersonalIdentificationInfo pii = piiRepository.findByEmail(request.getEmail());
+            pii.setStatus(S_PII_AUTHORIZED); // Saving for the pii information
+                                             // so the admin can see it
+            request.setStatus(S_PII_REQUEST_DONE);
             piiRequestRepository.save(request);
-        }catch(Exception e){
+        } catch (Exception e) {
             return ERROR;
         }
-       
+
         return SUCCESS;
     }
 
     @Override
     public String decline(PiiRequest piiRequest) {
-        try{
+        try {
             PiiRequest request = piiRequestRepository.findOne(piiRequest.getPiiRId());
-            PersonalIdentificationInfo pii = piiRepository.findByEmail(request.getEmail()) ;
-            pii.setStatus(S_PII_DECLINED); //Saving for the pii information so the admin can see it
-            request.setStatus(S_PII_REQUEST_DONE); 
+            PersonalIdentificationInfo pii = piiRepository.findByEmail(request.getEmail());
+            pii.setStatus(S_PII_DECLINED); // Saving for the pii information so
+                                           // the admin can see it
+            request.setStatus(S_PII_REQUEST_DONE);
             piiRequestRepository.save(request);
-        }catch(Exception e){
+        } catch (Exception e) {
             return ERROR;
         }
-       
+
         return SUCCESS;
     }
 }

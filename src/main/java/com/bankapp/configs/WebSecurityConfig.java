@@ -59,9 +59,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	            .sessionFixation()
 	            .migrateSession()
 	            .maximumSessions(1)
-	            .expiredUrl("/")
+	            .expiredUrl("/?error=expired")
 	            .and()
-	            .invalidSessionUrl("/?error=expired");
+	            .invalidSessionUrl("/");
 		
 		http.addFilterBefore(new CrossScriptingFilter(), BasicAuthenticationFilter.class);
 			     
@@ -74,7 +74,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Bean
 	public DaoAuthenticationProvider authProvider() {
-		final DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
+		final DaoAuthenticationProvider authProvider = new CustomDaoAuthenticationProvider();
 		authProvider.setUserDetailsService(userDetailsService);
 		authProvider.setPasswordEncoder(encoder());
 		return authProvider;

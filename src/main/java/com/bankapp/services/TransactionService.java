@@ -5,6 +5,7 @@ import java.security.GeneralSecurityException;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -42,14 +43,21 @@ public class TransactionService implements ITransactionService, Constants {
     @Transactional
     @Override
     public List<Transaction> getTransactionsByAccount(Account fromAccount, Account toAccount) {
-        List<Transaction> transactions = transactionRepository.findByFromAccountOrToAccountOrderByCreatedDesc(fromAccount, toAccount);
-        transactions = transactionRepository.findByStatusNot("D");
+        List<Transaction> transactions = transactionRepository
+                .findByFromAccountOrToAccountOrderByCreatedDesc(fromAccount, toAccount);
+        List<Transaction> transactionIds = new ArrayList<Transaction>();
+        for (int i = 0; i < transactions.size(); i++) {
+            if (!transactions.get(i).getStatus().equals("D")) {
+                transactionIds.add(transactions.get(i));
+            }
+
+        }
         String logMessageFormat = "[Action=%s][FromAccount=%s, ToAccount=%s]";
         String logMessage = String.format(logMessageFormat, "getTransactionsByAccount", fromAccount.getAccId(),
                 toAccount.getAccId());
         logger.info(logMessage);
 
-        return transactions;
+        return transactionIds;
     }
 
     @Transactional
@@ -630,7 +638,7 @@ public class TransactionService implements ITransactionService, Constants {
                 logger.info(logMessage);
 
                 return ERR_LESS_BALANCE;
-            }else if(transaction.getStatus().equals(S_CUSTOMER_VERIFIED)){
+            } else if (transaction.getStatus().equals(S_CUSTOMER_VERIFIED)) {
                 String message = accountService.updateBalance(transaction);
                 transaction.setStatus(S_VERIFIED);
                 transactionRepository.save(transaction);
@@ -640,7 +648,7 @@ public class TransactionService implements ITransactionService, Constants {
                         transaction.getTransactionId());
                 logger.info(logMessage);
                 return message;
-                
+
             } else if (transaction.getAmount() < 0 || transaction.getAmount() > 100000) {
                 return ERR_TRANS_LIMIT;
             } else {

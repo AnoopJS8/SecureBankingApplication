@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
 <head th:include="fragment/common :: headerFragment" />
-<link th:href="@{/css/keyboard.css}" rel="stylesheet" media="screen" />
+<link th:href="@{/css/keyboard-basic.min.css}" rel="stylesheet" media="screen" />
 <body>
 	<div class="container">
 		<div th:replace="fragment/common :: top-nav(home)"></div>
@@ -18,8 +18,8 @@
 					Customer Login <small><a th:href="@{/signup}">New User?</a></small>
 				</h3>
 				<hr />
-				<div th:if="${param.error != null} and ${param.error[0] == 'expired'}" class="alert alert-danger"
-					role="alert">
+				<div th:if="${param.error != null} and ${param.error[0] == 'expired'}"
+					class="alert alert-danger" role="alert">
 					<p>Your session has expired, please login again</p>
 				</div>
 				<div th:if="${param.logout}">You have been logged out.</div>
@@ -38,15 +38,15 @@
 					<div class="form-group">
 						<label class="control-label col-sm-5" for="email">Email</label>
 						<div class="col-sm-7">
-							<input id="email" type="email" name="m_email" class="form-control"
-								placeholder="Email" />
+							<input id="email" type="email" name="m_email" placeholder="Email"
+								class="form-control" />
 						</div>
 					</div>
 					<div class="form-group">
 						<label class="control-label col-sm-5" for="password">Password</label>
 						<div class="col-sm-7">
 							<input id="password" type="password" name="m_password"
-								class="form-control keyboardInput" placeholder="Password" />
+								class="form-control" placeholder="Password" />
 						</div>
 					</div>
 					<div class="form-group">
@@ -95,6 +95,6 @@
 	</div>
 	<script th:src="@{/webjars/jquery-validation/1.14.0/jquery.validate.min.js}"></script>
 	<script type="text/javascript" th:src="@{/js/login.js}"></script>
-	<script type="text/javascript" th:src="@{/js/keyboard.js}"></script>
+	<script type="text/javascript" th:src="@{/js/jquery.keyboard.min.js}"></script>
 </body>
 </html>

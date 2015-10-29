@@ -20,4 +20,10 @@ $(document).ready(function() {
 			form.submit();
 		}
 	});
+	
+
+	$('#password').keyboard({
+		  usePreview: false,
+		  appendLocally: true
+	});
 });

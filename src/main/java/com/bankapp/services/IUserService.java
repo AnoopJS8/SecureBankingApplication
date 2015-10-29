@@ -24,6 +24,8 @@ public interface IUserService {
 
     public boolean hasMissingFields(Principal principal);
 
+    String saveUser(User user);
+
     void saveRegisteredUser(User user);
 
     void createVerificationToken(User user, String token);
