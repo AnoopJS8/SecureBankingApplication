@@ -35,6 +35,9 @@ public class Account {
     private Date created;
     private Date updated;
 
+    @NotNull
+    private String typeOfAccount;
+
     @OneToMany(cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<Transaction> transactions = new ArrayList<Transaction>();
 
@@ -55,11 +58,12 @@ public class Account {
         super();
     }
 
-    public Account(final User user, final Double balance, final Double criticalLimit) {
+    public Account(final User user, final String typeOfAccount, final Double balance, final Double criticalLimit) {
         super();
         this.user = user;
         this.balance = balance;
         this.criticalLimit = criticalLimit;
+        this.typeOfAccount = typeOfAccount;
     }
 
     public String getAccId() {
@@ -123,6 +127,14 @@ public class Account {
         final String value = String.format("Account Object [accountId=%s, user=%s, balance=%s, criticalLimit=%s]",
                 accId, user.getId(), balance, criticalLimit);
         return value;
+    }
+
+    public String getTypeOfAccount() {
+        return typeOfAccount;
+    }
+
+    public void setTypeOfAccount(String typeOfAccount) {
+        this.typeOfAccount = typeOfAccount;
     }
 
 }

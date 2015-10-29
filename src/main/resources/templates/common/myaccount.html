@@ -19,16 +19,18 @@
 			<thead>
 				<tr class="info">
 					<th class="col-sm-3">Account Number</th>
-					<th class="col-sm-3">Balance</th>
-					<th class="col-sm-3">Created Date</th>
+					<th class="col-sm-2">Account Type</th>
+					<th class="col-sm-2">Balance</th>
+					<th class="col-sm-2">Created Date</th>
 					<th class="col-sm-3">Critical Limit</th>
 				</tr>
 			</thead>
 			<tbody>
 				<tr style="cursor: pointer" th:each="account : ${accounts}">
 					<td class="col-sm-3"><span th:text="${account.accId}"></span></td>
-					<td class="col-sm-3"><span th:text="${account.balance}"></span></td>
-					<td class="col-sm-3"><span th:text="${account.created}"></span></td>
+					<td class="col-sm-2"><span th:text="${account.typeOfAccount}"></span></td>
+					<td class="col-sm-2"><span th:text="${account.balance}"></span></td>
+					<td class="col-sm-2"><span th:text="${account.created}"></span></td>
 					<td class="col-sm-3">
 						<div class="critical-limit">
 							<span th:text="${account.criticalLimit}"></span> <a

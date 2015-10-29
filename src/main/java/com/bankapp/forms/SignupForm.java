@@ -25,7 +25,7 @@ public class SignupForm extends RecaptchaForm {
 
     private String address;
 
-    @Pattern(regexp="\\d{10}", message = "Please enter a valid 10 digit phone number")
+    @Pattern(regexp = "\\d{10}", message = "Please enter a valid 10 digit phone number")
     private String phoneNumber;
 
     @DateTimeFormat(pattern = "MM/dd/yyyy")
@@ -40,6 +40,8 @@ public class SignupForm extends RecaptchaForm {
     private String securityAnswer;
 
     Role role;
+
+    private String typeOfAccount;
 
     public SignupForm() {
         this.role = new Role();
@@ -123,6 +125,14 @@ public class SignupForm extends RecaptchaForm {
 
     public void setRole(Role role) {
         this.role = role;
+    }
+
+    public String getTypeOfAccount() {
+        return typeOfAccount;
+    }
+
+    public void setTypeOfAccount(String typeOfAccount) {
+        this.typeOfAccount = typeOfAccount;
     }
 
 }

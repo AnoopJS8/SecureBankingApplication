@@ -77,6 +77,8 @@ public class User {
 
     private Date lastLoginDate;
 
+    private String typeOfAccount;
+
     @OneToOne(cascade = CascadeType.REMOVE, orphanRemoval = true)
     Account account;
 
@@ -293,6 +295,14 @@ public class User {
 
     public void setRequest(ProfileRequest request) {
         this.request = request;
+    }
+
+    public String getTypeOfAccount() {
+        return typeOfAccount;
+    }
+
+    public void setTypeOfAccount(String typeOfAccount) {
+        this.typeOfAccount = typeOfAccount;
     }
 
     @Override
