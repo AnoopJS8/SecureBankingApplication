@@ -395,7 +395,7 @@ public class AdminController implements Constants {
                     String line = in.nextLine();
                     if ((line.contains("WARN") || line.contains("ERROR") || line.contains("INFO"))) {
                         count++;
-                        l1.add(line);
+                        l1.add(0, line);
                     }
                 }
             } catch (FileNotFoundException e) {
@@ -403,7 +403,6 @@ public class AdminController implements Constants {
                         "admin view log", "GET", "admin", "error", "View Logs");
                 LOGGER.info(logMessage);
             }
-
             mv.addObject("listlogs", l1);
             return mv;
         } catch (Exception e) {

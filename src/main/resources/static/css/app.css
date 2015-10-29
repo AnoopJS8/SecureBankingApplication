@@ -9,6 +9,7 @@ footer.footer {
 form .error {
 	border-color: #a94442;
 }
+
 form label.error {
 	color: #a94442;
 }
@@ -16,13 +17,20 @@ form label.error {
 form.hidden-form {
 	display: none;
 }
+
 .admin-profile {
 	font-size: 28px;
 }
+
 .admin-profile .fa {
 	font-size: 90px;
 }
 
 .ui-keyboard {
 	background-color: black !important;
+}
+
+table {
+	word-wrap: break-word;
+	table-layout: fixed;
 }
