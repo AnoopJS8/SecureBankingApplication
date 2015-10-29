@@ -405,8 +405,8 @@ public class CommonController implements Constants {
 
                 for (Map.Entry<String, Transaction> entry : statementData.entrySet()) {
                     table.addCell(entry.getValue().getTransferDate().toString());
-                    table.addCell(entry.getValue().getFromAccount().getUser().getUsername());
-                    table.addCell(entry.getValue().getToAccount().getUser().getUsername());
+                    table.addCell(entry.getValue().getFromAccount().getUser().getEmail());
+                    table.addCell(entry.getValue().getToAccount().getUser().getEmail());
                     table.addCell(entry.getValue().getAmount().toString());
                 }
 

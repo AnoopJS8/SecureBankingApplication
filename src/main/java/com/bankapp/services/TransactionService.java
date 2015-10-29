@@ -601,7 +601,15 @@ public class TransactionService implements ITransactionService, Constants {
 
             transaction.getToAccount().setBalance(amount);
             transaction.setTransferDate(new Date());
-            transaction.setComment("Bank " + status + " the amount");
+            String msgStatus;
+            if(status.equals(S_CREDIT_VERIFIED)){
+                msgStatus = "Credited";
+            }else if(status.equals(S_DEBIT_VERIFIED)){
+                msgStatus = "Debited";
+            }else{
+                msgStatus="";
+            }
+            transaction.setComment("Bank " + msgStatus + " the amount");
             transaction.setStatus(status);
             accountService.saveAccount(transaction.getToAccount());
             transactionRepository.save(transaction);
