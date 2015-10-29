@@ -42,9 +42,8 @@ public class TransactionService implements ITransactionService, Constants {
     @Transactional
     @Override
     public List<Transaction> getTransactionsByAccount(Account fromAccount, Account toAccount) {
-        List<Transaction> transactions = transactionRepository
-                .findByFromAccountOrToAccountOrderByCreatedDesc(fromAccount, toAccount);
-
+        List<Transaction> transactions = transactionRepository.findByFromAccountOrToAccountOrderByCreatedDesc(fromAccount, toAccount);
+        transactions = transactionRepository.findByStatusNot("D");
         String logMessageFormat = "[Action=%s][FromAccount=%s, ToAccount=%s]";
         String logMessage = String.format(logMessageFormat, "getTransactionsByAccount", fromAccount.getAccId(),
                 toAccount.getAccId());
@@ -518,8 +517,7 @@ public class TransactionService implements ITransactionService, Constants {
             transaction.setStatus(status);
 
             if (status.equals(S_CUSTOMER_VERIFIED)) {
-                String msg = saveTransaction(transaction.getFromAccount().getUser().getEmail(),
-                        transaction.getToAccount().getUser().getEmail(), transaction);
+                String msg = executeTransaction(transaction);
 
                 String logMessageFormat = "[Action=%s][Status=%s][ID=%s, Status=%s, Transaction=%s]";
                 String logMessage = String.format(logMessageFormat, "actionOnRequest", msg, id, status,
@@ -632,6 +630,17 @@ public class TransactionService implements ITransactionService, Constants {
                 logger.info(logMessage);
 
                 return ERR_LESS_BALANCE;
+            }else if(transaction.getStatus().equals(S_CUSTOMER_VERIFIED)){
+                String message = accountService.updateBalance(transaction);
+                transaction.setStatus(S_VERIFIED);
+                transactionRepository.save(transaction);
+
+                String logMessageFormat = "[Action=%s][Status=%s][Transaction=%s]";
+                String logMessage = String.format(logMessageFormat, "customer verified", message,
+                        transaction.getTransactionId());
+                logger.info(logMessage);
+                return message;
+                
             } else if (transaction.getAmount() < 0 || transaction.getAmount() > 100000) {
                 return ERR_TRANS_LIMIT;
             } else {

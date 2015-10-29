@@ -20,12 +20,21 @@ public class PIIRequestService implements IPIIRequestService, Constants {
     
     @Autowired
     PIIRepository piiRepository;
+    
+    @Autowired
+    IUserService IUserService;
 
     @Transactional
     @Override
     public String saveRequest(PiiRequest piiRequest) {
+        if(!IUserService.emailExist(piiRequest.getEmail()))
+        {
+            return ERR_EMAIL_NOT_EXISTS;
+        }
         PersonalIdentificationInfo pii = piiRepository.findByEmail(piiRequest.getEmail());
+        System.out.println(pii);
         if(pii!=null){
+            System.out.println(pii.getEmail());
             piiRequest.setStatus(S_PII_REQUEST_PENDING);
             try {
                 piiRequestRepository.save(piiRequest);
@@ -34,7 +43,7 @@ public class PIIRequestService implements IPIIRequestService, Constants {
                 return ERROR;
             }
         }else{
-            return ERR_EMAIL_NOT_EXISTS;
+            return ERR_PII_NOT_ADDED;
         }
         
     }

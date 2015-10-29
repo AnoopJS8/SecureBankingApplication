@@ -2,6 +2,7 @@ package com.bankapp.repositories;
 
 import java.util.List;
 
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 
 import com.bankapp.models.Account;
@@ -20,5 +21,7 @@ public interface TransactionRepository extends CrudRepository<Transaction, Strin
     List<Transaction> findByToAccount(Account toAccount);
 
     List<Transaction> findByStatus(String status);
+    
+    List<Transaction> findByStatusNot(String status);
 
 }
