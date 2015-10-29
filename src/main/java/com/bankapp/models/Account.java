@@ -1,15 +1,11 @@
 package com.bankapp.models;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 import javax.persistence.CascadeType;
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
@@ -28,11 +24,10 @@ public class Account {
     @GenericGenerator(name = "uuid", strategy = "uuid2")
     private String accId;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.REMOVE)
     private User user;
 
     @NotNull
-    @Column(precision = 10, scale = 2)
     private Double balance;
     private Date created;
     private Date updated;
@@ -40,11 +35,7 @@ public class Account {
     @NotNull
     private String typeOfAccount;
 
-    @OneToMany(cascade = CascadeType.REMOVE, orphanRemoval = true)
-    private List<Transaction> transactions = new ArrayList<Transaction>();
-
     @Min(value = 0)
-    @Column(precision = 10, scale = 2)
     private Double criticalLimit;
 
     @PrePersist
@@ -115,14 +106,6 @@ public class Account {
 
     public void setCriticalLimit(Double criticalLimit) {
         this.criticalLimit = criticalLimit;
-    }
-
-    public List<Transaction> getTransactions() {
-        return transactions;
-    }
-
-    public void setTransactions(List<Transaction> transactions) {
-        this.transactions = transactions;
     }
 
     @Override
