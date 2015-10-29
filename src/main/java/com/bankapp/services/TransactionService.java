@@ -506,9 +506,9 @@ public class TransactionService implements ITransactionService, Constants {
     }
 
     @Override
-    public List<Transaction> getMerchantRequests(String status) {
-        List<Transaction> transactions = transactionRepository.findByStatus(status);
-
+    public List<Transaction> getMerchantRequests(User user, String status) {
+        Account account = accountService.getAccountByUser(user);
+        List<Transaction> transactions = transactionRepository.findByStatusAndFromAccount(status, account);
         String logMessageFormat = "[Action=%s][Status=%s][Status=%s, Transactions=%s]";
         String logMessage = String.format(logMessageFormat, "getMerchantRequests", SUCCESS, status,
                 transactions.size());
@@ -516,7 +516,7 @@ public class TransactionService implements ITransactionService, Constants {
 
         return transactions;
     }
-
+    
     @Transactional
     @Override
     public String actionOnRequest(String id, String status) {

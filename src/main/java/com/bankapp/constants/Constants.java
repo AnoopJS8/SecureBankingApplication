@@ -7,6 +7,7 @@ public interface Constants {
 	public String CRITICAL = "Its a critical transaction, so it will be handled by our employees shortly";
 	public String PII_EXISTS = "Pii already added";
 	
+	public String ERR_ACCOUNT_EXISTS = "An account exists with this email";
 	public String ERR_LESS_BALANCE = "You are low on balance, the transaction cannot go through.";
 	public String ERR_ACCOUNT_NOT_EXISTS = "Account does not exist!";
 	public String ERR_SAME_USER = "Same user transfer is not valid";

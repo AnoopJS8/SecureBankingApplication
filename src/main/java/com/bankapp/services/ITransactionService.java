@@ -20,7 +20,7 @@ public interface ITransactionService {
 
     public String askCustomerPayment(String fromEmail, String toEmail, Transaction transaction);
 
-    public List<Transaction> getMerchantRequests(String status);
+    public List<Transaction> getMerchantRequests(User user, String status);
 
     public String actionOnRequest(String id, String status);
 

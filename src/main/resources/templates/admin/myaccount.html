@@ -6,9 +6,10 @@
 	<div class="container">
 		<div th:replace="fragment/common :: top-nav(admin)"></div>
 		<div th:include="fragment/admin :: admin-header"></div>
-		<div class="page-header"> 
+		<div class="page-header">
 			<h3>Admin Dashboard</h3>
 		</div>
+		<div th:replace="fragment/common :: message"></div>
 		<div class="admin-profile row">
 			<div class="col-md-1 text-right">
 				<i class="fa fa-user"></i>
@@ -22,7 +23,6 @@
 				</p>
 			</div>
 		</div>
-		<div th:replace="fragment/common :: message"></div>
 		<div th:replace="fragment/common :: footer"></div>
 	</div>
 </body>

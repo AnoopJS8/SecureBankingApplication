@@ -1,5 +1,6 @@
 package com.bankapp.controllers;
 
+import java.security.Principal;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -16,7 +17,9 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.bankapp.constants.Constants;
 import com.bankapp.constants.Message;
 import com.bankapp.models.Transaction;
+import com.bankapp.models.User;
 import com.bankapp.services.ITransactionService;
+import com.bankapp.services.IUserService;
 
 @Controller
 @Secured("ROLE_CUSTOMER")
@@ -26,12 +29,15 @@ public class CustomerController implements Constants {
 
     @Autowired
     private ITransactionService transactionService;
+    
+    @Autowired IUserService userService;
 
     @RequestMapping(value = "/customer/authorizemerchant", method = RequestMethod.GET)
-    public ModelAndView authorizemerchant() {
+    public ModelAndView authorizemerchant(Principal principal) {
         ModelAndView mv = new ModelAndView("/customer/authorizemerchant");
         mv.addObject("role", "customer");
-        List<Transaction> transactions = transactionService.getMerchantRequests(S_PENDING_CUSTOMER_VERIFICATION);
+        User user = userService.getUserFromSession(principal);
+        List<Transaction> transactions = transactionService.getMerchantRequests(user, S_PENDING_CUSTOMER_VERIFICATION);
         mv.addObject("transactions", transactions);
         String logMessage = String.format("[Action=%s, Method=%s, Role=%s][Status=%s][Message=%s]", "authorize merchant",
                 "GET", "Customer", "success", "view authorized merchant");

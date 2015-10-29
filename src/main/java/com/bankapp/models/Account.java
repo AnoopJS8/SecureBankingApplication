@@ -2,6 +2,7 @@ package com.bankapp.models;
 
 import java.util.Date;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -37,6 +38,7 @@ public class Account {
     private String typeOfAccount;
 
     @Min(value = 0)
+    @Column(precision = 10, scale = 2)
     private Double criticalLimit;
 
     @PrePersist

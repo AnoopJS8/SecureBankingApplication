@@ -196,7 +196,7 @@ public class UserService implements IUserService, Constants {
             String publicKey = new String(Base64.encodeBase64(keyPair.getPublicKey()));
             String userName = user.getUsername();
             String recipientAddress = user.getEmail();
-            String subject = "My ASU Bank - Security Feature";
+            String subject = "My ASU Bank - " + userName + " - Important";
             String textBody = String.format("Dear %s, <br /><br />As a valued customer, we respect your privacy "
                     + "and ensure that your account is alwasy secured.<br /><br />"
                     + "Please download our transaction verifier, and use the below provided "
@@ -402,38 +402,44 @@ public class UserService implements IUserService, Constants {
     @Override
     public String addEmployee(User user, String roleName) throws EmailExistsException {
         try {
-            String temporaryPassword = OneTimePassword.generateOTP();
-            user.setPassword(passwordEncoder.encode(temporaryPassword));
-            user.setRole(roleRepository.findByName(roleName));
-            user.setEnabled(true);
-            if (!emailExist(user.getEmail()))
+            User newUser = userRepository.findByEmail(user.getEmail());
+            if (newUser != null) {
+                return ERR_ACCOUNT_EXISTS;
+            } else {
+
+                String temporaryPassword = OneTimePassword.generateOTP();
+                user.setPassword(passwordEncoder.encode(temporaryPassword));
+                user.setRole(roleRepository.findByName(roleName));
+                user.setEnabled(true);
                 userRepository.save(user);
-            else
-                return "EmailExits";
-            String userName = user.getUsername();
-            String recipientAddress = user.getEmail();
-            String subject = "My ASU Bank - New Account Creation";
-            String role = user.getRole().getName();
+                String userName = user.getUsername();
+                String recipientAddress = user.getEmail();
+                String subject = "My ASU Bank - New Account Creation";
+                String role = user.getRole().getName();
 
-            if (role.equalsIgnoreCase("ROLE_MANAGER"))
-                role = "MANAGER";
-            else if (role.equalsIgnoreCase("ROLE_ADMIN"))
-                role = "ADMIN";
-            else
-                role = "EMPLOYEE";
+                if (role.equalsIgnoreCase("ROLE_MANAGER"))
+                    role = "MANAGER";
+                else if (role.equalsIgnoreCase("ROLE_ADMIN"))
+                    role = "ADMIN";
+                else
+                    role = "EMPLOYEE";
 
-            String textBody = String
-                    .format("Dear %s, <br /><br />You are now registered as %s. Here is your temporary password : %s<br />"
-                            + "<br />Regards,<br />My ASU Bank", userName, role, temporaryPassword);
-            mailService.sendEmail(recipientAddress, subject, textBody);
+                String textBody = String
+                        .format("Dear %s, <br /><br />You are now registered as %s. Here is your temporary password : %s<br />"
+                                + "<br />Regards,<br />My ASU Bank", userName, role, temporaryPassword);
+                mailService.sendEmail(recipientAddress, subject, textBody);
+
+                String logMessageFormat = "[Action=%s][Status=%s][User=%s, Role=%s]";
+                String logMessage = String.format(logMessageFormat, "createUser", SUCCESS, user.getEmail(), roleName);
+                logger.info(logMessage);
+                return SUCCESS;
+            }
         } catch (Exception e) {
-            e.printStackTrace();
-            return "mailError";
+            String logMessageFormat = "[Action=%s][Status=%s][User=%s, Role=%s, ErrorMsg=%s]";
+            String logMessage = String.format(logMessageFormat, "createUser", SUCCESS, user.getEmail(), roleName, e.getMessage());
+            logger.error(logMessage);
+            return ERR_UNHANDLED;
         }
-        String logMessageFormat = "[Action=%s][Status=%s][User=%s, Role=%s]";
-        String logMessage = String.format(logMessageFormat, "updateUser", SUCCESS, user.getId(), roleName);
-        logger.info(logMessage);
-        return SUCCESS;
 
     }
 

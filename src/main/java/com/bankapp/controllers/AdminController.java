@@ -261,27 +261,36 @@ public class AdminController implements Constants {
         user.setUsername(form.getUsername());
         user.setDateOfBirth(form.getDateOfBirth());
         Role role = form.getRole();
+
+        String status = "error", message = ERR_UNHANDLED;
         try {
-            String msg = userService.addEmployee(user, role.getName());
-            if (msg.equalsIgnoreCase("EmailExists")) {
-                attr.addFlashAttribute("message", new Message("error", "Email already exists"));
-                return redirectFailureURL;
+            String serviceStatus = userService.addEmployee(user, role.getName());
+            switch (serviceStatus) {
+            case SUCCESS:
+                status = "success";
+                message = "New account for the employee has been created";
+                break;
+            case ERR_ACCOUNT_EXISTS:
+            case ERR_UNHANDLED:
+            default:
+                status = "error";
+                message = serviceStatus;
+                break;
             }
-            if (msg.equalsIgnoreCase("mailError")) {
-                attr.addFlashAttribute("message",
-                        new Message("error", "Mail service dint work properly please try again"));
-                return redirectFailureURL;
-            }
-            attr.addFlashAttribute("message", new Message("success", "Internal user has been created"));
+
             logMessage = String.format("Action: %s, Message: %s", "add", "Employee has been created");
-            return redirectSuccessURL;
+            LOGGER.info(logMessage);
+
         } catch (EmailExistsException e) {
             logMessage = String.format("Action: %s, Message: %s", "email_exists", e.getMessage());
-            attr.addFlashAttribute("message", new Message("error", "Email already exists"));
+            LOGGER.error(logMessage);
+
+            attr.addFlashAttribute("message", new Message(status, message));
             return redirectFailureURL;
-        } finally {
-            LOGGER.info(logMessage);
         }
+
+        attr.addFlashAttribute("message", new Message(status, message));
+        return redirectSuccessURL;
     }
 
     @RequestMapping(value = "/declineProfileRequest", method = RequestMethod.POST)
@@ -332,10 +341,10 @@ public class AdminController implements Constants {
         } else if (msg.equals(ERR_EMAIL_NOT_EXISTS)) {
             message = new Message("error", "Email does not exist");
             status = "error";
-        } else if(msg.equals(ERR_PII_NOT_ADDED)){
+        } else if (msg.equals(ERR_PII_NOT_ADDED)) {
             message = new Message("error", msg);
             status = "error";
-        }else {
+        } else {
             message = new Message("error", "error please try again");
             status = "error";
         }
@@ -370,9 +379,9 @@ public class AdminController implements Constants {
             int count = 0;
             try {
                 in = new Scanner(file);
-                while (in.hasNext() && count < 51) {
+                while (in.hasNext() && count < 101) {
                     String line = in.nextLine();
-                    if ((line.contains("WARN") || line.contains("ERROR"))) {
+                    if ((line.contains("WARN") || line.contains("ERROR") || line.contains("INFO"))) {
                         count++;
                         l1.add(line);
                     }
