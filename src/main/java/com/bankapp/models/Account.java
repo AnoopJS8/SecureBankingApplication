@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.List;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -31,6 +32,7 @@ public class Account {
     private User user;
 
     @NotNull
+    @Column(precision = 10, scale = 2)
     private Double balance;
     private Date created;
     private Date updated;
@@ -42,6 +44,7 @@ public class Account {
     private List<Transaction> transactions = new ArrayList<Transaction>();
 
     @Min(value = 0)
+    @Column(precision = 10, scale = 2)
     private Double criticalLimit;
 
     @PrePersist

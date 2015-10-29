@@ -59,7 +59,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	            .sessionFixation()
 	            .migrateSession()
 	            .maximumSessions(1)
-	            .expiredUrl("/?error=expired")
+	            .expiredUrl("/")
 	            .and()
 	            .invalidSessionUrl("/?error=expired");
 		

@@ -167,7 +167,10 @@ public class SignupController {
         }
 
         // Check if user is enabled
-        if (!user.isEnabled()) {
+        if (user == null) {
+            attributes.addFlashAttribute("message",
+                    new Message("error", "There seems to be no account linked to this token!"));
+        } else if (!user.isEnabled()) {
             user.setEnabled(true);
             userService.saveRegisteredUser(user);
 
