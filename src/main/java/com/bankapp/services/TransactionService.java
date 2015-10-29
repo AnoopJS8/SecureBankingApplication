@@ -42,9 +42,8 @@ public class TransactionService implements ITransactionService, Constants {
     @Transactional
     @Override
     public List<Transaction> getTransactionsByAccount(Account fromAccount, Account toAccount) {
-        List<Transaction> transactions = transactionRepository
-                .findByStatusNotAndFromAccountOrToAccountOrderByCreatedDesc("D",fromAccount, toAccount);
-
+        List<Transaction> transactions = transactionRepository.findByFromAccountOrToAccountOrderByCreatedDesc(fromAccount, toAccount);
+        transactions = transactionRepository.findByStatusNot("D");
         String logMessageFormat = "[Action=%s][FromAccount=%s, ToAccount=%s]";
         String logMessage = String.format(logMessageFormat, "getTransactionsByAccount", fromAccount.getAccId(),
                 toAccount.getAccId());
