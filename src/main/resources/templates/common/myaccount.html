@@ -103,7 +103,7 @@
 							Debited</td>
 						<td th:if="${transaction.status.equalsIgnoreCase('ACR')}">Pending
 							Credit</td>
-						<td th:if="${transaction.status.equalsIgnoreCase('CD')}"><span
+						<td th:if="${transaction.status.equalsIgnoreCase('CD') || transaction.status.equalsIgnoreCase('D') }"><span
 							th:text="Declined"></span></td>
 					</tr>
 				</tbody>

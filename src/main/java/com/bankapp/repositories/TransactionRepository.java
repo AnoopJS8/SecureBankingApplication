@@ -9,7 +9,7 @@ import com.bankapp.models.Transaction;
 
 public interface TransactionRepository extends CrudRepository<Transaction, String> {
 
-    List<Transaction> findByFromAccountOrToAccountOrderByCreatedDesc(Account fromAccount, Account toAccount);
+    List<Transaction> findByStatusNotAndFromAccountOrToAccountOrderByCreatedDesc( String status,Account fromAccount, Account toAccount);
 
     Transaction findByTransactionId(String id);
 
