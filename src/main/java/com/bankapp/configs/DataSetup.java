@@ -27,6 +27,9 @@ public class DataSetup implements ApplicationListener<ContextRefreshedEvent> {
     @Value("${com.bankapp.data.roleSetup}")
     private Boolean doRoleSetup;
 
+    @Value("${com.bankapp.data.deploy}")
+    private Boolean deploy;
+
     @Autowired
     private UserRepository userRepository;
 
@@ -69,62 +72,10 @@ public class DataSetup implements ApplicationListener<ContextRefreshedEvent> {
         adminUser.setRole(adminRole);
         adminUser.setEnabled(true);
         adminUser.setDateOfBirth(new Date());
-        adminUser.setPhoneNumber("1231231231");
-        adminUser.setSecurityQuestion("Name?");
-        adminUser.setSecurityAnswer("test");
+        adminUser.setPhoneNumber("1000000000");
+        adminUser.setSecurityQuestion("What's your name?");
+        adminUser.setSecurityAnswer("admin");
         createUserIfNotFound(adminEmail, adminUser);
-
-        final Role employeeRole = roleRepository.findByName("ROLE_EMPLOYEE");
-        User employeeUser = new User();
-        employeeUser.setUsername("Test Employee");
-        employeeUser.setPassword(passwordEncoder.encode("test123"));
-        employeeUser.setEmail(employeeEmail);
-        employeeUser.setRole(employeeRole);
-        employeeUser.setEnabled(true);
-        employeeUser.setDateOfBirth(new Date());
-        employeeUser.setPhoneNumber("1231231231");
-        employeeUser.setSecurityQuestion("Name?");
-        employeeUser.setSecurityAnswer("test");
-        createUserIfNotFound(employeeEmail, employeeUser);
-
-        final Role managerRole = roleRepository.findByName("ROLE_MANAGER");
-        User managerUser = new User();
-        managerUser.setUsername("Test Manager");
-        managerUser.setPassword(passwordEncoder.encode("test123"));
-        managerUser.setEmail(managerEmail);
-        managerUser.setRole(managerRole);
-        managerUser.setEnabled(true);
-        managerUser.setDateOfBirth(new Date());
-        managerUser.setPhoneNumber("1231231231");
-        managerUser.setSecurityQuestion("Name?");
-        managerUser.setSecurityAnswer("test");
-        createUserIfNotFound(managerEmail, managerUser);
-
-        final Role customerRole = roleRepository.findByName("ROLE_CUSTOMER");
-        User customerUser = new User();
-        customerUser.setUsername("Test Customer");
-        customerUser.setPassword(passwordEncoder.encode("test123"));
-        customerUser.setEmail(customerEmail);
-        customerUser.setRole(customerRole);
-        customerUser.setEnabled(true);
-        customerUser.setDateOfBirth(new Date());
-        customerUser.setPhoneNumber("1231231231");
-        customerUser.setSecurityQuestion("Name?");
-        customerUser.setSecurityAnswer("test");
-        createUserIfNotFound(customerEmail, customerUser);
-
-        final Role merchantRole = roleRepository.findByName("ROLE_MERCHANT");
-        User merchantUser = new User();
-        merchantUser.setUsername("Test Merchant");
-        merchantUser.setPassword(passwordEncoder.encode("test123"));
-        merchantUser.setEmail(merchantEmail);
-        merchantUser.setRole(merchantRole);
-        merchantUser.setEnabled(true);
-        merchantUser.setDateOfBirth(new Date());
-        merchantUser.setPhoneNumber("1231231231");
-        merchantUser.setSecurityQuestion("Name?");
-        merchantUser.setSecurityAnswer("test");
-        createUserIfNotFound(merchantEmail, merchantUser);
 
         final Role agencyRole = roleRepository.findByName("ROLE_AGENCY");
         User agencyUser = new User();
@@ -134,10 +85,64 @@ public class DataSetup implements ApplicationListener<ContextRefreshedEvent> {
         agencyUser.setRole(agencyRole);
         agencyUser.setEnabled(true);
         agencyUser.setDateOfBirth(new Date());
-        agencyUser.setPhoneNumber("1231231231");
-        agencyUser.setSecurityQuestion("Name?");
-        agencyUser.setSecurityAnswer("test");
+        agencyUser.setPhoneNumber("1000000000");
+        agencyUser.setSecurityQuestion("What's your name?");
+        agencyUser.setSecurityAnswer("agency");
         createUserIfNotFound(agencyEmail, agencyUser);
+
+        if (!deploy) {
+            final Role employeeRole = roleRepository.findByName("ROLE_EMPLOYEE");
+            User employeeUser = new User();
+            employeeUser.setUsername("Test Employee");
+            employeeUser.setPassword(passwordEncoder.encode("test123"));
+            employeeUser.setEmail(employeeEmail);
+            employeeUser.setRole(employeeRole);
+            employeeUser.setEnabled(true);
+            employeeUser.setDateOfBirth(new Date());
+            employeeUser.setPhoneNumber("1231231231");
+            employeeUser.setSecurityQuestion("Name?");
+            employeeUser.setSecurityAnswer("test");
+            createUserIfNotFound(employeeEmail, employeeUser);
+
+            final Role managerRole = roleRepository.findByName("ROLE_MANAGER");
+            User managerUser = new User();
+            managerUser.setUsername("Test Manager");
+            managerUser.setPassword(passwordEncoder.encode("test123"));
+            managerUser.setEmail(managerEmail);
+            managerUser.setRole(managerRole);
+            managerUser.setEnabled(true);
+            managerUser.setDateOfBirth(new Date());
+            managerUser.setPhoneNumber("1231231231");
+            managerUser.setSecurityQuestion("Name?");
+            managerUser.setSecurityAnswer("test");
+            createUserIfNotFound(managerEmail, managerUser);
+
+            final Role customerRole = roleRepository.findByName("ROLE_CUSTOMER");
+            User customerUser = new User();
+            customerUser.setUsername("Test Customer");
+            customerUser.setPassword(passwordEncoder.encode("test123"));
+            customerUser.setEmail(customerEmail);
+            customerUser.setRole(customerRole);
+            customerUser.setEnabled(true);
+            customerUser.setDateOfBirth(new Date());
+            customerUser.setPhoneNumber("1231231231");
+            customerUser.setSecurityQuestion("Name?");
+            customerUser.setSecurityAnswer("test");
+            createUserIfNotFound(customerEmail, customerUser);
+
+            final Role merchantRole = roleRepository.findByName("ROLE_MERCHANT");
+            User merchantUser = new User();
+            merchantUser.setUsername("Test Merchant");
+            merchantUser.setPassword(passwordEncoder.encode("test123"));
+            merchantUser.setEmail(merchantEmail);
+            merchantUser.setRole(merchantRole);
+            merchantUser.setEnabled(true);
+            merchantUser.setDateOfBirth(new Date());
+            merchantUser.setPhoneNumber("1231231231");
+            merchantUser.setSecurityQuestion("Name?");
+            merchantUser.setSecurityAnswer("test");
+            createUserIfNotFound(merchantEmail, merchantUser);
+        }
 
         doDataSetup = true;
     }

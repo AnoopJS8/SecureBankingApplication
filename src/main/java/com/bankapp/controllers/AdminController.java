@@ -256,11 +256,23 @@ public class AdminController implements Constants {
             return "admin/addemployee";
         }
 
+        Role role = form.getRole();
+        if (!role.getName().equalsIgnoreCase("ROLE_ADMIN") && !role.getName().equalsIgnoreCase("ROLE_MANAGER")
+                && !role.getName().equalsIgnoreCase("ROLE_EMPLOYEE")) {
+            model.addAttribute("form", form);
+            attr.addFlashAttribute("message",
+                    new Message("error", "You can only create an employee, manager or an admin"));
+
+            logMessage = String.format("Employee creation failed: [Email=%s, Message=%s]",
+                    form.getEmail(), "You can only create an employee, manager or an admin");
+            LOGGER.info(logMessage);
+            return "redirect:/admin/add";
+        }
+
         User user = new User();
         user.setEmail(form.getEmail());
         user.setUsername(form.getUsername());
         user.setDateOfBirth(form.getDateOfBirth());
-        Role role = form.getRole();
 
         String status = "error", message = ERR_UNHANDLED;
         try {

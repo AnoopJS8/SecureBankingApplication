@@ -6,14 +6,7 @@
 <body>
     <div class="container">
         <div th:replace="fragment/common :: top-nav(signup)"></div>
-        <div th:if="${message}">
-            <div class="alert alert-danger  alert-dismissible">
-                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-                <p th:text="${message}"></p>
-            </div>
-        </div>
+        <div th:replace="fragment/common :: message"></div>
         <form id="signup-form" action="#" th:action="@{/signup}" th:object="${form}" method="post" class="form-horizontal">
             <div class="form-group">
                 <label class="col-sm-2 control-label">Username</label>
