@@ -23,7 +23,7 @@ public class ProfileRequest {
     private String rId;
 
     @OneToOne
-    @JoinColumn(name = "userId", nullable = false)
+    @JoinColumn(name = "userId")
     private User user;
 
     private String address;

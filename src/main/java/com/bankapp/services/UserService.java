@@ -16,12 +16,16 @@ import org.springframework.transaction.annotation.Transactional;
 import com.bankapp.constants.Constants;
 import com.bankapp.encryption.RSAKeyPair;
 import com.bankapp.exceptions.EmailExistsException;
+import com.bankapp.models.Account;
 import com.bankapp.models.OneTimePassword;
 import com.bankapp.models.Role;
+import com.bankapp.models.Transaction;
 import com.bankapp.models.User;
 import com.bankapp.models.VerificationToken;
+import com.bankapp.repositories.AccountRepository;
 import com.bankapp.repositories.OTPRepository;
 import com.bankapp.repositories.RoleRepository;
+import com.bankapp.repositories.TransactionRepository;
 import com.bankapp.repositories.UserRepository;
 import com.bankapp.repositories.VerificationTokenRepository;
 
@@ -35,6 +39,12 @@ public class UserService implements IUserService, Constants {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private AccountRepository accountRepository;
+
+    @Autowired
+    private TransactionRepository transactionRepository;
 
     @Autowired
     private OTPRepository oTPRepository;
@@ -269,8 +279,25 @@ public class UserService implements IUserService, Constants {
     }
 
     @Override
+    @Transactional
     public void deleteUser(User user) {
-        userRepository.delete(user);
+        Account userAccount = accountRepository.findByUser(user);
+        List<Transaction> transactions = transactionRepository
+                .findByFromAccountOrToAccountOrderByCreatedDesc(userAccount, userAccount);
+        VerificationToken token = tokenRepository.findByUser(user);
+
+        if (token != null) {
+            tokenRepository.delete(token);
+        }
+        if (transactions != null) {
+            transactionRepository.delete(transactions);
+        }
+        if (userAccount != null) {
+            accountRepository.delete(userAccount);
+        }
+        if (user != null) {
+            userRepository.delete(user);
+        }
     }
 
     @Override
@@ -395,12 +422,29 @@ public class UserService implements IUserService, Constants {
     }
 
     @Override
+    @Transactional
     public String deleteExternalUser(String email) {
         try {
             User user = userRepository.findByEmail(email);
 
             if (user != null) {
-                userRepository.delete(user);
+                Account userAccount = accountRepository.findByUser(user);
+                List<Transaction> transactions = transactionRepository
+                        .findByFromAccountOrToAccountOrderByCreatedDesc(userAccount, userAccount);
+                VerificationToken token = tokenRepository.findByUser(user);
+
+                if (token != null) {
+                    tokenRepository.delete(token);
+                }
+                if (transactions != null) {
+                    transactionRepository.delete(transactions);
+                }
+                if (userAccount != null) {
+                    accountRepository.delete(userAccount);
+                }
+                if (user != null) {
+                    userRepository.delete(user);
+                }
             } else {
                 return ERR_ACCOUNT_NOT_EXISTS;
             }

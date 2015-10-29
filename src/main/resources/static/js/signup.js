@@ -30,7 +30,7 @@ $(document).ready(function() {
 			'email' : "Please enter a valid email address",
 			'password': {
 				required: "Please enter a password",
-				minlength: "Password should be atleast 6 characters long"
+				minlength: "Password should be atleast 8 characters long"
 			},
 			'dateOfBirth': "Please enter a past date in MM/dd/yyyy format",
 			'securityQuestion' : "Please enter a security question",
