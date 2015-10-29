@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.List;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -31,14 +32,19 @@ public class Account {
     private User user;
 
     @NotNull
+    @Column(precision = 10, scale = 2)
     private Double balance;
     private Date created;
     private Date updated;
+
+    @NotNull
+    private String typeOfAccount;
 
     @OneToMany(cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<Transaction> transactions = new ArrayList<Transaction>();
 
     @Min(value = 0)
+    @Column(precision = 10, scale = 2)
     private Double criticalLimit;
 
     @PrePersist
@@ -55,11 +61,12 @@ public class Account {
         super();
     }
 
-    public Account(final User user, final Double balance, final Double criticalLimit) {
+    public Account(final User user, final String typeOfAccount, final Double balance, final Double criticalLimit) {
         super();
         this.user = user;
         this.balance = balance;
         this.criticalLimit = criticalLimit;
+        this.typeOfAccount = typeOfAccount;
     }
 
     public String getAccId() {
@@ -123,6 +130,14 @@ public class Account {
         final String value = String.format("Account Object [accountId=%s, user=%s, balance=%s, criticalLimit=%s]",
                 accId, user.getId(), balance, criticalLimit);
         return value;
+    }
+
+    public String getTypeOfAccount() {
+        return typeOfAccount;
+    }
+
+    public void setTypeOfAccount(String typeOfAccount) {
+        this.typeOfAccount = typeOfAccount;
     }
 
 }

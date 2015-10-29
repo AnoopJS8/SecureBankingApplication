@@ -7,6 +7,7 @@ import java.util.Date;
 import javax.validation.Valid;
 
 import org.apache.log4j.Logger;
+import org.hibernate.validator.constraints.NotBlank;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.context.ApplicationEventPublisher;
@@ -283,18 +284,22 @@ public class MainController implements Constants {
     }
 
     @RequestMapping(value = "/changelimit", method = RequestMethod.POST)
-    public String changeLimit(@ModelAttribute("limit") @Valid Double newLimit, BindingResult result, WebRequest request,
+    public String changeLimit(@ModelAttribute("limit") @NotBlank String limit, BindingResult result, WebRequest request,
             Errors errors, Principal principal, RedirectAttributes attributes) {
 
         User loggedInUser = userService.getUserFromSession(principal);
-        if (newLimit < 0) {
-            attributes.addFlashAttribute("message", new Message("error", "Critical limit cannot be set below 0"));
-        } else {
-
-            Account newAccount = accountService.getAccountByUser(loggedInUser);
-            newAccount.setCriticalLimit(newLimit);
-            accountService.saveAccount(newAccount);
-            attributes.addFlashAttribute("message", new Message("success", "Your critical limit has been updated"));
+        try {
+            Double newLimit = Double.parseDouble(limit);
+            if (newLimit < 0) {
+                attributes.addFlashAttribute("message", new Message("error", "Critical limit cannot be set below 0"));
+            } else {
+                Account newAccount = accountService.getAccountByUser(loggedInUser);
+                newAccount.setCriticalLimit(newLimit);
+                accountService.saveAccount(newAccount);
+                attributes.addFlashAttribute("message", new Message("success", "Your critical limit has been updated"));
+            }
+        } catch (Exception e) {
+            attributes.addFlashAttribute("message", new Message("error", "Critical limit cannot be empty"));
         }
 
         String roleName = loggedInUser.getRole().getName();

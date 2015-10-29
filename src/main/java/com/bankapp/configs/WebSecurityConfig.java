@@ -57,11 +57,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	            .deleteCookies("JSESSIONID").and()
 	        .sessionManagement()
 	            .sessionFixation()
-	            .newSession()
+	            .migrateSession()
 	            .maximumSessions(1)
 	            .expiredUrl("/")
 	            .and()
-	            .invalidSessionUrl("/");
+	            .invalidSessionUrl("/?error=expired");
 		
 		http.addFilterBefore(new CrossScriptingFilter(), BasicAuthenticationFilter.class);
 			     

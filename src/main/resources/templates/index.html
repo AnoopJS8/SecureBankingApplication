@@ -18,15 +18,20 @@
 					Customer Login <small><a th:href="@{/signup}">New User?</a></small>
 				</h3>
 				<hr />
+				<div th:if="${param.error != null} and ${param.error[0] == 'expired'}" class="alert alert-danger"
+					role="alert">
+					<p>Your session has expired, please login again</p>
+				</div>
 				<div th:if="${param.logout}">You have been logged out.</div>
-				<div class="error" th:if="${param.error} and ${session['SPRING_SECURITY_LAST_EXCEPTION']}"
+				<div class="error"
+					th:if="${param.error} and ${session['SPRING_SECURITY_LAST_EXCEPTION']}"
 					th:with="errorMsg=${session['SPRING_SECURITY_LAST_EXCEPTION'].message}">
-					<div th:if="${errorMsg} == 'Bad credentials'">
-						<div th:switch="${errorMsg}" class="alert alert-danger" role="alert">
-							<p th:case="'Bad credentials'">Invalid username and password</p>
-							<p th:case="'blocked'">Too many failed login attempts. You have been banned for a day!</p>
-							<p th:case="*" th:text="${errorMsg}"></p>
-						</div>
+					<div th:switch="${errorMsg}" class="alert alert-danger" role="alert">
+						<p th:case="'Bad credentials'">Invalid username and password</p>
+						<p th:case="'blocked'">Too many failed login attempts. You have been
+							banned for a day!</p>
+						<p th:case="'expired'">Your session has expired, please logging again</p>
+						<p th:case="*" th:text="${errorMsg}"></p>
 					</div>
 				</div>
 				<form th:action="@{/}" method="post" class="form-horizontal" id="login-form">
@@ -87,7 +92,6 @@
 			</div>
 		</div>
 		<div th:replace="fragment/common :: [//footer]"></div>
-		
 	</div>
 	<script th:src="@{/webjars/jquery-validation/1.14.0/jquery.validate.min.js}"></script>
 	<script type="text/javascript" th:src="@{/js/login.js}"></script>

@@ -95,6 +95,11 @@ public class SignupController {
         if (resultForm.hasErrors()) {
             mv.addObject("form", form);
             mv.addObject("errors", resultForm.getAllErrors());
+
+            String logMessage = String.format(
+                    "Registration for user account failed with information: [Email=%s, Message=%s]", form.getEmail(),
+                    resultForm.getAllErrors());
+            LOGGER.info(logMessage);
             return mv;
         }
 
@@ -108,6 +113,7 @@ public class SignupController {
         newUser.setGender(form.getGender());
         newUser.setSecurityQuestion(form.getSecurityQuestion());
         newUser.setSecurityAnswer(form.getSecurityAnswer());
+        newUser.setTypeOfAccount(form.getTypeOfAccount());
         Role role = form.getRole();
         String logMessage = String.format("Registering user account with information: {%s, %s}", newUser, role);
         LOGGER.info(logMessage);
@@ -161,12 +167,25 @@ public class SignupController {
         }
 
         // Check if user is enabled
-        if (!user.isEnabled()) {
+        if (user == null) {
+            attributes.addFlashAttribute("message",
+                    new Message("error", "There seems to be no account linked to this token!"));
+        } else if (!user.isEnabled()) {
             user.setEnabled(true);
             userService.saveRegisteredUser(user);
 
             // Create user account
-            Account userAccount = new Account(user, defaultBalance, defaultCriticalLimit);
+            Account userAccount;
+            String typeOfAccount = user.getTypeOfAccount();
+            switch (typeOfAccount) {
+            case "S":
+                userAccount = new Account(user, "Savings", defaultBalance, defaultCriticalLimit);
+                break;
+            case "C":
+            default:
+                userAccount = new Account(user, "Checkings", defaultBalance, defaultCriticalLimit);
+            }
+
             accountService.saveAccount(userAccount);
 
             logMessage = String.format("User %s has been verified, created new account [%s]", user.getId(),

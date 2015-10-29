@@ -8,7 +8,7 @@ cd group7Certs
 
 # Since we do not have any certification authority, we will generate our own.
 openssl genrsa -out group7CA.key 2048
-openssl req -new -x509 -days 3650 -key group7CA.key -out group7CA.crt -subj "/C=US/ST=AZ/L=Phoenix/O=SS/OU=group7/CN=group7.com"
+openssl req -new -x509 -days 3650 -key group7CA.key -out group7CA.crt -subj "/C=US/ST=AZ/L=Phoenix/O=SS/OU=group7/CN=group7.mobicloud.asu.edu"
 mkdir -p group7CA/newcerts
 touch group7CA/index.txt
 echo '01' > group7CA/serial
@@ -25,7 +25,7 @@ keytool -import -keystore cacerts.jks -storepass myasubank -alias group7CA -file
 #######################################################
 
 # Generate the keystore
-keytool -genkey -v -alias group7 -keyalg RSA -validity 3650 -keystore group7.jks -storepass myasubank -keypass myasubank -dname "CN=group7.com, OU=group7, O=SS, L=Phoenix, ST=AZ, C=US"
+keytool -genkey -v -alias group7 -keyalg RSA -validity 3650 -keystore group7.jks -storepass myasubank -keypass myasubank -dname "CN=group7.mobicloud.asu.edu, OU=group7, O=SS, L=Phoenix, ST=AZ, C=US"
 # Then, generate the CSR to sign:
 keytool -certreq -alias group7 -file group7.csr -keystore group7.jks -storepass myasubank
 # Sign the certificate to the CA:

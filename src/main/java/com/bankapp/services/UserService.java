@@ -73,6 +73,7 @@ public class UserService implements IUserService, Constants {
         newUser.setSecurityQuestion(user.getSecurityQuestion());
         newUser.setSecurityAnswer(user.getSecurityAnswer());
         newUser.setRole(roleRepository.findByName(roleName));
+        newUser.setTypeOfAccount(user.getTypeOfAccount());
 
         String logMessageFormat = "[Action=%s][User=%s, Role=%s]";
         String logMessage = String.format(logMessageFormat, "registerNewUserAccount", user.getId(), roleName);

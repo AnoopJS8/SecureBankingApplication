@@ -2,38 +2,49 @@ $(document).ready(function() {
 	$('#signup-form').validate({
 		errorClass : 'error',
 		rules : {
-			'user.username' : {
+			'username' : {
 				required : true
 			},
-			'user.email' : {
+			'email' : {
 				required : true,
 				email : true
 			},
-			'user.password' : {
+			'password' : {
 				required : true,
-				minlength : 6
+				minlength : 8
 			},
-			'user.securityQuestion' : {
+			'dateOfBirth': {
+				required: true,
+				dateFA : true,
+			},
+			'securityQuestion' : {
 				required : true
 			},
-			'user.securityAnswer' : {
+			'securityAnswer' : {
 				required : true
 			}
 		},
 		// Specify the validation error messages
 		messages : {
-			'user.username' : "Please enter your user name",
-			'user.email' : "Please enter a valid email address",
-			'user.password': {
+			'username' : "Please enter your user name",
+			'email' : "Please enter a valid email address",
+			'password': {
 				required: "Please enter a password",
 				minlength: "Password should be atleast 6 characters long"
 			},
-			'user.securityQuestion' : "Please enter a security question",
-			'user.securityAnswer' : "Please enter a security answer"
+			'dateOfBirth': "Please enter a past date in MM/dd/yyyy format",
+			'securityQuestion' : "Please enter a security question",
+			'securityAnswer' : "Please enter a security answer"
 		},
 
 		submitHandler : function(form) {
 			form.submit();
 		}
 	});
+	
+	$.validator.addMethod("dateFA", function(value, element) {
+		return this.optional(element)
+				|| /^(0[1-9]|1[0-2])\/(0[1-9]|1\d|2\d|3[01])\/([0-9][0-9])\d{2}$/
+						.test(value);
+	}, $.validator.messages.date);
 });

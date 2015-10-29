@@ -109,6 +109,7 @@ public class DataSetup implements ApplicationListener<ContextRefreshedEvent> {
         Account customerAccount = new Account();
         customerUser.setAccount(customerAccount);
         customerAccount.setUser(customerUser);
+        customerAccount.setTypeOfAccount("Checkings");
         customerAccount.setCreated(new Date());
         customerAccount.setBalance(100.0);
         customerAccount.setCriticalLimit(100.0);
@@ -131,6 +132,7 @@ public class DataSetup implements ApplicationListener<ContextRefreshedEvent> {
         merchantUser.setAccount(merchantAccount);
         merchantAccount.setUser(merchantUser);
         merchantAccount.setCreated(new Date());
+        merchantAccount.setTypeOfAccount("Savings");
         merchantAccount.setBalance(100.0);
         merchantAccount.setCriticalLimit(100.0);
         accountRepository.save(merchantAccount);
