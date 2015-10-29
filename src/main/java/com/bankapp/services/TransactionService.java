@@ -50,7 +50,6 @@ public class TransactionService implements ITransactionService, Constants {
             if (!transactions.get(i).getStatus().equals("D")) {
                 transactionIds.add(transactions.get(i));
             }
-
         }
         String logMessageFormat = "[Action=%s][FromAccount=%s, ToAccount=%s]";
         String logMessage = String.format(logMessageFormat, "getTransactionsByAccount", fromAccount.getAccId(),
@@ -629,7 +628,11 @@ public class TransactionService implements ITransactionService, Constants {
         try {
             transaction.setTransferDate(new Date());
             if (transaction.getFromAccount().getBalance() < transaction.getAmount()) {
-                transaction.setStatus(S_DECLINED);
+                if(transaction.getStatus().equals(S_CUSTOMER_VERIFIED)){
+                    transaction.setStatus(S_CUSTOMER_DECLINED);
+                }else{
+                    transaction.setStatus(S_DECLINED);
+                }
                 transactionRepository.save(transaction);
 
                 String logMessageFormat = "[Action=%s][Status=%s][Transaction=%s]";
