@@ -11,6 +11,7 @@ public interface Constants {
 	public String ERR_ACCOUNT_NOT_EXISTS = "Account does not exist!";
 	public String ERR_SAME_USER = "Same user transfer is not valid";
 	public String ERR_EMAIL_NOT_EXISTS = "email not present with agency";
+	public String ERR_PII_NOT_ADDED = "The user has not added the pii yet please tell the user to put their pii";
 	
 	public String ERR_PROFILE_UPDATE = "Could not authorize the request";
 	public String ERR_PROFILE_DOB = "Date of Birth must be in MM/dd/yyyy format";

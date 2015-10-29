@@ -332,7 +332,10 @@ public class AdminController implements Constants {
         } else if (msg.equals(ERR_EMAIL_NOT_EXISTS)) {
             message = new Message("error", "Email does not exist");
             status = "error";
-        } else {
+        } else if(msg.equals(ERR_PII_NOT_ADDED)){
+            message = new Message("error", msg);
+            status = "error";
+        }else {
             message = new Message("error", "error please try again");
             status = "error";
         }
