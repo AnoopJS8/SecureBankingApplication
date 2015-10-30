@@ -1,11 +1,13 @@
 package com.bankapp.controllers;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
 
 import javax.validation.Valid;
 
@@ -21,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.bankapp.configs.ReverseFileReader;
 import com.bankapp.constants.Constants;
 import com.bankapp.constants.Message;
 import com.bankapp.exceptions.EmailExistsException;
@@ -263,8 +266,8 @@ public class AdminController implements Constants {
             attr.addFlashAttribute("message",
                     new Message("error", "You can only create an employee, manager or an admin"));
 
-            logMessage = String.format("Employee creation failed: [Email=%s, Message=%s]",
-                    form.getEmail(), "You can only create an employee, manager or an admin");
+            logMessage = String.format("Employee creation failed: [Email=%s, Message=%s]", form.getEmail(),
+                    "You can only create an employee, manager or an admin");
             LOGGER.info(logMessage);
             return "redirect:/admin/add";
         }
@@ -384,32 +387,44 @@ public class AdminController implements Constants {
     public ModelAndView logDetails() {
 
         ModelAndView mv = new ModelAndView("/admin/viewLogs");
+        int count = 0;
+        List<String> readLines = new ArrayList<String>();
         try {
-            File file = new File("logging.log");
-            Scanner in = null;
-            List<String> l1 = new ArrayList<String>();
-            int count = 0;
-            try {
-                in = new Scanner(file);
-                while (in.hasNext() && count < 101) {
-                    String line = in.nextLine();
+            File file = new File("/opt/tomcat/logs/bankapp.log");
+            BufferedReader in = new BufferedReader(new InputStreamReader(new ReverseFileReader(file)));
+
+            while (true) {
+                String line = in.readLine();
+                if (line == null || count >= 100) {
+                    break;
+                } else {
                     if ((line.contains("WARN") || line.contains("ERROR") || line.contains("INFO"))) {
                         count++;
-                        l1.add(0, line);
+                        readLines.add(line);
                     }
                 }
-            } catch (FileNotFoundException e) {
-                String logMessage = String.format("[Action=%s, Method=%s, Role=%s][Status=%s][Message=%s]",
-                        "admin view log", "GET", "admin", "error", "View Logs");
-                LOGGER.info(logMessage);
             }
-            mv.addObject("listlogs", l1);
+            in.close();
+        } catch (FileNotFoundException e) {
+            String logMessage = String.format("[Action=%s, Method=%s, Role=%s][Status=%s][Message=%s]",
+                    "admin view log", "GET", "admin", "error", e.getMessage());
+            LOGGER.info(logMessage);
+
+            mv.addObject("error", new Message("error", "Sorry, logs are not present at the moment"));
+            mv.addObject("listlogs", readLines);
             return mv;
-        } catch (Exception e) {
-            mv.addObject("message", new Message("error", ERR_UNHANDLED));
+        } catch (IOException e) {
+            String logMessage = String.format("[Action=%s, Method=%s, Role=%s][Status=%s][Message=%s]",
+                    "admin view log", "GET", "admin", "error", e.getMessage());
+            LOGGER.info(logMessage);
+
+            mv.addObject("error", new Message("error", "Sorry, logs are not present at the moment"));
+            mv.addObject("listlogs", readLines);
             return mv;
         }
 
-    }
+        mv.addObject("listlogs", readLines);
+        return mv;
 
+    }
 }

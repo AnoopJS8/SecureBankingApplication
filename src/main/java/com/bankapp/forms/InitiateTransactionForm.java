@@ -4,17 +4,20 @@ import java.util.Date;
 
 import javax.validation.constraints.Future;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
 public class InitiateTransactionForm {
 
     @NotNull
+    @Size(min = 1, max = 50)
     String email;
 
     @NotNull
     String amount;
 
+    @Size(min = 1, max = 50)
     String comment;
 
     @NotNull

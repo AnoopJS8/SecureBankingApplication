@@ -12,7 +12,7 @@ import com.google.common.cache.LoadingCache;
 @Service
 public class LoginAttemptService {
 
-    private final int MAX_ATTEMPT = 3;
+    private final int MAX_ATTEMPT = 5;
     private LoadingCache<String, Integer> attemptsCache;
 
     public LoginAttemptService() {

@@ -194,13 +194,23 @@ public class SystemManagerController implements Constants {
         String redirectUrl = "redirect:/manager/addUserForm";
         String status = "success";
 
-        // System.out.println(form.getUsername());
         if (result.hasErrors()) {
             status = "error";
             model.addAttribute("form", form);
             String message = "Invalid Details";
             model.addAttribute("message", new Message(status, message));
             return "/manager/addUserForm";
+        }
+
+        if (!role.getName().equalsIgnoreCase("ROLE_CUSTOMER") && !role.getName().equalsIgnoreCase("ROLE_MERCHANT")) {
+            model.addAttribute("form", form);
+            attributes.addFlashAttribute("message",
+                    new Message("error", "You can only create a customer or a merchant"));
+
+            String logMessage = String.format("External user creation failed: [Email=%s, Message=%s]", form.getEmail(),
+                    "You can only create a customer or a merchant");
+            LOGGER.info(logMessage);
+            return "redirect:/manager/addUserForm";
         }
 
         User registered = null;

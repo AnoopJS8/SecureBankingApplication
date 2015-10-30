@@ -5,6 +5,7 @@ import java.util.Date;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Past;
 import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
 
 import org.hibernate.validator.constraints.NotEmpty;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -15,8 +16,10 @@ public class EmployeeProfileUpdateForm {
     private String Id;
 
     @NotEmpty
+    @Size(min = 1, max = 50)
     private String username;
 
+    @Size(min = 1, max = 50)
     private String address;
 
     @Pattern(regexp="\\d{10}", message = "Please enter a valid 10 digit phone number")
@@ -27,6 +30,7 @@ public class EmployeeProfileUpdateForm {
     @NotNull
     private Date dateOfBirth;
 
+    @Size(min = 1, max = 50)
     private String gender;
 
     public String getId() {

@@ -4,6 +4,7 @@ import java.util.Date;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Past;
+import javax.validation.constraints.Size;
 
 import org.hibernate.annotations.NotFound;
 import org.hibernate.validator.constraints.NotEmpty;
@@ -15,11 +16,13 @@ import com.bankapp.validators.ValidEmail;
 public class AddEmployeeForm {
     
     @NotEmpty    
+    @Size(min = 1, max = 50)
     private String username;
     
     @NotEmpty
     @NotFound
     @ValidEmail
+    @Size(min = 1, max = 50)
     private String email;
     
     Role role;

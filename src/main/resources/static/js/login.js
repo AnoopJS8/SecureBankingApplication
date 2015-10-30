@@ -24,6 +24,7 @@ $(document).ready(function() {
 
 	$('#password').keyboard({
 		  usePreview: false,
-		  appendLocally: true
+		  appendLocally: true,
+		  autoAccept: true
 	});
 });

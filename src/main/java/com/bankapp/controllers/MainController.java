@@ -292,6 +292,9 @@ public class MainController implements Constants {
             Double newLimit = Double.parseDouble(limit);
             if (newLimit < 0) {
                 attributes.addFlashAttribute("message", new Message("error", "Critical limit cannot be set below 0"));
+            } else if (newLimit > 1000) {
+                attributes.addFlashAttribute("message",
+                        new Message("error", "Critical limit cannot be more than 1000"));
             } else {
                 Account newAccount = accountService.getAccountByUser(loggedInUser);
                 newAccount.setCriticalLimit(newLimit);
